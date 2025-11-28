@@ -1114,169 +1114,249 @@ Starke Base (z. B. NaOH):
   ]
 }
 ,
-        {
-          id: "titrationen",
-          title: "Titrationen (Säure-Base, Fällung, Komplexometrie, Redox)",
-          tags: ["Titration", "Äquivalenzpunkt", "Titrationskurve"],
-          goals: [
-            "Grundprinzip einer Titration erklären können.",
-            "Äquivalenzpunkt und Endpunkt unterscheiden.",
-            "Konzentationen über c₁·V₁ = c₂·V₂ berechnen (einfache Fälle)."
-          ],
-          summary:
-            "Bei einer Titration wird eine Maßlösung (bekannte Konzentration) zu einer Probelösung gegeben, bis die stöchiometrische Menge erreicht ist (Äquivalenzpunkt). Aus dem verbrauchten Volumen der Maßlösung kann die Konzentration oder die Stoffmenge der unbekannten Probe berechnet werden. Es gibt verschiedene Titrationsarten: Säure-Base-, Fällungs-, Redox- und komplexometrische Titrationen.",
-          keyPoints: [
-            "Äquivalenzpunkt: Stoffmengenverhältnis entspricht genau der Reaktionsstöchiometrie.",
-            "Endpunkt: der tatsächlich beobachtete Punkt (z. B. Farbumschlag des Indikators).",
-            "Säure-Base-Titration: typischer pH-Sprung in der Nähe des Äquivalenzpunktes.",
-            "Komplexometrie: Metall-Ionen werden mit Liganden (z. B. EDTA) titriert.",
-            "Redoxtitration: Redoxreaktion + Titrationsprinzip (z. B. Permanganat)."
-          ],
-          formulas: [
-            "n = c · V",
-            "c₁ · V₁ = c₂ · V₂ (bei 1:1-Stöchiometrie)",
-            "Für allgemeine Reaktion: n(Säure)/n(Base) = stöchiometrisches Verhältnis"
-          ]
-        },
-        {
-          id: "gehaltsbestimmung",
-          title: "Gehaltsbestimmung & mg-Berechnung (z. B. Säure-Probe)",
-          tags: ["Gehaltsbestimmung", "Titration", "mg-Berechnung"],
-          goals: [
-            "Aus Titrationsdaten die Stoffmenge der unbekannten Substanz bestimmen.",
-            "Aus Stoffmenge und molarer Masse die Masse (mg) berechnen.",
-            "Typische Klausuraufgabe 'Wie viel mg waren in der Probe?' strukturiert lösen."
-          ],
-          summary:
-            "In der Klausur kann eine Aufgabe vorkommen wie: 'Es werden x mL einer unbekannten Säureprobe mit einer Maßlösung bekannter Konzentration titriert. Berechne, wie viel mg der Säure in der Probe enthalten waren.' Der Lösungsweg ist immer gleich: Reaktionsgleichung aufstellen, Stoffmenge der Maßlösung berechnen, über Stöchiometrie die Stoffmenge der unbekannten Säure finden und schließlich über m = n·M die Masse berechnen.",
-          keyPoints: [
-            "1) Reaktionsgleichung aufstellen und ausgleichen.",
-            "2) Stoffmenge der Maßlösung: n(Maß) = c(Maß) · V(Maß).",
-            "3) Über das stöchiometrische Verhältnis n(unbekannt) bestimmen.",
-            "4) Masse: m(unbekannt) = n(unbekannt) · M(unbekannt).",
-            "5) Falls nötig: in mg umrechnen (1 g = 1000 mg)."
-          ],
-          formulas: [
-            "n = c · V",
-            "m = n · M",
-            "m[mg] = m[g] · 1000"
-          ],
-          visual: `
-            <div style="font-size:11px;margin-bottom:4px;">Schematischer Rechenweg:</div>
-            <pre style="font-size:10px;line-height:1.3;">
-Gegeben:
-    V(Maß), c(Maß), V(Probe)
-Gesucht:
-    m(Säure in Probe) in mg
-
-1) n(Maß) = c(Maß) · V(Maß)
-2) n(Säure) = n(Maß) · (Koeffizientenverhältnis)
-3) m(Säure) = n(Säure) · M(Säure)
-4) in mg umrechnen
-            </pre>
-          `
-        },
-        {
-          id: "loeslichkeit",
-          title: "Löslichkeit & Löslichkeitsprodukt",
-          tags: ["Löslichkeit", "Ksp", "Fällung"],
-          goals: [
-            "Begriff gesättigte Lösung und Löslichkeit erklären.",
-            "Löslichkeitsprodukt Ksp definieren.",
-            "Einfaches Ionenprodukt mit Ksp vergleichen (Fällung ja/nein)."
-          ],
-          summary:
-            "Die Löslichkeit beschreibt, wie viel eines Stoffes sich maximal in einem bestimmten Volumen Lösungsmittel lösen kann. Für schwerlösliche Salze wird das Gleichgewicht über das Löslichkeitsprodukt Ksp beschrieben. Überschreitet das Ionenprodukt das Löslichkeitsprodukt, fällt ein schwerlösliches Salz aus (Fällungsreaktion). Das Prinzip wird in der qualitativen und quantitativen Analyse genutzt.",
-          keyPoints: [
-            "Ksp ist eine Gleichgewichtskonstante: Produkt der Ionenaktivitäten/-konzentrationen hoch stöchiometrische Koeffizienten.",
-            "Je kleiner Ksp, desto schlechter löslich ist das Salz.",
-            "Ionenprodukt Q = aktuelles Produkt der Ionen-Konzentrationen.",
-            "Wenn Q > Ksp → Fällung (Übersättigung); Q < Ksp → noch keine Fällung."
-          ],
-          formulas: [
-            "Beispiel AgCl: AgCl ⇌ Ag⁺ + Cl⁻ → Ksp = [Ag⁺]·[Cl⁻]"
-          ]
-        },
-        {
-          id: "em-strahlung",
-          title: "Elektromagnetische Strahlung & Photonenenergie",
-          tags: ["Strahlung", "Photon", "Energie"],
-          goals: [
-            "Zusammenhang zwischen Wellenlänge λ, Frequenz ν und Lichtgeschwindigkeit c angeben.",
-            "Energie eines Photons aus λ oder ν berechnen können.",
-            "Einheiten sicher umrechnen (nm ↔ m, J ↔ kJ·mol⁻¹)."
-          ],
-          summary:
-            "Elektromagnetische Strahlung wird als Welle mit Wellenlänge λ und Frequenz ν beschrieben. Zwischen beiden Größen gilt c = λ·ν. Gleichzeitig kann Licht als Teilchenstrom (Photonen) betrachtet werden. Die Energie eines Photons ist E = h·ν. In der Chemie ist es wichtig, z. B. die Energie eines UV-Photons zu berechnen und auf molare Energie (kJ·mol⁻¹) umzurechnen.",
-          keyPoints: [
-            "c = 3,00·10⁸ m/s (Lichtgeschwindigkeit im Vakuum).",
-            "c = λ·ν → aus λ die Frequenz ν berechnen und umgekehrt.",
-            "Photonenergie: E = h·ν = h·c/λ.",
-            "Planck-Konstante h ≈ 6,626·10⁻³⁴ J·s.",
-            "Für molare Energie: E<sub>mol</sub> = E·N<sub>A</sub> (Avogadro-Konstante)."
-          ],
-          formulas: [
-            "c = λ · ν",
-            "E = h · ν = h · c / λ",
-            "E<sub>mol</sub> = E · N<sub>A</sub>"
-          ],
-          visual: `
-            <div style="font-size:11px;margin-bottom:4px;">Welle vs. Photon (Schema):</div>
-            <svg viewBox="0 0 200 60" width="200" height="60">
-              <path d="M0 30 Q 20 10 40 30 T 80 30 T 120 30 T 160 30 T 200 30"
-                    fill="none" stroke="currentColor" stroke-width="1.2"/>
-              <text x="70" y="15" style="font-size:9px;">λ</text>
-              <line x1="40" y1="30" x2="80" y2="30" stroke="currentColor" stroke-dasharray="3 3"/>
-              <circle cx="170" cy="15" r="4" fill="currentColor"/>
-              <text x="180" y="18" style="font-size:9px;">Photon</text>
-            </svg>
-          `
-        },
-        {
-          id: "redox",
-          title: "Redoxreaktionen & elektrochemische Spannungsreihe",
-          tags: ["Oxidation", "Reduktion", "Redox", "Elektrochemie"],
-          goals: [
-            "Oxidation und Reduktion definieren (Elektronenabgabe/-aufnahme).",
-            "Einfachen Reaktionen Oxidationszahlen zuweisen.",
-            "Mit der Spannungsreihe vorhersagen, welche Reaktion freiwillig abläuft."
-          ],
-          summary:
-            "Redoxreaktionen sind Elektronentransferprozesse. Oxidation bedeutet Elektronenabgabe, Reduktion Elektronenaufnahme. Die elektrochemische Spannungsreihe ordnet Halbzellen nach ihrem Standardelektrodenpotenzial. Elemente mit sehr negativen Potenzialen geben leicht Elektronen ab (starke Reduktionsmittel). In der Analytik werden Redoxtitrationen eingesetzt, bei denen ein Redoxvorgang mit Titrationsprinzip verknüpft wird.",
-          keyPoints: [
-            "Oxidation: Elektronenabgabe (Oxidationszahl wird größer).",
-            "Reduktion: Elektronenaufnahme (Oxidationszahl wird kleiner).",
-            "Oxidationsmittel wird selbst reduziert, Reduktionsmittel wird oxidiert.",
-            "Spannungsreihe: weiter oben = stärkeres Oxidationsmittel (in Normaldarstellung).",
-            "Redoxtitrationen nutzen meist farbige Redoxpaare (z. B. Permanganat)."
-          ],
-          formulas: [
-            "Nernst-Gleichung (nur als Überblick): E = E⁰ − (R·T)/(z·F) · ln(Q)"
-          ]
-        },
-        {
-          id: "laborsicherheit",
-          title: "Laborsicherheit & wissenschaftliches Arbeiten",
-          tags: ["Gefahrstoffe", "Labor", "Sicherheit"],
-          goals: [
-            "Wichtige Gefahrstoffsymbole erkennen und Beispiele nennen.",
-            "Grundregeln für sicheres Verhalten im Labor aufzählen.",
-            "Aufbau eines sinnvollen Versuchsprotokolls skizzieren."
-          ],
-          summary:
-            "Im chemischen Praktikum steht Sicherheit an erster Stelle. Gefahrstoffetiketten informieren über Gefahren (z. B. ätzend, giftig, brandfördernd) und notwendige Schutzmaßnahmen. Wissenschaftliches Arbeiten bedeutet: sorgfältiges Planen, sauberes Protokollieren und kritische Auswertung inklusive Fehlerdiskussion. In der Klausur können Verständnisfragen zu Gefahrensymbolen oder zum Umgang mit konzentrierten Säuren und Laugen vorkommen.",
-          keyPoints: [
-            "Persönliche Schutzausrüstung: Schutzbrille, Laborkittel, geschlossene Schuhe.",
-            "Nie Chemikalien pipettieren mit dem Mund – immer Pipettierhilfen benutzen.",
-            "Abfälle korrekt entsorgen, niemals einfach in das Waschbecken kippen, wenn es nicht erlaubt ist.",
-            "Protokoll-Inhalte: Datum, Ziel, Chemikalien, Durchführung, Messwerte, Auswertung, Fehlerquellen, Fazit."
-          ],
-          formulas: []
-        }
-      ]
+{
+  id: "titrationen",
+  title: "Titrationen (Säure-Base, Fällung, Komplexometrie, Redox)",
+  tags: ["Titration", "Äquivalenzpunkt", "Titrationskurve", "Gehaltsbestimmung"],
+  goals: [
+    "Das Grundprinzip einer Titration erklären können.",
+    "Äquivalenzpunkt, Umschlagpunkt und Endpunkt sicher unterscheiden.",
+    "Gehaltsbestimmung aus c₁·V₁ = c₂·V₂ in einfachen Fällen durchführen.",
+    "Den Unterschied zwischen Säure-Base-, Fällungs-, komplexometrischen und Redoxtitrationen kennen."
+  ],
+  summary:
+    "Bei einer Titration wird eine Maßlösung definierter Konzentration zu einer Probe gegeben, bis die stöchiometrische Menge erreicht ist (Äquivalenzpunkt). Über das verbrauchte Volumen und die bekannte Konzentration der Maßlösung kann man die Konzentration der Probe berechnen. In der Klausur sind typische Themen: Säure-Base-Titrationen, Äquivalenzpunkt-Bestimmung, Indikatorwahl, einfache Gehaltsberechnung.",
+  keyPoints: [
+    "Maßlösung: Lösung bekannter Konzentration (c bekannt).",
+    "Probelösung: zu untersuchende Lösung (c gesucht).",
+    "Äquivalenzpunkt: stöchiometrisch genaues Mengenverhältnis erreicht.",
+    "Umschlagpunkt/Endpunkt: der tatsächlich beobachtete Farbumschlag des Indikators (liegt nahe am Äquivalenzpunkt).",
+    "Titrationskurve: grafische Darstellung von pH (oder Potential) gegen zugegebenes Volumen.",
+    "Standardrezept Gehaltsbestimmung: c₁·V₁ = c₂·V₂ (nach Stoffmenge n = c·V)."
+  ],
+  formulas: [
+    "n = c · V",
+    "c(Probelösung) = (c(Maßlösung) · V(Maßlösung)) / V(Probelösung) (bei einfacher 1:1-Stöchiometrie)",
+    "für andere Verhältnisse: ν₁·c₁·V₁ = ν₂·c₂·V₂ (ν = stöchiometrischer Koeffizient)"
+  ],
+  visual: `
+    <div style="font-size:11px;margin-bottom:4px;">Idealisierte Säure-Base-Titrationskurve (starke Säure mit starker Base):</div>
+    <pre style="font-size:10px;line-height:1.2;">
+pH
+14 |                           ______
+   |                        __/
+   |                     __/
+   |                  __/
+   |               __/
+   |            __/
+   |         __/
+   |      __/
+   |   __/
+   |__/
+   +--------------------------------- V
+          &uarr;
+     Äquivalenzpunkt (starker Anstieg)
+    </pre>
+  `,
+  detailBlocks: [
+    {
+      title: "Grundprinzip der Titration",
+      content: `
+        <ul style="padding-left:18px;margin:0;">
+          <li>Man gibt eine <b>Maßlösung</b> definierter Konzentration tropfenweise zu einer <b>Probelösung</b> unbekannter Konzentration.</li>
+          <li>Die reagierenden Stoffe stehen in einer <b>stöchiometrischen Reaktionsgleichung</b> (z. B. 1:1 oder 1:2).</li>
+          <li>Am <b>Äquivalenzpunkt</b> sind die Stoffmengen im stöchiometrisch richtigen Verhältnis umgesetzt.</li>
+          <li>Über das verbrauchte Volumen der Maßlösung und ihre Konzentration kann man die Stoffmenge berechnen und daraus die Konzentration der Probe.</li>
+          <li>Ein <b>Indikator</b> (oder pH-Meter/Leitfähigkeit) zeigt an, wann der Endpunkt (nahe beim Äquivalenzpunkt) erreicht ist.</li>
+        </ul>
+      `
+    },
+    {
+      title: "Säure-Base-Titrationen (stark/stark)",
+      content: `
+        <ul style="padding-left:18px;margin:0;">
+          <li><b>Beispiel:</b> HCl (starke Säure) mit NaOH (starke Base).</li>
+          <li>Reaktionsgleichung: HCl + NaOH → NaCl + H₂O (1:1-Verhältnis).</li>
+          <li><b>Vor dem ÄP:</b> Lösung ist sauer, pH wird durch Überschuss an HCl bestimmt.</li>
+          <li><b>Am ÄP:</b> Stöchiometrisch gleiche Stoffmenge HCl und NaOH umgesetzt, pH ≈ 7 (bei starken Säuren/Basen in Wasser).</li>
+          <li><b>Nach dem ÄP:</b> Lösung ist basisch, pH wird durch Überschuss an NaOH bestimmt.</li>
+        </ul>
+        <div style="font-size:11px;margin-top:6px;">
+          <b>Gehaltsberechnung (1:1):</b> c(HCl) = c(NaOH) · V(NaOH) / V(HCl) 
+        </div>
+      `
+    },
+    {
+      title: "Titrationen mit anderen Stöchiometrien",
+      content: `
+        <ul style="padding-left:18px;margin:0;">
+          <li>Reaktionsgleichung muss immer <b>zuerst</b> aufgestellt und ausgeglichen werden.</li>
+          <li>Beispiel: 2 HCl + Na₂CO₃ → 2 NaCl + H₂O + CO₂ → Verhältnis 2:1.</li>
+          <li>Dann gilt: 2 · n(Na₂CO₃) = n(HCl) oder allgemein: ν₁·n₁ = ν₂·n₂.</li>
+          <li>Übertragen auf Konzentration und Volumen: ν₁·c₁·V₁ = ν₂·c₂·V₂.</li>
+          <li>Das ist die <b>allgemeine Gehaltsgleichung</b> für Titrationen.</li>
+        </ul>
+      `
+    },
+    {
+      title: "Beispielaufgabe (Gehaltsbestimmung)",
+      content: `
+        <div style="font-size:12px;margin-bottom:4px;">
+          <b>Aufgabe:</b> 25,0 mL Salzsäure werden mit 0,100 mol/L NaOH titriert. Der Äquivalenzpunkt liegt bei 18,6 mL NaOH. Berechne c(HCl).
+        </div>
+        <ol style="padding-left:18px;margin:0;">
+          <li>Reaktionsgleichung: HCl + NaOH → NaCl + H₂O (1:1).</li>
+          <li>Formel: c(HCl) · V(HCl) = c(NaOH) · V(NaOH).</li>
+          <li>Einsetzen: c(HCl) · 25,0 mL = 0,100 mol/L · 18,6 mL.</li>
+          <li>Volumina in L umrechnen oder kürzen, da beide in mL: c(HCl) = 0,100 · 18,6 / 25,0 mol/L.</li>
+          <li>c(HCl) ≈ 0,0744 mol/L.</li>
+        </ol>
+        <div style="font-size:11px;margin-top:6px;">
+          <b>Antwort:</b> Die Salzsäure hat eine Konzentration von ca. 0,074 mol/L.
+        </div>
+      `
+    },
+    {
+      title: "Andere Titrationsarten (Überblick)",
+      content: `
+        <ul style="padding-left:18px;margin:0;">
+          <li><b>Fällungstitration:</b> Bildung eines schwerlöslichen Niederschlags (z. B. Ag⁺ + Cl⁻ → AgCl↓) – ÄP über Leitfähigkeit oder Indikator.</li>
+          <li><b>Komplexometrische Titration:</b> Bildung von Komplexen (z. B. EDTA-Titration von Ca²⁺/Mg²⁺) – Indikatoren sind oft Metallindikatoren.</li>
+          <li><b>Redoxtitration:</b> Redoxreaktion zwischen Maß- und Probelösung (z. B. Permanganattitration) – ÄP über Potentialsprung oder Eigenfärbung.</li>
+        </ul>
+      `
+    },
+    {
+      title: "Typische Klausurfallen & Merksätze",
+      content: `
+        <ul style="padding-left:18px;margin:0;">
+          <li><b>Falle 1:</b> Stoßzahlen ignorieren → immer zuerst Reaktionsgleichung sauber ausgleichen.</li>
+          <li><b>Falle 2:</b> Volumen in mL einsetzen, obwohl in der Formel L gebraucht werden → Einheit checken!</li>
+          <li><b>Falle 3:</b> Äquivalenzpunkt und Umschlagpunkt verwechseln.</li>
+          <li><b>Falle 4:</b> c₁·V₁ = c₂·V₂ anwenden, obwohl Verhältnis ≠ 1:1 → dann braucht man ν₁·c₁·V₁ = ν₂·c₂·V₂.</li>
+          <li><b>Merksatz:</b> <i>„Erst Reaktionsgleichung, dann rechnen.“</i></li>
+        </ul>
+      `
     }
   ]
-};
+},
+
+{
+ id: "redox",
+ title: "Redoxreaktionen & elektrochemische Spannungsreihe",
+ tags: ["Oxidation", "Reduktion", "Redox", "Elektrochemie"],
+ goals: [
+   "Oxidation und Reduktion sicher definieren (Elektronenabgabe/-aufnahme).",
+   "Oxidationszahlen zuweisen und einfache Redoxgleichungen interpretieren können.",
+   "Die elektrochemische Spannungsreihe zur Vorhersage der Reaktionsrichtung nutzen.",
+   "Grundidee von galvanischer Zelle, Standardpotential und Nernst-Gleichung verstehen (auf Klausur-Niveau)."
+ ],
+ summary:
+   "Redoxreaktionen sind Elektronentransferprozesse: Oxidation bedeutet Elektronenabgabe, Reduktion Elektronenaufnahme. Die elektrochemische Spannungsreihe ordnet Halbzellen nach ihren Standardelektrodenpotenzialen. Elemente mit sehr negativem Potential geben leicht Elektronen ab (starke Reduktionsmittel), solche mit hohem Potential wirken als Oxidationsmittel. In galvanischen Zellen wird die freie Reaktionsenergie in elektrische Energie umgewandelt.",
+ keyPoints: [
+   "Oxidation: Elektronenabgabe (Oxidationszahl wird größer).",
+   "Reduktion: Elektronenaufnahme (Oxidationszahl wird kleiner).",
+   "Oxidationsmittel wird selbst reduziert, Reduktionsmittel selbst oxidiert.",
+   "Spannungsreihe: Metalle mit negativeren E°-Werten sind stärkere Reduktionsmittel.",
+   "Zellspannung E°(Zelle) = E°(Kathode) − E°(Anode).",
+   "Nernst-Gleichung beschreibt Konzentrationsabhängigkeit des Potentials."
+ ],
+ formulas: [
+   "E°(Zelle) = E°(Kathode) − E°(Anode)",
+   "Nernst (vereinfacht, 25 °C): E = E° − (0,059 V / z) · log(Q)"
+ ],
+ visual: `
+   <div style="font-size:11px;margin-bottom:4px;">Beispiel: Daniell-Element (Zn/Cu-Zelle)</div>
+   <pre style="font-size:10px;line-height:1.3;">
+Anode (Oxidation):   Zn → Zn²⁺ + 2 e⁻     (E° ≈ −0,76 V)
+Kathode (Reduktion): Cu²⁺ + 2 e⁻ → Cu     (E° ≈ +0,34 V)
+
+Zellreaktion:        Zn + Cu²⁺ → Zn²⁺ + Cu
+
+E°(Zelle) = E°(Kathode) − E°(Anode)
+       = (+0,34 V) − (−0,76 V)
+       = +1,10 V
+   </pre>
+ `,
+ detailBlocks: [
+   {
+     title: "Oxidation, Reduktion & Oxidationszahlen",
+     content: `
+       <ul style="padding-left:18px;margin:0;">
+         <li><b>Oxidation:</b> Abgabe von Elektronen (e⁻). Oxidationszahl wird <b>höher</b>.</li>
+         <li><b>Reduktion:</b> Aufnahme von Elektronen. Oxidationszahl wird <b>niedriger</b>.</li>
+         <li><b>Oxidationsmittel:</b> Stoff, der andere oxidiert (nimmt Elektronen auf) → wird selbst <b>reduziert</b>.</li>
+         <li><b>Reduktionsmittel:</b> Stoff, der andere reduziert (gibt Elektronen ab) → wird selbst <b>oxidiert</b>.</li>
+         <li>Oxidationszahlen helfen, Elektronenzahl bei Redoxreaktionen nachzuvollziehen (Klausurklassiker).</li>
+       </ul>
+     `
+   },
+   {
+     title: "Elektrochemische Spannungsreihe (Prinzip)",
+     content: `
+       <ul style="padding-left:18px;margin:0;">
+         <li>Liste von Halbzellen mit ihren <b>Standardelektrodenpotenzialen E°</b> (in V gegen Standard-Wasserstoffelektrode).</li>
+         <li>Je <b>negativer</b> E°, desto leichter gibt die Spezies Elektronen ab → gutes Reduktionsmittel.</li>
+         <li>Je <b>positiver</b> E°, desto leichter nimmt die Spezies Elektronen auf → gutes Oxidationsmittel.</li>
+         <li><b>Regel:</b> Halbzelle mit größerem E° wirkt als <b>Kathode</b>, die mit kleinerem E° als <b>Anode</b>.</li>
+       </ul>
+     `
+   },
+   {
+     title: "Galvanische Zelle (am Beispiel Zn/Cu)",
+     content: `
+       <ol style="padding-left:18px;margin:0;">
+         <li><b>Anode:</b> Zn-Elektrode in Zn²⁺-Lösung, hier läuft die Oxidation: Zn → Zn²⁺ + 2 e⁻.</li>
+         <li><b>Kathode:</b> Cu-Elektrode in Cu²⁺-Lösung, hier läuft die Reduktion: Cu²⁺ + 2 e⁻ → Cu.</li>
+         <li>Elektronen fließen über den äußeren Leiter von der Anode zur Kathode.</li>
+         <li>Die <b>Salzbrücke</b> sorgt für Ladungsausgleich (Ionentransport), damit der Strom nicht abreißt.</li>
+         <li>Die gemessene Spannung entspricht E(Zelle).</li>
+       </ol>
+     `
+   },
+   {
+     title: "Nernst-Gleichung (auf Klausurniveau)",
+     content: `
+       <div style="font-size:12px;margin-bottom:4px;">
+         Die Nernst-Gleichung beschreibt, wie sich das Elektrodenpotential mit der Konzentration der beteiligten Ionen ändert.
+       </div>
+       <div style="padding-left:18px;font-size:12px;">
+         <b>Allgemein (25 °C):</b><br/>
+         E = E° − (0,059 V / z) · log(Q)
+       </div>
+       <ul style="padding-left:18px;margin-top:4px;">
+         <li>E: aktuelles Elektrodenpotential.</li>
+         <li>E°: Standardelektrodenpotential (bei 1 mol/L).</li>
+         <li>z: Zahl der übertragenen Elektronen.</li>
+         <li>Q: Reaktionsquotient (Verhältnis Produkte/Edukte).</li>
+       </ul>
+       <div style="font-size:11px;margin-top:6px;">
+         In vielen Klausuren reicht es zu wissen, dass höhere Produktkonzentration das Potential verschiebt
+         und dass aus Konzentrationsunterschieden eine messbare Spannung entsteht.
+       </div>
+     `
+   },
+   {
+     title: "Typische Klausuraufgaben & Fallen",
+        content: `
+          <ul style="padding-left:18px;margin:0;">
+            <li>Halbreaktionen identifizieren (was wird oxidiert, was reduziert?).</li>
+            <li>E°(Zelle) berechnen aus Tabellenwerten → Kathode minus Anode.</li>
+            <li>Vorhersagen, ob eine Redoxreaktion freiwillig abläuft (E°(Zelle) > 0 ⇒ tendenziell freiwillig).</li>
+            <li><b>Falle 1:</b> Anode/Kathode verwechseln (Merksatz: „Anode = Oxidation“).</li>
+            <li><b>Falle 2:</b> Falsche Vorzeichen bei Potentialen (E° nicht einfach addieren, sondern Kathode − Anode).</li>
+            <li><b>Falle 3:</b> z in der Nernst-Gleichung vergessen.</li>
+          </ul>
+        `
+      }
+    ]            // schließt detailBlocks
+  }              // schließt Topic "redox"
+  ]              // schließt topics-Array
+}                // schließt Subject "Allgemeine Chemie"
+  ]
+};               // schließt learnData
+
+
 
     // ---------- DATENMODELL ----------
     let data = {
