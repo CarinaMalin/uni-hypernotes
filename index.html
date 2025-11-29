@@ -1931,8 +1931,24 @@ async function syncFromCloud() {
     redrawActivePage();
   }
 
+      let resizeDebounce = null;
 
-    window.addEventListener("resize", resizeCanvas);
+      function handleResizeEvent() {
+    if (drawing || pencilPointerActive) {
+      pendingResize = true;
+      return;
+    }
+
+    pendingResize = false;
+    if (resizeDebounce) clearTimeout(resizeDebounce);
+    resizeDebounce = setTimeout(() => {
+      resizeDebounce = null;
+      resizeCanvas();
+    }, 150);
+  }
+
+
+    window.addEventListener("resize", handleResizeEvent);
 
 function getTemplateSpacing() {
   const base = 32; // deine bisherige Standardgröße
@@ -2408,11 +2424,11 @@ function stopDrawing(evt) {
   currentStroke = null;
   saveData();
 
-  if (pendingResize) {
-    pendingResize = false;
-    requestAnimationFrame(resizeCanvas);
+    if (pendingResize) {
+      pendingResize = false;
+      handleResizeEvent();
+    }
   }
-}
 
 
 
