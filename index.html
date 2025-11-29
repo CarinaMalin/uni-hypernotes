@@ -2360,7 +2360,6 @@ function drawStrokeSegment(from, to, stroke) {
 
 function moveDrawing(evt) {
   if (!drawing || !currentStroke) return;
-  evt.preventDefault();
 
   const raw = normPos(evt);
 
@@ -2514,7 +2513,16 @@ function handlePointerDown(e) {
 
 function handlePointerMove(e) {
   if (e.pointerType !== "pen" || !drawing) return;
-  moveDrawing(e);
+
+  e.preventDefault();
+
+  const events = typeof e.getCoalescedEvents === "function" && e.getCoalescedEvents()
+    ? e.getCoalescedEvents()
+    : [e];
+
+  for (const evt of events) {
+    moveDrawing(evt);
+  }
 }
 
 function handlePointerUp(e) {
