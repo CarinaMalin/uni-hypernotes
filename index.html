@@ -555,6 +555,159 @@
       margin-bottom: 4px;
     }
 
+    /* Notebook & Page Meta */
+    #notebookInfoBar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      margin-bottom: 8px;
+    }
+
+    #notebookTitleBlock {
+      flex: 1;
+    }
+
+    #notebookSubjectBlock {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 180px;
+    }
+
+    .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .editable-inline {
+      min-height: 26px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.3);
+      outline: none;
+      font-size: 16px;
+      font-weight: 700;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .editable-inline:focus {
+      border-color: rgba(123, 140, 255, 0.5);
+      background: rgba(123, 140, 255, 0.08);
+    }
+
+    .subject-select-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #notebookSubject {
+      border-radius: 10px;
+      padding: 7px 10px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text);
+    }
+
+    .subject-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(123, 140, 255, 0.15);
+      color: var(--text);
+      font-size: 12px;
+      border: 1px solid rgba(123, 140, 255, 0.35);
+      min-height: 28px;
+    }
+
+    #notebookMeta,
+    #pageMetaInfo {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    #pageMeta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      margin-bottom: 8px;
+    }
+
+    #pageTitleDisplay {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .page-edit-btn,
+    .notebook-edit-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 4px 8px;
+      border-radius: 8px;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 12px;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .page-edit-btn:hover,
+    .notebook-edit-btn:hover {
+      background: rgba(123, 140, 255, 0.12);
+      border-color: rgba(123, 140, 255, 0.4);
+    }
+
+    .page-thumb-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .page-thumb-subject {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .page-thumb .edit-icon {
+      opacity: 0.7;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: opacity 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .page-thumb:hover .edit-icon {
+      opacity: 1;
+      border-color: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
     @media (max-width: 860px) {
       #sidebarNotes { width: 105px; }
       button, select { font-size: 11px; padding: 4px 9px; }
@@ -634,6 +787,24 @@
       </div>
 
       <div id="canvasWrapper">
+        <div id="notebookInfoBar">
+          <div id="notebookTitleBlock">
+            <div class="label">Notizbuch</div>
+            <div class="editable-inline" id="notebookTitle" contenteditable="true" spellcheck="false"></div>
+          </div>
+          <div id="notebookSubjectBlock">
+            <div class="label">Fach</div>
+            <div class="subject-select-row">
+              <select id="notebookSubject"></select>
+              <span id="notebookSubjectBadge" class="subject-badge"></span>
+            </div>
+          </div>
+        </div>
+        <div id="notebookMeta"></div>
+        <div id="pageMeta">
+          <div id="pageTitleDisplay"></div>
+          <div id="pageMetaInfo"></div>
+        </div>
         <div id="toolbar">
           <label>Tool:</label>
           <button class="tool-btn active" data-tool="pen">Stift</button>
@@ -3210,7 +3381,276 @@ if (syncSaveBtn && syncIdInput) {
 
 
 <script id="notebook-system">
-   // HIER BAUT CODEx die Notebook- und Fächerlogik ein
+  (() => {
+    const subjects = [
+      "Mathematik 1",
+      "Mathematikübung",
+      "Einführung in das Programmieren",
+      "Zellbiologie",
+      "Biochemie",
+      "Allgemeine Chemie",
+      "Physikalische Chemie"
+    ];
+
+    const notebookTitleEl = document.getElementById("notebookTitle");
+    const notebookSubjectSelect = document.getElementById("notebookSubject");
+    const notebookSubjectBadge = document.getElementById("notebookSubjectBadge");
+    const notebookMetaEl = document.getElementById("notebookMeta");
+    const pageMetaTitle = document.getElementById("pageTitleDisplay");
+    const pageMetaInfo = document.getElementById("pageMetaInfo");
+    const pageListEl = document.getElementById("pageList");
+
+    const originalSaveData = window.saveData;
+
+    const ensureDate = (value) => value || new Date().toISOString();
+
+    function normalizeData() {
+      if (!data.notebooks) data.notebooks = [];
+      data.notebooks = data.notebooks.map((nb, nbIndex) => {
+        const normalizedPages = (nb.pages || []).map((p, pIndex) => {
+          const title = p.title || p.name || `Seite ${pIndex + 1}`;
+          return {
+            ...p,
+            title,
+            name: title,
+            createdAt: ensureDate(p.createdAt),
+            updatedAt: ensureDate(p.updatedAt)
+          };
+        });
+        const title = nb.title || nb.name || `Notizbuch ${nbIndex + 1}`;
+        return {
+          ...nb,
+          title,
+          name: title,
+          subject: nb.subject || null,
+          createdAt: ensureDate(nb.createdAt),
+          updatedAt: ensureDate(nb.updatedAt),
+          pages: normalizedPages
+        };
+      });
+    }
+
+    window.saveData = function () {
+      normalizeData();
+      originalSaveData();
+    };
+
+    function formatDate(iso) {
+      if (!iso) return "-";
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return "-";
+      return `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+    }
+
+    function refreshSubjectSelect(selected) {
+      notebookSubjectSelect.innerHTML = "";
+      const empty = document.createElement("option");
+      empty.value = "";
+      empty.textContent = "(kein Fach)";
+      notebookSubjectSelect.appendChild(empty);
+      subjects.forEach(sub => {
+        const opt = document.createElement("option");
+        opt.value = sub;
+        opt.textContent = sub;
+        if (sub === selected) opt.selected = true;
+        notebookSubjectSelect.appendChild(opt);
+      });
+    }
+
+    function renderNotebookMeta() {
+      const nb = getActiveNotebook();
+      if (!nb) return;
+      notebookTitleEl.textContent = nb.title || nb.name || "";
+      refreshSubjectSelect(nb.subject || "");
+      notebookSubjectBadge.textContent = nb.subject || "Kein Fach";
+      notebookSubjectBadge.style.display = nb.subject ? "inline-flex" : "none";
+      notebookMetaEl.textContent = `Erstellt: ${formatDate(nb.createdAt)} • Zuletzt geändert: ${formatDate(nb.updatedAt)}`;
+    }
+
+    function renderPageMeta() {
+      const page = getActivePage();
+      const nb = getActiveNotebook();
+      if (!page) {
+        pageMetaTitle.textContent = "Keine Seite ausgewählt";
+        pageMetaInfo.textContent = "";
+        return;
+      }
+      pageMetaTitle.innerHTML = `${page.title || page.name} ${nb?.subject ? `<span class="subject-badge">${nb.subject}</span>` : ""}`;
+      pageMetaInfo.textContent = `Erstellt: ${formatDate(page.createdAt)} • Zuletzt geändert: ${formatDate(page.updatedAt)}`;
+    }
+
+    const originalRenderNotebookSelect = window.renderNotebookSelect;
+    window.renderNotebookSelect = function () {
+      if (typeof originalRenderNotebookSelect === "function") {
+        notebookSelect.innerHTML = "";
+        data.notebooks.forEach(nb => {
+          const opt = document.createElement("option");
+          opt.value = nb.id;
+          opt.textContent = nb.title || nb.name;
+          if (nb.id === data.activeNotebookId) opt.selected = true;
+          notebookSelect.appendChild(opt);
+        });
+      }
+      renderNotebookMeta();
+      renderPageMeta();
+    };
+
+    const originalRenderPageList = window.renderPageList;
+    window.renderPageList = function () {
+      const nb = getActiveNotebook();
+      pageListEl.innerHTML = "";
+      if (!nb) return;
+      nb.pages.forEach((page, index) => {
+        const div = document.createElement("div");
+        div.className = "page-thumb" + (page.id === data.activePageId ? " active" : "");
+
+        const titleRow = document.createElement("div");
+        titleRow.className = "page-thumb-title";
+        const titleSpan = document.createElement("span");
+        titleSpan.textContent = page.title || page.name;
+        titleRow.appendChild(titleSpan);
+
+        const editIcon = document.createElement("span");
+        editIcon.className = "edit-icon";
+        editIcon.textContent = "✏️";
+        editIcon.title = "Titel bearbeiten";
+        editIcon.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openPageTitleEditor(page, titleSpan);
+        });
+        titleRow.appendChild(editIcon);
+
+        const idx = document.createElement("span");
+        idx.className = "index";
+        idx.textContent = index + 1;
+        div.appendChild(idx);
+        div.appendChild(titleRow);
+
+        if (nb.subject) {
+          const subj = document.createElement("div");
+          subj.className = "page-thumb-subject";
+          subj.textContent = nb.subject;
+          div.appendChild(subj);
+        }
+
+        div.addEventListener("click", () => {
+          if (page.id === data.activePageId) return;
+          data.activePageId = page.id;
+          undoStack = [];
+          redoStack = [];
+          window.renderPageList();
+          redrawActivePage();
+          saveData();
+          renderPageMeta();
+        });
+
+        titleSpan.addEventListener("dblclick", (e) => {
+          e.stopPropagation();
+          openPageTitleEditor(page, titleSpan);
+        });
+
+        pageListEl.appendChild(div);
+      });
+      const activePage = getActivePage();
+      if (activePage) templateSelect.value = activePage.template || "blank";
+    };
+
+    function openPageTitleEditor(page, titleSpan) {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = page.title || page.name;
+      input.className = "editable-inline";
+      const finish = () => {
+        const newTitle = input.value.trim() || page.title || page.name;
+        page.title = newTitle;
+        page.name = newTitle;
+        page.updatedAt = new Date().toISOString();
+        const nb = getActiveNotebook();
+        if (nb) nb.updatedAt = new Date().toISOString();
+        saveData();
+        window.renderPageList();
+        renderNotebookSelect();
+        renderPageMeta();
+      };
+      input.addEventListener("blur", finish);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          input.blur();
+        }
+        if (e.key === "Escape") {
+          e.preventDefault();
+          window.renderPageList();
+          renderPageMeta();
+        }
+      });
+      titleSpan.replaceWith(input);
+      input.focus();
+      input.select();
+    }
+
+    function commitNotebookTitle() {
+      const nb = getActiveNotebook();
+      if (!nb) return;
+      const newTitle = notebookTitleEl.textContent.trim() || "Unbenanntes Notizbuch";
+      nb.title = newTitle;
+      nb.name = newTitle;
+      nb.updatedAt = new Date().toISOString();
+      saveData();
+      renderNotebookSelect();
+    }
+
+    notebookTitleEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        notebookTitleEl.blur();
+      }
+    });
+
+    notebookTitleEl.addEventListener("blur", commitNotebookTitle);
+
+    notebookSubjectSelect.addEventListener("change", (e) => {
+      const nb = getActiveNotebook();
+      if (!nb) return;
+      nb.subject = e.target.value || null;
+      nb.updatedAt = new Date().toISOString();
+      saveData();
+      renderNotebookMeta();
+      window.renderPageList();
+      renderPageMeta();
+    });
+
+    pageMetaTitle.addEventListener("dblclick", () => {
+      const page = getActivePage();
+      if (!page) return;
+      const activeTitleSpan = pageListEl.querySelector(".page-thumb.active .page-thumb-title span");
+      if (activeTitleSpan) {
+        openPageTitleEditor(page, activeTitleSpan);
+      } else {
+        const newTitle = prompt("Seitentitel bearbeiten", page.title || page.name);
+        if (newTitle) {
+          page.title = newTitle.trim();
+          page.name = page.title;
+          page.updatedAt = new Date().toISOString();
+          const nb = getActiveNotebook();
+          if (nb) nb.updatedAt = new Date().toISOString();
+          saveData();
+          window.renderPageList();
+          renderNotebookSelect();
+          renderPageMeta();
+        }
+      }
+    });
+
+    window.addEventListener("load", () => {
+      normalizeData();
+      renderNotebookSelect();
+      window.renderPageList();
+      renderNotebookMeta();
+      renderPageMeta();
+      saveData();
+    });
+  })();
 </script>
 
 <script id="flashcards-system">
