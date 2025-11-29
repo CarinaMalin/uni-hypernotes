@@ -2025,13 +2025,35 @@ function redrawActivePage() {
     applyStrokeStyle(stroke);
 
     const pts = stroke.points;
-    if (pts.length > 1) {
+    if (!pts || pts.length === 0) {
+      ctx.restore();
+      return;
+    }
+
+    if (pts.length === 1) {
+      drawStrokeDot(pts[0], stroke);
+    } else {
       ctx.beginPath();
       ctx.moveTo(pts[0].x * canvas.width, pts[0].y * canvas.height);
+
+      let totalDistance = 0;
+
       for (let i = 1; i < pts.length; i++) {
-        ctx.lineTo(pts[i].x * canvas.width, pts[i].y * canvas.height);
+        const prev = pts[i - 1];
+        const curr = pts[i];
+        ctx.lineTo(curr.x * canvas.width, curr.y * canvas.height);
+
+        const dx = (curr.x - prev.x) * canvas.width;
+        const dy = (curr.y - prev.y) * canvas.height;
+        totalDistance += Math.hypot(dx, dy);
       }
+
       ctx.stroke();
+
+      // Striche, die so kurz sind, dass sie kaum gezeichnet werden, als Punkt darstellen
+      if (totalDistance < stroke.width * 0.6) {
+        drawStrokeDot(pts[0], stroke);
+      }
     }
 
     ctx.restore();
@@ -2313,6 +2335,12 @@ function drawInitialDot(pos, stroke) {
   ctx.restore();
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = "source-over";
+}
+
+function drawStrokeDot(point, stroke) {
+  ctx.beginPath();
+  ctx.arc(point.x * canvas.width, point.y * canvas.height, stroke.width / 2, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 function drawStrokeSegment(from, to, stroke) {
