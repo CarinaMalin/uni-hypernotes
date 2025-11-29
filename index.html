@@ -1628,6 +1628,9 @@ canvas.style.touchAction = "none";
     let drawing = false;
     let currentStroke = null;
     let lastPos = { x: 0, y: 0 };
+    let smoothedPos = null;
+    const PEN_SMOOTHING = 0.28;
+    const MIN_SEGMENT_DIST = 0.0008;
     let undoStack = [];
     let redoStack = [];
     let shapeStartPos = null;
@@ -2260,8 +2263,36 @@ function handleTouchEnd(e) {
   }
 }
 
+function resetSmoothing(point) {
+  smoothedPos = { ...point };
+}
+
+function getSmoothedPoint(raw) {
+  if (!smoothedPos) return { ...raw };
+
+  smoothedPos = {
+    x: smoothedPos.x + (raw.x - smoothedPos.x) * PEN_SMOOTHING,
+    y: smoothedPos.y + (raw.y - smoothedPos.y) * PEN_SMOOTHING,
+    pressure: raw.pressure
+  };
+
+  return smoothedPos;
+}
+
+function shouldSkipSegment(from, to) {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  return dx * dx + dy * dy < MIN_SEGMENT_DIST * MIN_SEGMENT_DIST;
+}
+
 function startDrawing(evt) {
   evt.preventDefault();
+
+  // Falls ein vorheriger Stroke hängen geblieben ist, sauber beenden
+  if (drawing) {
+    stopDrawing(evt);
+  }
+
   const page = getActivePage();
   if (!page) return;
 
@@ -2269,11 +2300,12 @@ function startDrawing(evt) {
   redoStack = [];
 
   const p = normPos(evt);
-  lastPos = p;
+  resetSmoothing(p);
 
   if (["line", "rect", "circle"].includes(currentTool)) {
     // Formen: Startpunkt merken, Stroke nur als „Platzhalter“
     shapeStartPos = p;
+    lastPos = p;
     currentStroke = {
       tool: "pen",
       color: currentColor,
@@ -2283,13 +2315,16 @@ function startDrawing(evt) {
     };
   } else {
     // Freihand-Stift / Marker / Radierer
+    const startPoint = currentTool === "pen" ? getSmoothedPoint(p) : p;
+    lastPos = startPoint;
+
     const stroke = {
       tool: currentTool,
       color: currentColor,
       // Marker bewusst dicker, wirkt mehr wie echter Textmarker
       width: currentTool === "highlighter" ? currentWidth * 4 : currentWidth,
       alpha: 1,
-      points: [p]
+      points: [startPoint]
     };
 
     if (currentTool === "eraser") {
@@ -2297,7 +2332,7 @@ function startDrawing(evt) {
     }
 
     currentStroke = stroke;
-    drawInitialDot(p, stroke);
+    drawInitialDot(startPoint, stroke);
   }
 }
 
@@ -2370,10 +2405,12 @@ function moveDrawing(evt) {
     return;
   }
 
-  // Apple Pencil: jede Bewegung sofort als Segment zeichnen, ohne Filter oder Glättung
-  drawStrokeSegment(lastPos, raw, currentStroke);
-  currentStroke.points.push(raw);
-  lastPos = raw;
+  const target = currentTool === "pen" ? getSmoothedPoint(raw) : raw;
+  if (shouldSkipSegment(lastPos, target)) return;
+
+  drawStrokeSegment(lastPos, target, currentStroke);
+  currentStroke.points.push(target);
+  lastPos = target;
 }
 
 function stopDrawing(evt) {
@@ -2435,6 +2472,7 @@ function stopDrawing(evt) {
   }
 
   currentStroke = null;
+  smoothedPos = null;
   saveData();
 
     if (pendingResize) {
@@ -2522,6 +2560,7 @@ canvas.addEventListener("pointerdown", handlePointerDown, { passive: false });
 canvas.addEventListener("pointermove", handlePointerMove, { passive: false });
 canvas.addEventListener("pointerup", handlePointerUp, { passive: false });
 canvas.addEventListener("pointercancel", handlePointerUp, { passive: false });
+canvas.addEventListener("pointerleave", handlePointerUp, { passive: false });
 
 
 // Canvas Events (Touch – Finger nur für Pan/Zoom)
