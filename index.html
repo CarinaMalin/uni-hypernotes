@@ -2363,32 +2363,17 @@ function moveDrawing(evt) {
 
   const raw = normPos(evt);
 
-  // Für Linien/Rechteck/Kreis keine Glättung, nur Vorschau
+  // Für Linien/Rechteck/Kreis nur Vorschau, direkt ohne Glättung zeichnen
   if (["line", "rect", "circle"].includes(currentTool)) {
     previewShape(raw);
     lastPos = raw;
     return;
   }
 
-  // Glättung: Mischung aus alter und neuer Position (fühlt sich noch direkt an)
-  const p = {
-    x: lastPos.x * 0.35 + raw.x * 0.65,
-    y: lastPos.y * 0.35 + raw.y * 0.65,
-    pressure: (lastPos.pressure || 1) * 0.35 + (raw.pressure || 1) * 0.65
-  };
-
-  // Winzige Bewegungen nur minimal filtern, damit kurze/rasch gesetzte Striche nicht verschwinden
-  const dx = p.x - lastPos.x;
-  const dy = p.y - lastPos.y;
-  const dist2 = dx * dx + dy * dy;
-  const minDist2 = currentStroke.points.length <= 1 ? 0 : 0.000001; // erstes Segment immer zulassen
-  if (dist2 < minDist2) {
-    return;
-  }
-
-  drawStrokeSegment(lastPos, p, currentStroke);
-  currentStroke.points.push(p);
-  lastPos = p;
+  // Apple Pencil: jede Bewegung sofort als Segment zeichnen, ohne Filter oder Glättung
+  drawStrokeSegment(lastPos, raw, currentStroke);
+  currentStroke.points.push(raw);
+  lastPos = raw;
 }
 
 function stopDrawing(evt) {
