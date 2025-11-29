@@ -260,12 +260,12 @@
       box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
       margin-bottom: 7px;
       cursor: pointer;
-      padding: 6px;
+      padding: 7px 8px 8px 8px;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
       font-size: 11px;
-      text-align: center;
       color: var(--muted);
       transition: 0.15s ease border-color, 0.15s ease transform, 0.15s ease background-color;
     }
@@ -283,6 +283,104 @@
       right: 6px;
       font-size: 9px;
       opacity: 0.7;
+    }
+
+    .page-title-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .page-title-row .page-name {
+      flex: 1;
+      text-align: left;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .page-rename-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 2px 6px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .page-meta-line {
+      font-size: 10px;
+      opacity: 0.78;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #noteMetaBar {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      background: linear-gradient(90deg, rgba(10, 12, 24, 0.85), rgba(14, 16, 28, 0.85));
+      border-radius: 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .note-meta-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .note-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .muted-label {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .inline-input {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 6px 9px;
+      color: var(--text);
+      min-width: 180px;
+    }
+
+    #notebookNameInput,
+    #pageNameInputDisplay {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    #notebookSubjectSelect {
+      min-width: 200px;
+    }
+
+    .meta-dates {
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .page-meta-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 2px 6px;
+      font-size: 11px;
+      color: var(--muted);
     }
 
     #canvasWrapper {
@@ -650,6 +748,24 @@
       </div>
 
         <div id="canvasWrapper">
+          <div id="noteMetaBar">
+            <div class="note-meta-group">
+              <div class="note-meta-row">
+                <span class="muted-label">Notizbuch:</span>
+                <input type="text" id="notebookNameInput" class="inline-input" placeholder="Notizbuch benennen">
+                <select id="notebookSubjectSelect" class="inline-input"></select>
+              </div>
+              <div class="meta-dates" id="notebookDates"></div>
+            </div>
+            <div class="note-meta-group" style="align-items:flex-end;">
+              <div class="note-meta-row">
+                <span class="muted-label">Aktuelle Seite:</span>
+                <span id="pageNameInputDisplay" class="inline-input" style="text-align:left;"></span>
+                <button id="renamePageBtn" class="page-rename-btn" title="Seite umbenennen">✏️</button>
+              </div>
+              <div class="meta-dates" id="pageDates" style="justify-content:flex-end;"></div>
+            </div>
+          </div>
           <div id="toolbar">
             <label>Tool:</label>
             <button class="tool-btn active" data-tool="pen">Stift</button>
@@ -1486,6 +1602,16 @@ let data = {
   templateScale: "medium"   // 👈 NEU: Rastergröße (small / medium / large)
 };
 
+    const SUBJECTS = [
+      "Mathematik 1",
+      "Mathematikübung",
+      "Einführung in das Programmieren",
+      "Zellbiologie",
+      "Biochemie",
+      "Allgemeine Chemie",
+      "Physikalische Chemie"
+    ];
+
 
     const STORAGE_KEY = "uniHyperNotes_v3";
 
@@ -1513,6 +1639,12 @@ let data = {
     const ctx = canvas.getContext("2d");
     const notebookSelect = document.getElementById("notebookSelect");
     const addNotebookBtn = document.getElementById("addNotebookBtn");
+    const notebookNameInput = document.getElementById("notebookNameInput");
+    const notebookSubjectSelect = document.getElementById("notebookSubjectSelect");
+    const notebookDates = document.getElementById("notebookDates");
+    const pageNameInputDisplay = document.getElementById("pageNameInputDisplay");
+    const renamePageBtn = document.getElementById("renamePageBtn");
+    const pageDates = document.getElementById("pageDates");
 
 // iPad/Safari: eigenes Scroll-/Zoom-Verhalten abschalten
 canvas.style.touchAction = "none";
@@ -1610,13 +1742,48 @@ canvas.style.touchAction = "none";
       return nb.pages.find(p => p.id === data.activePageId);
     }
 
+    function ensureNotebookDefaults() {
+      if (!Array.isArray(data.notebooks)) data.notebooks = [];
+      data.notebooks.forEach(nb => {
+        nb.name = nb.name || "Unbenanntes Notizbuch";
+        nb.subject = nb.subject || SUBJECTS[0];
+        nb.createdAt = nb.createdAt || Date.now();
+        nb.updatedAt = nb.updatedAt || nb.createdAt;
+        if (!Array.isArray(nb.pages)) nb.pages = [];
+        nb.pages.forEach((page, idx) => {
+          page.name = page.name || `Seite ${idx + 1}`;
+          page.template = page.template || "blank";
+          page.strokes = page.strokes || [];
+          page.subject = page.subject || nb.subject;
+          page.createdAt = page.createdAt || Date.now();
+          page.updatedAt = page.updatedAt || page.createdAt;
+        });
+      });
+    }
+
+    function updateActiveTimestamps() {
+      const nb = getActiveNotebook();
+      if (!nb) return;
+      nb.updatedAt = Date.now();
+      const page = getActivePage();
+      if (page) page.updatedAt = Date.now();
+    }
+
+    function formatDateTime(ts) {
+      if (!ts) return "-";
+      const d = new Date(ts);
+      return d.toLocaleDateString("de-DE") + ", " + d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+    }
+
     // ---------- Storage & Theme ----------
     function saveData() {
+  updateActiveTimestamps();
   // Lokal speichern (wie bisher)
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
   // Versuchen, in die Cloud zu syncen (non-blocking)
   syncToCloud();
+  renderNotebookMeta();
 }
 
 // ---- Cloud-Sync: Hochladen ----
@@ -1647,8 +1814,11 @@ async function syncToCloud() {
         const defaultNotebook = {
           id: "nb-" + Date.now(),
           name: "Standard",
+          subject: SUBJECTS[0],
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
           pages: [
-            { id: "p-" + Date.now(), name: "Seite 1", template: "blank", strokes: [] }
+            { id: "p-" + Date.now(), name: "Seite 1", template: "blank", strokes: [], subject: SUBJECTS[0], createdAt: Date.now(), updatedAt: Date.now() }
           ]
         };
         data.notebooks = [defaultNotebook];
@@ -1661,11 +1831,13 @@ async function syncToCloud() {
         data.tasks = [];
         data.brain = { entries: [] };
         data.templateScale = "medium";
+        ensureNotebookDefaults();
         return;
       }
       try {
         data = JSON.parse(raw);
         if (!data.templateScale) data.templateScale = "medium"; // 👈 falls altes Backup
+        ensureNotebookDefaults();
       } catch (e) {
         console.error("Fehler beim Laden, initialisiere neu", e);
         localStorage.removeItem(STORAGE_KEY);
@@ -1691,30 +1863,32 @@ async function syncFromCloud() {
 
     const cloud = snap.data();
     if (cloud && cloud.data) {
-  data = cloud.data;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      data = cloud.data;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-  // Alles neu rendern, damit du es siehst
-  applyTheme();
-  renderNotebookSelect();
-  resizeCanvas();
-  renderPageList();
-  redrawActivePage();
+      ensureNotebookDefaults();
 
-  renderDecks();
-  renderExams();
-  renderFormulas();
-  renderTasks();
-  renderBrainHistory();
-  renderStats();
-  renderToolInputs();
-  renderLearnSubjects();
-  renderLearnTopics();
-  renderLearnContent();
+      // Alles neu rendern, damit du es siehst
+      applyTheme();
+      renderNotebookSelect();
+      resizeCanvas();
+      renderPageList();
+      redrawActivePage();
+      renderNotebookMeta();
 
-  updateSyncStatus("Cloud-Daten geladen ✔");
-}
- else {
+      renderDecks();
+      renderExams();
+      renderFormulas();
+      renderTasks();
+      renderBrainHistory();
+      renderStats();
+      renderToolInputs();
+      renderLearnSubjects();
+      renderLearnTopics();
+      renderLearnContent();
+
+      updateSyncStatus("Cloud-Daten geladen ✔");
+    } else {
       updateSyncStatus("Cloud-Dokument leer – keine Änderung.");
     }
   } catch (err) {
@@ -1758,6 +1932,17 @@ async function syncFromCloud() {
     });
 
     // ---------- Notebooks & Seiten ----------
+    function populateSubjectSelect() {
+      if (!notebookSubjectSelect) return;
+      notebookSubjectSelect.innerHTML = "";
+      SUBJECTS.forEach(sub => {
+        const opt = document.createElement("option");
+        opt.value = sub;
+        opt.textContent = sub;
+        notebookSubjectSelect.appendChild(opt);
+      });
+    }
+
     function renderNotebookSelect() {
       notebookSelect.innerHTML = "";
       data.notebooks.forEach(nb => {
@@ -1767,6 +1952,16 @@ async function syncFromCloud() {
         if (nb.id === data.activeNotebookId) opt.selected = true;
         notebookSelect.appendChild(opt);
       });
+    }
+
+    function renderNotebookMeta() {
+      const nb = getActiveNotebook();
+      const page = getActivePage();
+      if (notebookNameInput) notebookNameInput.value = nb ? nb.name : "";
+      if (notebookSubjectSelect) notebookSubjectSelect.value = nb ? nb.subject : SUBJECTS[0];
+      if (notebookDates) notebookDates.textContent = nb ? `Erstellt: ${formatDateTime(nb.createdAt)} • Zuletzt geändert: ${formatDateTime(nb.updatedAt)}` : "";
+      if (pageNameInputDisplay) pageNameInputDisplay.textContent = page ? page.name : "Keine Seite";
+      if (pageDates) pageDates.textContent = page ? `Erstellt: ${formatDateTime(page.createdAt)} • Zuletzt geändert: ${formatDateTime(page.updatedAt)}` : "";
     }
 
     function switchNotebook(id) {
@@ -1780,16 +1975,21 @@ async function syncFromCloud() {
       renderNotebookSelect();
       renderPageList();
       redrawActivePage();
+      renderNotebookMeta();
       saveData();
     }
 
     function addNotebook() {
       const name = prompt("Name für das neue Notizbuch:", "Neues Notizbuch");
       if (!name) return;
+      const now = Date.now();
       const nb = {
-        id: "nb-" + Date.now(),
+        id: "nb-" + now,
         name,
-        pages: [{ id: "p-" + Date.now(), name: "Seite 1", template: "blank", strokes: [] }]
+        subject: notebookSubjectSelect?.value || SUBJECTS[0],
+        createdAt: now,
+        updatedAt: now,
+        pages: [{ id: "p-" + now, name: "Seite 1", template: "blank", strokes: [], subject: notebookSubjectSelect?.value || SUBJECTS[0], createdAt: now, updatedAt: now }]
       };
       data.notebooks.push(nb);
       data.activeNotebookId = nb.id;
@@ -1799,7 +1999,12 @@ async function syncFromCloud() {
       renderNotebookSelect();
       renderPageList();
       redrawActivePage();
+      renderNotebookMeta();
       saveData();
+    }
+
+    function getPageSubject(page, notebook) {
+      return page.subject || notebook?.subject || SUBJECTS[0];
     }
 
     function renderPageList() {
@@ -1809,7 +2014,29 @@ async function syncFromCloud() {
       nb.pages.forEach((page, index) => {
         const div = document.createElement("div");
         div.className = "page-thumb" + (page.id === data.activePageId ? " active" : "");
-        div.textContent = page.name;
+
+        const titleRow = document.createElement("div");
+        titleRow.className = "page-title-row";
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "page-name";
+        nameSpan.textContent = page.name;
+        const renameBtn = document.createElement("button");
+        renameBtn.className = "page-rename-btn";
+        renameBtn.textContent = "✏️";
+        renameBtn.title = "Seite umbenennen";
+        renameBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          renamePage(page);
+        });
+        titleRow.appendChild(nameSpan);
+        titleRow.appendChild(renameBtn);
+        div.appendChild(titleRow);
+
+        const meta = document.createElement("div");
+        meta.className = "page-meta-line";
+        meta.innerHTML = `<span class="page-meta-chip">${getPageSubject(page, nb)}</span><span class="page-meta-chip">${formatDateTime(page.updatedAt)}</span>`;
+        div.appendChild(meta);
+
         const idx = document.createElement("span");
         idx.className = "index";
         idx.textContent = index + 1;
@@ -1821,22 +2048,28 @@ async function syncFromCloud() {
           redoStack = [];
           renderPageList();
           redrawActivePage();
+          renderNotebookMeta();
           saveData();
         });
         pageList.appendChild(div);
       });
       const activePage = getActivePage();
       if (activePage) templateSelect.value = activePage.template || "blank";
+      renderNotebookMeta();
     }
 
     function addPage() {
       const nb = getActiveNotebook();
       if (!nb) return;
+      const now = Date.now();
       const page = {
-        id: "p-" + Date.now(),
+        id: "p-" + now,
         name: "Seite " + (nb.pages.length + 1),
         template: templateSelect.value || "blank",
-        strokes: []
+        strokes: [],
+        subject: nb.subject,
+        createdAt: now,
+        updatedAt: now
       };
       nb.pages.push(page);
       data.activePageId = page.id;
@@ -1847,10 +2080,56 @@ async function syncFromCloud() {
       saveData();
     }
 
+    function renamePage(page) {
+      if (!page) return;
+      const newName = prompt("Neuer Seitenname:", page.name) || page.name;
+      page.name = newName.trim() || page.name;
+      page.updatedAt = Date.now();
+      const nb = getActiveNotebook();
+      if (nb) nb.updatedAt = Date.now();
+      renderPageList();
+      redrawActivePage();
+      renderNotebookMeta();
+      saveData();
+    }
+
+    function handleNotebookNameInput() {
+      const nb = getActiveNotebook();
+      if (!nb || !notebookNameInput) return;
+      const newName = notebookNameInput.value.trim();
+      if (!newName) return;
+      nb.name = newName;
+      nb.updatedAt = Date.now();
+      renderNotebookSelect();
+      renderNotebookMeta();
+      saveData();
+    }
+
+    function handleNotebookSubjectChange(subject) {
+      const nb = getActiveNotebook();
+      if (!nb) return;
+      const previous = nb.subject;
+      nb.subject = subject;
+      nb.updatedAt = Date.now();
+      nb.pages.forEach(p => {
+        if (!p.subject || p.subject === previous) {
+          p.subject = subject;
+          p.updatedAt = Date.now();
+        }
+      });
+      renderPageList();
+      renderNotebookSelect();
+      renderNotebookMeta();
+      saveData();
+    }
+
     function setPageTemplate(template) {
       const page = getActivePage();
       if (!page) return;
       page.template = template;
+      page.updatedAt = Date.now();
+      const nb = getActiveNotebook();
+      if (nb) nb.updatedAt = Date.now();
       redrawActivePage();
       saveData();
     }
@@ -2347,7 +2626,19 @@ if (resetViewBtn) {
     clearBtn.addEventListener("click", clearPage);
     addNotebookBtn.addEventListener("click", addNotebook);
     notebookSelect.addEventListener("change", e => switchNotebook(e.target.value));
+    notebookNameInput.addEventListener("change", handleNotebookNameInput);
+    notebookNameInput.addEventListener("blur", handleNotebookNameInput);
+    notebookNameInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleNotebookNameInput();
+        notebookNameInput.blur();
+      }
+    });
+    notebookSubjectSelect.addEventListener("change", e => handleNotebookSubjectChange(e.target.value));
     addPageBtn.addEventListener("click", addPage);
+    renamePageBtn.addEventListener("click", () => renamePage(getActivePage()));
+    pageNameInputDisplay.addEventListener("click", () => renamePage(getActivePage()));
     templateSelect.addEventListener("change", e => setPageTemplate(e.target.value));
     exportPageBtn.addEventListener("click", exportPageAsPNG);
 
@@ -2398,6 +2689,8 @@ importJsonInput.addEventListener("change", () => {
       // Unsere globale data ersetzen
       data = imported;
 
+      ensureNotebookDefaults();
+
       // Sicherheitshalber: falls alte Backups ein paar Felder nicht hatten
       if (!data.cards) data.cards = { decks: [] };
       if (!data.planner) data.planner = { exams: [], focusSessions: [] };
@@ -2424,6 +2717,7 @@ importJsonInput.addEventListener("change", () => {
       resizeCanvas();
       renderPageList();
       redrawActivePage();
+      renderNotebookMeta();
       renderDecks();
       renderExams();
       renderFormulas();
@@ -3164,11 +3458,13 @@ importJsonInput.addEventListener("change", () => {
     // ---------- INIT ----------
     window.addEventListener("load", () => {
       loadData();
+      populateSubjectSelect();
       applyTheme();
       renderNotebookSelect();
       resizeCanvas();
       renderPageList();
       redrawActivePage();
+      renderNotebookMeta();
       renderDecks();
       renderExams();
       renderFormulas();
