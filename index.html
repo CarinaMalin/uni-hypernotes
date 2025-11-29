@@ -2378,11 +2378,12 @@ function moveDrawing(evt) {
     pressure: (lastPos.pressure || 1) * 0.35 + (raw.pressure || 1) * 0.65
   };
 
-  // Winzige Bewegungen ignorieren → weniger Zittern
+  // Winzige Bewegungen nur minimal filtern, damit kurze/rasch gesetzte Striche nicht verschwinden
   const dx = p.x - lastPos.x;
   const dy = p.y - lastPos.y;
   const dist2 = dx * dx + dy * dy;
-  if (dist2 < 0.000004) {
+  const minDist2 = currentStroke.points.length <= 1 ? 0 : 0.000001; // erstes Segment immer zulassen
+  if (dist2 < minDist2) {
     return;
   }
 
