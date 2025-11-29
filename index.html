@@ -41,6 +41,14 @@
       -webkit-user-select: none;
     }
 
+    ::selection {
+      background: transparent;
+    }
+
+    ::-moz-selection {
+      background: transparent;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
@@ -911,6 +919,10 @@
 // ---------- Firebase Setup ----------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+// Globally block jegliche Textmarkierung/Drag-Selection im UI
+document.addEventListener("selectstart", (e) => e.preventDefault());
+document.addEventListener("dragstart", (e) => e.preventDefault());
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0gBG9LNOOjWib7u5a5Ztq2bd9MGg7k",
