@@ -290,11 +290,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 6px;
+      justify-content: flex-start;
+      padding: 10px 6px 6px;
       min-width: 0;
-      gap: 8px;
+      gap: 10px;
       overflow: hidden;
+      position: relative;
     }
 
     #toolbar {
@@ -307,6 +308,10 @@
       box-shadow: var(--shadow-soft);
       flex-wrap: wrap;
       border: 1px solid rgba(255, 255, 255, 0.04);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      pointer-events: auto;
     }
 
     .zoom-controls {
@@ -334,6 +339,8 @@
       box-shadow: 0 22px 55px rgba(5, 6, 17, 0.85);
       touch-action: none;
       border: 1px solid rgba(0, 0, 0, 0.08);
+      position: relative;
+      z-index: 1;
     }
 
     body.light #canvas {
@@ -1510,6 +1517,8 @@ let data = {
 
     // ---------- NOTIZEN / CANVAS ----------
     const canvas = document.getElementById("canvas");
+    const canvasWrapper = document.getElementById("canvasWrapper");
+    const toolbar = document.getElementById("toolbar");
     const ctx = canvas.getContext("2d");
     const notebookSelect = document.getElementById("notebookSelect");
     const addNotebookBtn = document.getElementById("addNotebookBtn");
@@ -1542,9 +1551,24 @@ canvas.style.touchAction = "none";
     }
   }
 
+  function clampPanToToolbar() {
+    if (!toolbar || !canvas || !canvasWrapper) return;
+
+    const toolbarRect = toolbar.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    const safeTop = toolbarRect.bottom + 8;
+
+    if (canvasRect.top < safeTop) {
+      const adjust = safeTop - canvasRect.top;
+      panY += adjust;
+      canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+    }
+  }
+
   function updateCanvasTransform() {
     canvas.style.transformOrigin = "center center";
     canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+    clampPanToToolbar();
     updateZoomIndicator();
   }
 
