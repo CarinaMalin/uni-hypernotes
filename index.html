@@ -1531,6 +1531,8 @@ canvas.style.touchAction = "none";
   let isPinching = false;
   let lastPinchDist = 0;
   let lastPinchCenter = null;
+  let isPanning = false;
+  let panStart = null;
 
   function clampZoom(value) {
     return Math.max(0.5, Math.min(value, 4));
@@ -2085,7 +2087,15 @@ function previewShape(endPos) {
 
   const x = (clientX - rect.left) / rect.width;
   const y = (clientY - rect.top) / rect.height;
-  return { x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) };
+  const pressure = typeof evt.pressure === "number" && evt.pressure > 0
+    ? evt.pressure
+    : 1;
+
+  return {
+    x: Math.max(0, Math.min(1, x)),
+    y: Math.max(0, Math.min(1, y)),
+    pressure
+  };
 }
 
 // Abstand zwischen zwei Fingern
@@ -2111,12 +2121,15 @@ function handleTouchStart(e) {
   e.preventDefault();
 
   if (e.touches.length === 1) {
-    // 👉 1 Finger = normal zeichnen
+    // 👉 1 Finger = Pan
     isPinching = false;
-    startDrawing(e);
+    isPanning = true;
+    const touch = e.touches[0];
+    panStart = { x: touch.clientX, y: touch.clientY, panX, panY };
   } else if (e.touches.length === 2) {
     // 👉 2 Finger = Pinch-Zoom starten
     isPinching = true;
+    isPanning = false;
     lastPinchDist = getTouchDistance(e.touches);
     lastPinchCenter = getTouchCenter(e.touches);
   }
@@ -2146,9 +2159,15 @@ function handleTouchStart(e) {
       lastPinchCenter = newCenter;
 
       updateCanvasTransform();
-    } else if (!isPinching && e.touches.length === 1) {
-      // 👉 normales Zeichnen mit einem Finger
-      moveDrawing(e); // nutzt dein normPos(e)
+    } else if (isPanning && e.touches.length === 1 && panStart) {
+      // 👉 Pan mit einem Finger
+      e.preventDefault();
+      const touch = e.touches[0];
+      const dx = touch.clientX - panStart.x;
+      const dy = touch.clientY - panStart.y;
+      panX = panStart.panX + dx;
+      panY = panStart.panY + dy;
+      updateCanvasTransform();
     }
   }
 
@@ -2160,13 +2179,18 @@ function handleTouchEnd(e) {
     lastPinchCenter = null;
   }
 
+  if (isPanning && (!e.touches || e.touches.length === 0)) {
+    isPanning = false;
+    panStart = null;
+  }
+
   // Wenn gar kein Finger mehr drauf -> Zeichnung abschließen
   if (!e.touches || e.touches.length === 0) {
     stopDrawing(e);
   }
 }
 
-    function startDrawing(evt) {
+function startDrawing(evt) {
   evt.preventDefault();
   const page = getActivePage();
   if (!page) return;
@@ -2207,6 +2231,13 @@ function handleTouchEnd(e) {
   }
 }
 
+function getPressureScale(from, to) {
+  const p1 = (from && from.pressure) ? from.pressure : 1;
+  const p2 = (to && to.pressure) ? to.pressure : p1;
+  const avg = (p1 + p2) / 2;
+  return Math.max(0.2, avg); // Minimum-Druck für konsistente Strichbreite
+}
+
 function drawStrokeSegment(from, to, stroke) {
   ctx.save();
 
@@ -2214,19 +2245,19 @@ function drawStrokeSegment(from, to, stroke) {
     // Radiert nur gezeichnete Sachen, Template bleibt, weil das danach kommt
     ctx.globalCompositeOperation = "destination-out";
     ctx.strokeStyle = "rgba(0,0,0,1)";
-    ctx.lineWidth = stroke.width;
+    ctx.lineWidth = stroke.width * getPressureScale(from, to);
     ctx.globalAlpha = 1;
   } else if (stroke.tool === "highlighter") {
     // Halbtransparent wie echter Textmarker
     ctx.globalCompositeOperation = "source-over";
     ctx.strokeStyle = stroke.color;
-    ctx.lineWidth = stroke.width;
+    ctx.lineWidth = stroke.width * getPressureScale(from, to);
     ctx.globalAlpha = 0.35; // Transparent
   } else {
     // Normaler Stift
     ctx.globalCompositeOperation = "source-over";
     ctx.strokeStyle = stroke.color;
-    ctx.lineWidth = stroke.width;
+    ctx.lineWidth = stroke.width * getPressureScale(from, to);
     ctx.globalAlpha = 1;
   }
 
@@ -2260,7 +2291,8 @@ function moveDrawing(evt) {
   // Glättung: Mischung aus alter und neuer Position (fühlt sich noch direkt an)
   const p = {
     x: lastPos.x * 0.35 + raw.x * 0.65,
-    y: lastPos.y * 0.35 + raw.y * 0.65
+    y: lastPos.y * 0.35 + raw.y * 0.65,
+    pressure: (lastPos.pressure || 1) * 0.35 + (raw.pressure || 1) * 0.65
   };
 
   // Winzige Bewegungen ignorieren → weniger Zittern
@@ -2381,13 +2413,32 @@ function stopDrawing(evt) {
     }
 
     // Canvas Events (Maus)
-canvas.addEventListener("mousedown", startDrawing);
-canvas.addEventListener("mousemove", moveDrawing);
-canvas.addEventListener("mouseup", stopDrawing);
-canvas.addEventListener("mouseleave", stopDrawing);
+// Pointer Events (Apple Pencil only)
+function handlePointerDown(e) {
+  // Zeichnen nur mit dem Pencil (pointerType "pen") erlauben
+  if (e.pointerType !== "pen") return;
+  canvas.setPointerCapture(e.pointerId);
+  startDrawing(e);
+}
+
+function handlePointerMove(e) {
+  if (e.pointerType !== "pen" || !drawing) return;
+  moveDrawing(e);
+}
+
+function handlePointerUp(e) {
+  if (e.pointerType !== "pen") return;
+  canvas.releasePointerCapture(e.pointerId);
+  stopDrawing(e);
+}
+
+canvas.addEventListener("pointerdown", handlePointerDown, { passive: false });
+canvas.addEventListener("pointermove", handlePointerMove, { passive: false });
+canvas.addEventListener("pointerup", handlePointerUp, { passive: false });
+canvas.addEventListener("pointercancel", handlePointerUp, { passive: false });
 
 
-// Canvas Events (Touch – 1 Finger = zeichnen, 2 Finger = Pinch-Zoom)
+// Canvas Events (Touch – Finger nur für Pan/Zoom)
 canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
 canvas.addEventListener("touchmove",  handleTouchMove,  { passive: false });
 canvas.addEventListener("touchend",   handleTouchEnd,   { passive: false });
