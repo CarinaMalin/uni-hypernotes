@@ -1888,41 +1888,48 @@ async function syncFromCloud() {
     }
 
 
-    function resizeCanvas() {
-  const isLandscape = window.innerWidth > window.innerHeight; // 👈 NEU
-  const margin = isLandscape ? 10 : 20;
+      function resizeCanvas() {
+    // Wenn wir mitten im Zeichnen sind, verschieben wir das Resize, damit
+    // Apple Pencil & Co. nicht alle paar Sekunden unterbrochen werden.
+    if (drawing || pencilPointerActive) {
+      pendingResize = true;
+      return;
+    }
 
-  const wrapper = document.getElementById("canvasWrapper");
-  const w = wrapper.clientWidth - margin * 2;
-  const h = wrapper.clientHeight - margin * 2 - 40;
+    const isLandscape = window.innerWidth > window.innerHeight; // 👈 NEU
+    const margin = isLandscape ? 10 : 20;
 
-  const aspect = 1 / 1.414; // A4
-  let cw = w, ch = w / aspect;
-  if (ch > h) {
-    ch = h;
-    cw = h * aspect;
+    const wrapper = document.getElementById("canvasWrapper");
+    const w = wrapper.clientWidth - margin * 2;
+    const h = wrapper.clientHeight - margin * 2 - 40;
+
+    const aspect = 1 / 1.414; // A4
+    let cw = w, ch = w / aspect;
+    if (ch > h) {
+      ch = h;
+      cw = h * aspect;
+    }
+
+    const page = getActivePage();
+    const oldStrokes = page ? JSON.parse(JSON.stringify(page.strokes)) : null;
+    const tmpl = page ? page.template : "blank";
+
+    canvas.width = cw;
+    canvas.height = ch;
+
+    // Zoom & Pan beim Resize zurücksetzen (optional)
+    zoom = 1;
+    panX = 0;
+    panY = 0;
+    updateCanvasTransform();
+
+
+      if (page && oldStrokes) {
+        page.strokes = oldStrokes;
+        page.template = tmpl;
+    }
+    redrawActivePage();
   }
-
-  const page = getActivePage();
-  const oldStrokes = page ? JSON.parse(JSON.stringify(page.strokes)) : null;
-  const tmpl = page ? page.template : "blank";
-
-  canvas.width = cw;
-  canvas.height = ch;
-
-  // Zoom & Pan beim Resize zurücksetzen (optional)
-  zoom = 1;
-  panX = 0;
-  panY = 0;
-  updateCanvasTransform();
-
-
-    if (page && oldStrokes) {
-      page.strokes = oldStrokes;
-      page.template = tmpl;
-  }
-  redrawActivePage();
-}
 
 
     window.addEventListener("resize", resizeCanvas);
@@ -2124,7 +2131,8 @@ function getTouchDistance(touches) {
     };
   }
 
-let pencilPointerActive = false;
+  let pencilPointerActive = false;
+  let pendingResize = false;
 
 function handleTouchStart(e) {
   if (!e.touches || e.touches.length === 0) return;
@@ -2399,6 +2407,11 @@ function stopDrawing(evt) {
 
   currentStroke = null;
   saveData();
+
+  if (pendingResize) {
+    pendingResize = false;
+    requestAnimationFrame(resizeCanvas);
+  }
 }
 
 
