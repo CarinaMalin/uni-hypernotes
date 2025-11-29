@@ -35,19 +35,7 @@
       --radius-card: 18px;
     }
 
-    * {
-      box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    ::selection {
-      background: transparent;
-    }
-
-    ::-moz-selection {
-      background: transparent;
-    }
+    * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
@@ -307,9 +295,6 @@
       min-width: 0;
       gap: 8px;
       overflow: hidden;
-      position: relative;
-      user-select: none;
-      -webkit-user-select: none;
     }
 
     #toolbar {
@@ -322,9 +307,6 @@
       box-shadow: var(--shadow-soft);
       flex-wrap: wrap;
       border: 1px solid rgba(255, 255, 255, 0.04);
-      position: sticky;
-      top: 6px;
-      z-index: 20;
     }
 
     .zoom-controls {
@@ -352,10 +334,6 @@
       box-shadow: 0 22px 55px rgba(5, 6, 17, 0.85);
       touch-action: none;
       border: 1px solid rgba(0, 0, 0, 0.08);
-      position: relative;
-      z-index: 1;
-      user-select: none;
-      -webkit-user-select: none;
     }
 
     body.light #canvas {
@@ -919,10 +897,6 @@
 // ---------- Firebase Setup ----------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-
-// Globally block jegliche Textmarkierung/Drag-Selection im UI
-document.addEventListener("selectstart", (e) => e.preventDefault());
-document.addEventListener("dragstart", (e) => e.preventDefault());
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0gBG9LNOOjWib7u5a5Ztq2bd9MGg7k",
@@ -1535,15 +1509,10 @@ let data = {
     const importJsonInput = document.getElementById("importJsonInput");
 
     // ---------- NOTIZEN / CANVAS ----------
-    const canvasWrapper = document.getElementById("canvasWrapper");
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const notebookSelect = document.getElementById("notebookSelect");
     const addNotebookBtn = document.getElementById("addNotebookBtn");
-
-    if (canvasWrapper) {
-      canvasWrapper.addEventListener("selectstart", (e) => e.preventDefault());
-    }
 
 // iPad/Safari: eigenes Scroll-/Zoom-Verhalten abschalten
 canvas.style.touchAction = "none";
@@ -1562,8 +1531,6 @@ canvas.style.touchAction = "none";
   let isPinching = false;
   let lastPinchDist = 0;
   let lastPinchCenter = null;
-  let isPanning = false;
-  let panStart = null;
 
   function clampZoom(value) {
     return Math.max(0.5, Math.min(value, 4));
@@ -1628,9 +1595,6 @@ canvas.style.touchAction = "none";
     let drawing = false;
     let currentStroke = null;
     let lastPos = { x: 0, y: 0 };
-    let smoothedPos = null;
-    const PEN_SMOOTHING = 0.28;
-    const MIN_SEGMENT_DIST = 0.0008;
     let undoStack = [];
     let redoStack = [];
     let shapeStartPos = null;
@@ -1891,67 +1855,44 @@ async function syncFromCloud() {
     }
 
 
-      function resizeCanvas() {
-    // Wenn wir mitten im Zeichnen sind, verschieben wir das Resize, damit
-    // Apple Pencil & Co. nicht alle paar Sekunden unterbrochen werden.
-    if (drawing || pencilPointerActive) {
-      pendingResize = true;
-      return;
-    }
+    function resizeCanvas() {
+  const isLandscape = window.innerWidth > window.innerHeight; // 👈 NEU
+  const margin = isLandscape ? 10 : 20;
 
-    const isLandscape = window.innerWidth > window.innerHeight; // 👈 NEU
-    const margin = isLandscape ? 10 : 20;
+  const wrapper = document.getElementById("canvasWrapper");
+  const w = wrapper.clientWidth - margin * 2;
+  const h = wrapper.clientHeight - margin * 2 - 40;
 
-    const wrapper = document.getElementById("canvasWrapper");
-    const w = wrapper.clientWidth - margin * 2;
-    const h = wrapper.clientHeight - margin * 2 - 40;
-
-    const aspect = 1 / 1.414; // A4
-    let cw = w, ch = w / aspect;
-    if (ch > h) {
-      ch = h;
-      cw = h * aspect;
-    }
-
-    const page = getActivePage();
-    const oldStrokes = page ? JSON.parse(JSON.stringify(page.strokes)) : null;
-    const tmpl = page ? page.template : "blank";
-
-    canvas.width = cw;
-    canvas.height = ch;
-
-    // Zoom & Pan beim Resize zurücksetzen (optional)
-    zoom = 1;
-    panX = 0;
-    panY = 0;
-    updateCanvasTransform();
-
-
-      if (page && oldStrokes) {
-        page.strokes = oldStrokes;
-        page.template = tmpl;
-    }
-    redrawActivePage();
+  const aspect = 1 / 1.414; // A4
+  let cw = w, ch = w / aspect;
+  if (ch > h) {
+    ch = h;
+    cw = h * aspect;
   }
 
-      let resizeDebounce = null;
+  const page = getActivePage();
+  const oldStrokes = page ? JSON.parse(JSON.stringify(page.strokes)) : null;
+  const tmpl = page ? page.template : "blank";
 
-      function handleResizeEvent() {
-    if (drawing || pencilPointerActive) {
-      pendingResize = true;
-      return;
-    }
+  canvas.width = cw;
+  canvas.height = ch;
 
-    pendingResize = false;
-    if (resizeDebounce) clearTimeout(resizeDebounce);
-    resizeDebounce = setTimeout(() => {
-      resizeDebounce = null;
-      resizeCanvas();
-    }, 150);
+  // Zoom & Pan beim Resize zurücksetzen (optional)
+  zoom = 1;
+  panX = 0;
+  panY = 0;
+  updateCanvasTransform();
+
+
+    if (page && oldStrokes) {
+      page.strokes = oldStrokes;
+      page.template = tmpl;
   }
+  redrawActivePage();
+}
 
 
-    window.addEventListener("resize", handleResizeEvent);
+    window.addEventListener("resize", resizeCanvas);
 
 function getTemplateSpacing() {
   const base = 32; // deine bisherige Standardgröße
@@ -2025,38 +1966,37 @@ function redrawActivePage() {
   page.strokes.forEach(stroke => {
     ctx.save();
 
-    applyStrokeStyle(stroke);
-
-    const pts = stroke.points;
-    if (!pts || pts.length === 0) {
-      ctx.restore();
-      return;
+    if (stroke.tool === "eraser") {
+      // Radiert nur gezeichnete Sachen, Template bleibt, weil das danach kommt
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.strokeStyle = "rgba(0,0,0,1)";
+      ctx.lineWidth = stroke.width;
+      ctx.globalAlpha = 1;
+    } else if (stroke.tool === "highlighter") {
+      // Halbtransparent wie echter Textmarker
+      ctx.globalCompositeOperation = "source-over";
+      ctx.strokeStyle = stroke.color;
+      ctx.lineWidth = stroke.width;
+      ctx.globalAlpha = 0.35; // Transparent
+    } else {
+      // Normaler Stift
+      ctx.globalCompositeOperation = "source-over";
+      ctx.strokeStyle = stroke.color;
+      ctx.lineWidth = stroke.width;
+      ctx.globalAlpha = 1;
     }
 
-    if (pts.length === 1) {
-      drawStrokeDot(pts[0], stroke);
-    } else {
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    const pts = stroke.points;
+    if (pts.length > 1) {
       ctx.beginPath();
       ctx.moveTo(pts[0].x * canvas.width, pts[0].y * canvas.height);
-
-      let totalDistance = 0;
-
       for (let i = 1; i < pts.length; i++) {
-        const prev = pts[i - 1];
-        const curr = pts[i];
-        ctx.lineTo(curr.x * canvas.width, curr.y * canvas.height);
-
-        const dx = (curr.x - prev.x) * canvas.width;
-        const dy = (curr.y - prev.y) * canvas.height;
-        totalDistance += Math.hypot(dx, dy);
+        ctx.lineTo(pts[i].x * canvas.width, pts[i].y * canvas.height);
       }
-
       ctx.stroke();
-
-      // Striche, die so kurz sind, dass sie kaum gezeichnet werden, als Punkt darstellen
-      if (totalDistance < stroke.width * 0.6) {
-        drawStrokeDot(pts[0], stroke);
-      }
     }
 
     ctx.restore();
@@ -2145,15 +2085,7 @@ function previewShape(endPos) {
 
   const x = (clientX - rect.left) / rect.width;
   const y = (clientY - rect.top) / rect.height;
-  const pressure = typeof evt.pressure === "number" && evt.pressure > 0
-    ? evt.pressure
-    : 1;
-
-  return {
-    x: Math.max(0, Math.min(1, x)),
-    y: Math.max(0, Math.min(1, y)),
-    pressure
-  };
+  return { x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) };
 }
 
 // Abstand zwischen zwei Fingern
@@ -2172,29 +2104,19 @@ function getTouchDistance(touches) {
     };
   }
 
-  let pencilPointerActive = false;
-  let pendingResize = false;
-
 function handleTouchStart(e) {
   if (!e.touches || e.touches.length === 0) return;
-
-  // Stylus-Inputs (Apple Pencil) sollen niemals Pan/Zoom auslösen
-  const hasStylusTouch = Array.from(e.touches).some(t => t.touchType === "stylus");
-  if (pencilPointerActive || hasStylusTouch) return;
 
   // Browser-Scroll/Zoom verhindern
   e.preventDefault();
 
   if (e.touches.length === 1) {
-    // 👉 1 Finger = Pan
+    // 👉 1 Finger = normal zeichnen
     isPinching = false;
-    isPanning = true;
-    const touch = e.touches[0];
-    panStart = { x: touch.clientX, y: touch.clientY, panX, panY };
+    startDrawing(e);
   } else if (e.touches.length === 2) {
     // 👉 2 Finger = Pinch-Zoom starten
     isPinching = true;
-    isPanning = false;
     lastPinchDist = getTouchDistance(e.touches);
     lastPinchCenter = getTouchCenter(e.touches);
   }
@@ -2202,9 +2124,6 @@ function handleTouchStart(e) {
 
   function handleTouchMove(e) {
     if (!e.touches || e.touches.length === 0) return;
-
-    const hasStylusTouch = Array.from(e.touches).some(t => t.touchType === "stylus");
-    if (pencilPointerActive || hasStylusTouch) return;
 
     if (isPinching && e.touches.length === 2) {
       // 👉 Pinch aktiv
@@ -2227,34 +2146,18 @@ function handleTouchStart(e) {
       lastPinchCenter = newCenter;
 
       updateCanvasTransform();
-    } else if (isPanning && e.touches.length === 1 && panStart) {
-      // 👉 Pan mit einem Finger
-      e.preventDefault();
-      const touch = e.touches[0];
-      const dx = touch.clientX - panStart.x;
-      const dy = touch.clientY - panStart.y;
-      panX = panStart.panX + dx;
-      panY = panStart.panY + dy;
-      updateCanvasTransform();
+    } else if (!isPinching && e.touches.length === 1) {
+      // 👉 normales Zeichnen mit einem Finger
+      moveDrawing(e); // nutzt dein normPos(e)
     }
   }
 
 function handleTouchEnd(e) {
-  if (pencilPointerActive) return;
-
-  const hasStylusTouch = e.touches && Array.from(e.touches).some(t => t.touchType === "stylus");
-  if (hasStylusTouch) return;
-
   // Pinch beenden, wenn weniger als 2 Finger
   if (isPinching && (!e.touches || e.touches.length < 2)) {
     isPinching = false;
     lastPinchDist = 0;
     lastPinchCenter = null;
-  }
-
-  if (isPanning && (!e.touches || e.touches.length === 0)) {
-    isPanning = false;
-    panStart = null;
   }
 
   // Wenn gar kein Finger mehr drauf -> Zeichnung abschließen
@@ -2263,36 +2166,8 @@ function handleTouchEnd(e) {
   }
 }
 
-function resetSmoothing(point) {
-  smoothedPos = { ...point };
-}
-
-function getSmoothedPoint(raw) {
-  if (!smoothedPos) return { ...raw };
-
-  smoothedPos = {
-    x: smoothedPos.x + (raw.x - smoothedPos.x) * PEN_SMOOTHING,
-    y: smoothedPos.y + (raw.y - smoothedPos.y) * PEN_SMOOTHING,
-    pressure: raw.pressure
-  };
-
-  return smoothedPos;
-}
-
-function shouldSkipSegment(from, to) {
-  const dx = to.x - from.x;
-  const dy = to.y - from.y;
-  return dx * dx + dy * dy < MIN_SEGMENT_DIST * MIN_SEGMENT_DIST;
-}
-
-function startDrawing(evt) {
+    function startDrawing(evt) {
   evt.preventDefault();
-
-  // Falls ein vorheriger Stroke hängen geblieben ist, sauber beenden
-  if (drawing) {
-    stopDrawing(evt);
-  }
-
   const page = getActivePage();
   if (!page) return;
 
@@ -2300,12 +2175,11 @@ function startDrawing(evt) {
   redoStack = [];
 
   const p = normPos(evt);
-  resetSmoothing(p);
+  lastPos = p;
 
   if (["line", "rect", "circle"].includes(currentTool)) {
     // Formen: Startpunkt merken, Stroke nur als „Platzhalter“
     shapeStartPos = p;
-    lastPos = p;
     currentStroke = {
       tool: "pen",
       color: currentColor,
@@ -2315,16 +2189,13 @@ function startDrawing(evt) {
     };
   } else {
     // Freihand-Stift / Marker / Radierer
-    const startPoint = currentTool === "pen" ? getSmoothedPoint(p) : p;
-    lastPos = startPoint;
-
     const stroke = {
       tool: currentTool,
       color: currentColor,
       // Marker bewusst dicker, wirkt mehr wie echter Textmarker
       width: currentTool === "highlighter" ? currentWidth * 4 : currentWidth,
       alpha: 1,
-      points: [startPoint]
+      points: [p]
     };
 
     if (currentTool === "eraser") {
@@ -2332,55 +2203,35 @@ function startDrawing(evt) {
     }
 
     currentStroke = stroke;
-    drawInitialDot(startPoint, stroke);
+    drawStrokeSegment(lastPos, p, stroke);
   }
-}
-
-function applyStrokeStyle(stroke) {
-  if (stroke.tool === "eraser") {
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.strokeStyle = "rgba(0,0,0,1)";
-    ctx.fillStyle = "rgba(0,0,0,1)";
-    ctx.globalAlpha = 1;
-  } else if (stroke.tool === "highlighter") {
-    ctx.globalCompositeOperation = "source-over";
-    ctx.strokeStyle = stroke.color;
-    ctx.fillStyle = stroke.color;
-    ctx.globalAlpha = 0.35;
-  } else {
-    ctx.globalCompositeOperation = "source-over";
-    ctx.strokeStyle = stroke.color;
-    ctx.fillStyle = stroke.color;
-    ctx.globalAlpha = 1;
-  }
-
-  ctx.lineWidth = stroke.width;
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-}
-
-function drawInitialDot(pos, stroke) {
-  ctx.save();
-  applyStrokeStyle(stroke);
-
-  ctx.beginPath();
-  ctx.arc(pos.x * canvas.width, pos.y * canvas.height, stroke.width / 2, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.restore();
-  ctx.globalAlpha = 1;
-  ctx.globalCompositeOperation = "source-over";
-}
-
-function drawStrokeDot(point, stroke) {
-  ctx.beginPath();
-  ctx.arc(point.x * canvas.width, point.y * canvas.height, stroke.width / 2, 0, Math.PI * 2);
-  ctx.fill();
 }
 
 function drawStrokeSegment(from, to, stroke) {
   ctx.save();
-  applyStrokeStyle(stroke);
+
+  if (stroke.tool === "eraser") {
+    // Radiert nur gezeichnete Sachen, Template bleibt, weil das danach kommt
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.strokeStyle = "rgba(0,0,0,1)";
+    ctx.lineWidth = stroke.width;
+    ctx.globalAlpha = 1;
+  } else if (stroke.tool === "highlighter") {
+    // Halbtransparent wie echter Textmarker
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = stroke.color;
+    ctx.lineWidth = stroke.width;
+    ctx.globalAlpha = 0.35; // Transparent
+  } else {
+    // Normaler Stift
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = stroke.color;
+    ctx.lineWidth = stroke.width;
+    ctx.globalAlpha = 1;
+  }
+
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
 
   ctx.beginPath();
   ctx.moveTo(from.x * canvas.width, from.y * canvas.height);
@@ -2395,22 +2246,34 @@ function drawStrokeSegment(from, to, stroke) {
 
 function moveDrawing(evt) {
   if (!drawing || !currentStroke) return;
+  evt.preventDefault();
 
   const raw = normPos(evt);
 
-  // Für Linien/Rechteck/Kreis nur Vorschau, direkt ohne Glättung zeichnen
+  // Für Linien/Rechteck/Kreis keine Glättung, nur Vorschau
   if (["line", "rect", "circle"].includes(currentTool)) {
     previewShape(raw);
     lastPos = raw;
     return;
   }
 
-  const target = currentTool === "pen" ? getSmoothedPoint(raw) : raw;
-  if (shouldSkipSegment(lastPos, target)) return;
+  // Glättung: Mischung aus alter und neuer Position (fühlt sich noch direkt an)
+  const p = {
+    x: lastPos.x * 0.35 + raw.x * 0.65,
+    y: lastPos.y * 0.35 + raw.y * 0.65
+  };
 
-  drawStrokeSegment(lastPos, target, currentStroke);
-  currentStroke.points.push(target);
-  lastPos = target;
+  // Winzige Bewegungen ignorieren → weniger Zittern
+  const dx = p.x - lastPos.x;
+  const dy = p.y - lastPos.y;
+  const dist2 = dx * dx + dy * dy;
+  if (dist2 < 0.000004) {
+    return;
+  }
+
+  drawStrokeSegment(lastPos, p, currentStroke);
+  currentStroke.points.push(p);
+  lastPos = p;
 }
 
 function stopDrawing(evt) {
@@ -2472,14 +2335,8 @@ function stopDrawing(evt) {
   }
 
   currentStroke = null;
-  smoothedPos = null;
   saveData();
-
-    if (pendingResize) {
-      pendingResize = false;
-      handleResizeEvent();
-    }
-  }
+}
 
 
 
@@ -2524,46 +2381,13 @@ function stopDrawing(evt) {
     }
 
     // Canvas Events (Maus)
-// Pointer Events (Apple Pencil only)
-function handlePointerDown(e) {
-  // Zeichnen ausschließlich mit dem Pencil (pointerType "pen") erlauben
-  if (e.pointerType !== "pen") return;
-
-  pencilPointerActive = true;
-  canvas.setPointerCapture(e.pointerId);
-  startDrawing(e);
-}
-
-function handlePointerMove(e) {
-  if (e.pointerType !== "pen" || !drawing) return;
-
-  e.preventDefault();
-
-  const events = typeof e.getCoalescedEvents === "function" && e.getCoalescedEvents()
-    ? e.getCoalescedEvents()
-    : [e];
-
-  for (const evt of events) {
-    moveDrawing(evt);
-  }
-}
-
-function handlePointerUp(e) {
-  if (e.pointerType !== "pen") return;
-
-  pencilPointerActive = false;
-  canvas.releasePointerCapture(e.pointerId);
-  stopDrawing(e);
-}
-
-canvas.addEventListener("pointerdown", handlePointerDown, { passive: false });
-canvas.addEventListener("pointermove", handlePointerMove, { passive: false });
-canvas.addEventListener("pointerup", handlePointerUp, { passive: false });
-canvas.addEventListener("pointercancel", handlePointerUp, { passive: false });
-canvas.addEventListener("pointerleave", handlePointerUp, { passive: false });
+canvas.addEventListener("mousedown", startDrawing);
+canvas.addEventListener("mousemove", moveDrawing);
+canvas.addEventListener("mouseup", stopDrawing);
+canvas.addEventListener("mouseleave", stopDrawing);
 
 
-// Canvas Events (Touch – Finger nur für Pan/Zoom)
+// Canvas Events (Touch – 1 Finger = zeichnen, 2 Finger = Pinch-Zoom)
 canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
 canvas.addEventListener("touchmove",  handleTouchMove,  { passive: false });
 canvas.addEventListener("touchend",   handleTouchEnd,   { passive: false });
