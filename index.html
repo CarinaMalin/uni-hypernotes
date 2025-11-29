@@ -294,6 +294,7 @@
       padding: 6px;
       min-width: 0;
       gap: 8px;
+      overflow: hidden;
     }
 
     #toolbar {
@@ -306,6 +307,21 @@
       box-shadow: var(--shadow-soft);
       flex-wrap: wrap;
       border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .zoom-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding-left: 8px;
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+      margin-left: 2px;
+    }
+
+    .zoom-controls span {
+      min-width: 46px;
+      text-align: center;
+      font-weight: 600;
     }
 
     body.light #toolbar {
@@ -633,11 +649,11 @@
         <div id="pageList"></div>
       </div>
 
-      <div id="canvasWrapper">
-        <div id="toolbar">
-          <label>Tool:</label>
-          <button class="tool-btn active" data-tool="pen">Stift</button>
-          <button class="tool-btn" data-tool="highlighter">Marker</button>
+        <div id="canvasWrapper">
+          <div id="toolbar">
+            <label>Tool:</label>
+            <button class="tool-btn active" data-tool="pen">Stift</button>
+            <button class="tool-btn" data-tool="highlighter">Marker</button>
           <button class="tool-btn" data-tool="eraser">Radierer</button>
           <button class="tool-btn" data-tool="line">Linie</button>
           <button class="tool-btn" data-tool="rect">Rechteck</button>
@@ -646,20 +662,28 @@
           <label>Farbe:</label>
           <input type="color" id="colorPicker" value="#000000">
 
-          <label>Stärke:</label>
-          <button class="stroke-btn active" data-width="2">Dünn</button>
-          <button class="stroke-btn" data-width="5">Mittel</button>
-          <button class="stroke-btn" data-width="9">Dick</button>
+            <label>Stärke:</label>
+            <button class="stroke-btn active" data-width="2">Dünn</button>
+            <button class="stroke-btn" data-width="5">Mittel</button>
+            <button class="stroke-btn" data-width="9">Dick</button>
 
-          <button id="undoBtn">↶ Undo</button>
-          <button id="redoBtn">↷ Redo</button>
+            <button id="undoBtn">↶ Undo</button>
+            <button id="redoBtn">↷ Redo</button>
 
-          <button id="clearBtn">🧹 Seite leeren</button>
+            <button id="clearBtn">🧹 Seite leeren</button>
+
+            <div class="zoom-controls">
+              <label>Zoom:</label>
+              <button id="zoomOutBtn" title="Herauszoomen">−</button>
+              <span id="zoomIndicator">100%</span>
+              <button id="zoomInBtn" title="Hineinzoomen">＋</button>
+              <button id="resetViewBtn" title="Zoom & Position zurücksetzen">Reset</button>
+            </div>
+          </div>
+
+          <canvas id="canvas"></canvas>
         </div>
-
-        <canvas id="canvas"></canvas>
       </div>
-    </div>
 
     <!-- KARTEIKARTEN-TAB -->
     <div id="cardsSection" class="section">
@@ -1495,13 +1519,58 @@ canvas.style.touchAction = "none";
 
 
 // --- Zoom & Pan (Basis, auch wenn wir noch kein Pinch nutzen) ---
-let zoom = 1;
-let panX = 0;
-let panY = 0;
+  let zoom = 1;
+  let panX = 0;
+  let panY = 0;
 
-let isPinching = false;
-let lastPinchDist = 0;
-let lastPinchCenter = null;
+  const zoomInBtn = document.getElementById("zoomInBtn");
+  const zoomOutBtn = document.getElementById("zoomOutBtn");
+  const resetViewBtn = document.getElementById("resetViewBtn");
+  const zoomIndicator = document.getElementById("zoomIndicator");
+
+  let isPinching = false;
+  let lastPinchDist = 0;
+  let lastPinchCenter = null;
+
+  function clampZoom(value) {
+    return Math.max(0.5, Math.min(value, 4));
+  }
+
+  function updateZoomIndicator() {
+    if (zoomIndicator) {
+      zoomIndicator.textContent = Math.round(zoom * 100) + "%";
+    }
+  }
+
+  function updateCanvasTransform() {
+    canvas.style.transformOrigin = "center center";
+    canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+    updateZoomIndicator();
+  }
+
+  function setZoom(newZoom, anchor = null) {
+    const nextZoom = clampZoom(newZoom);
+
+    if (anchor) {
+      const rect = canvas.getBoundingClientRect();
+      const offsetX = anchor.x - rect.left - panX;
+      const offsetY = anchor.y - rect.top - panY;
+
+      const scaleRatio = nextZoom / zoom;
+      panX -= offsetX * (scaleRatio - 1);
+      panY -= offsetY * (scaleRatio - 1);
+    }
+
+    zoom = nextZoom;
+    updateCanvasTransform();
+  }
+
+  function resetView() {
+    zoom = 1;
+    panX = 0;
+    panY = 0;
+    updateCanvasTransform();
+  }
 
 
     const addPageBtn = document.getElementById("addPageBtn");
@@ -1808,15 +1877,16 @@ async function syncFromCloud() {
   canvas.width = cw;
   canvas.height = ch;
 
-// Zoom & Pan beim Resize zurücksetzen (optional)
-zoom = 1;
-panX = 0;
-panY = 0;
+  // Zoom & Pan beim Resize zurücksetzen (optional)
+  zoom = 1;
+  panX = 0;
+  panY = 0;
+  updateCanvasTransform();
 
 
-  if (page && oldStrokes) {
-    page.strokes = oldStrokes;
-    page.template = tmpl;
+    if (page && oldStrokes) {
+      page.strokes = oldStrokes;
+      page.template = tmpl;
   }
   redrawActivePage();
 }
@@ -2027,12 +2097,12 @@ function getTouchDistance(touches) {
 }
 
 // Mittelpunkt der zwei Finger
-function getTouchCenter(touches) {
-  return {
-    x: (touches[0].clientX + touches[1].clientX) / 2,
-    y: (touches[0].clientY + touches[1].clientY) / 2
-  };
-}
+  function getTouchCenter(touches) {
+    return {
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2
+    };
+  }
 
 function handleTouchStart(e) {
   if (!e.touches || e.touches.length === 0) return;
@@ -2052,38 +2122,35 @@ function handleTouchStart(e) {
   }
 }
 
-function handleTouchMove(e) {
-  if (!e.touches || e.touches.length === 0) return;
+  function handleTouchMove(e) {
+    if (!e.touches || e.touches.length === 0) return;
 
-  if (isPinching && e.touches.length === 2) {
-    // 👉 Pinch aktiv
-    e.preventDefault();
+    if (isPinching && e.touches.length === 2) {
+      // 👉 Pinch aktiv
+      e.preventDefault();
 
-    const newDist = getTouchDistance(e.touches);
-    const newCenter = getTouchCenter(e.touches);
+      const newDist = getTouchDistance(e.touches);
+      const newCenter = getTouchCenter(e.touches);
 
-    // Zoom-Faktor anpassen
-    const scaleChange = newDist / (lastPinchDist || newDist);
-    zoom *= scaleChange;
+      // Zoom-Faktor anpassen
+      const scaleChange = newDist / (lastPinchDist || newDist);
+      setZoom(zoom * scaleChange, newCenter);
 
-    // Grenzen setzen (wie GoodNotes-ish)
-    zoom = Math.max(0.5, Math.min(zoom, 4));
+      // Pan unter den Fingern anpassen
+      if (lastPinchCenter) {
+        panX += newCenter.x - lastPinchCenter.x;
+        panY += newCenter.y - lastPinchCenter.y;
+      }
 
-    // Pan unter den Fingern anpassen
-    if (lastPinchCenter) {
-      panX += newCenter.x - lastPinchCenter.x;
-      panY += newCenter.y - lastPinchCenter.y;
+      lastPinchDist = newDist;
+      lastPinchCenter = newCenter;
+
+      updateCanvasTransform();
+    } else if (!isPinching && e.touches.length === 1) {
+      // 👉 normales Zeichnen mit einem Finger
+      moveDrawing(e); // nutzt dein normPos(e)
     }
-
-    lastPinchDist = newDist;
-    lastPinchCenter = newCenter;
-
-    updateCanvasTransform();
-  } else if (!isPinching && e.touches.length === 1) {
-    // 👉 normales Zeichnen mit einem Finger
-    moveDrawing(e); // nutzt dein normPos(e)
   }
-}
 
 function handleTouchEnd(e) {
   // Pinch beenden, wenn weniger als 2 Finger
@@ -2326,6 +2393,24 @@ canvas.addEventListener("touchmove",  handleTouchMove,  { passive: false });
 canvas.addEventListener("touchend",   handleTouchEnd,   { passive: false });
 canvas.addEventListener("touchcancel",handleTouchEnd,   { passive: false });
 
+
+
+function getCanvasCenter() {
+  const rect = canvas.getBoundingClientRect();
+  return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+}
+
+if (zoomInBtn) {
+  zoomInBtn.addEventListener("click", () => setZoom(zoom * 1.15, getCanvasCenter()));
+}
+
+if (zoomOutBtn) {
+  zoomOutBtn.addEventListener("click", () => setZoom(zoom / 1.15, getCanvasCenter()));
+}
+
+if (resetViewBtn) {
+  resetViewBtn.addEventListener("click", resetView);
+}
 
 
 
