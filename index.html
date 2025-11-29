@@ -295,6 +295,9 @@
       min-width: 0;
       gap: 8px;
       overflow: hidden;
+      position: relative;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     #toolbar {
@@ -307,6 +310,8 @@
       box-shadow: var(--shadow-soft);
       flex-wrap: wrap;
       border: 1px solid rgba(255, 255, 255, 0.04);
+      position: relative;
+      z-index: 5;
     }
 
     .zoom-controls {
@@ -334,6 +339,10 @@
       box-shadow: 0 22px 55px rgba(5, 6, 17, 0.85);
       touch-action: none;
       border: 1px solid rgba(0, 0, 0, 0.08);
+      position: relative;
+      z-index: 1;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     body.light #canvas {
@@ -1509,10 +1518,15 @@ let data = {
     const importJsonInput = document.getElementById("importJsonInput");
 
     // ---------- NOTIZEN / CANVAS ----------
+    const canvasWrapper = document.getElementById("canvasWrapper");
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const notebookSelect = document.getElementById("notebookSelect");
     const addNotebookBtn = document.getElementById("addNotebookBtn");
+
+    if (canvasWrapper) {
+      canvasWrapper.addEventListener("selectstart", (e) => e.preventDefault());
+    }
 
 // iPad/Safari: eigenes Scroll-/Zoom-Verhalten abschalten
 canvas.style.touchAction = "none";
@@ -2245,13 +2259,6 @@ function startDrawing(evt) {
   }
 }
 
-function getPressureScale(from, to) {
-  const p1 = (from && from.pressure) ? from.pressure : 1;
-  const p2 = (to && to.pressure) ? to.pressure : p1;
-  const avg = (p1 + p2) / 2;
-  return Math.max(0.2, avg); // Minimum-Druck für konsistente Strichbreite
-}
-
 function drawStrokeSegment(from, to, stroke) {
   ctx.save();
 
@@ -2259,19 +2266,19 @@ function drawStrokeSegment(from, to, stroke) {
     // Radiert nur gezeichnete Sachen, Template bleibt, weil das danach kommt
     ctx.globalCompositeOperation = "destination-out";
     ctx.strokeStyle = "rgba(0,0,0,1)";
-    ctx.lineWidth = stroke.width * getPressureScale(from, to);
+    ctx.lineWidth = stroke.width;
     ctx.globalAlpha = 1;
   } else if (stroke.tool === "highlighter") {
     // Halbtransparent wie echter Textmarker
     ctx.globalCompositeOperation = "source-over";
     ctx.strokeStyle = stroke.color;
-    ctx.lineWidth = stroke.width * getPressureScale(from, to);
+    ctx.lineWidth = stroke.width;
     ctx.globalAlpha = 0.35; // Transparent
   } else {
     // Normaler Stift
     ctx.globalCompositeOperation = "source-over";
     ctx.strokeStyle = stroke.color;
-    ctx.lineWidth = stroke.width * getPressureScale(from, to);
+    ctx.lineWidth = stroke.width;
     ctx.globalAlpha = 1;
   }
 
