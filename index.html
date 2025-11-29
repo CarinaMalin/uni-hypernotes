@@ -2114,8 +2114,14 @@ function getTouchDistance(touches) {
     };
   }
 
+let pencilPointerActive = false;
+
 function handleTouchStart(e) {
   if (!e.touches || e.touches.length === 0) return;
+
+  // Stylus-Inputs (Apple Pencil) sollen niemals Pan/Zoom auslösen
+  const hasStylusTouch = Array.from(e.touches).some(t => t.touchType === "stylus");
+  if (pencilPointerActive || hasStylusTouch) return;
 
   // Browser-Scroll/Zoom verhindern
   e.preventDefault();
@@ -2137,6 +2143,9 @@ function handleTouchStart(e) {
 
   function handleTouchMove(e) {
     if (!e.touches || e.touches.length === 0) return;
+
+    const hasStylusTouch = Array.from(e.touches).some(t => t.touchType === "stylus");
+    if (pencilPointerActive || hasStylusTouch) return;
 
     if (isPinching && e.touches.length === 2) {
       // 👉 Pinch aktiv
@@ -2172,6 +2181,11 @@ function handleTouchStart(e) {
   }
 
 function handleTouchEnd(e) {
+  if (pencilPointerActive) return;
+
+  const hasStylusTouch = e.touches && Array.from(e.touches).some(t => t.touchType === "stylus");
+  if (hasStylusTouch) return;
+
   // Pinch beenden, wenn weniger als 2 Finger
   if (isPinching && (!e.touches || e.touches.length < 2)) {
     isPinching = false;
@@ -2415,8 +2429,10 @@ function stopDrawing(evt) {
     // Canvas Events (Maus)
 // Pointer Events (Apple Pencil only)
 function handlePointerDown(e) {
-  // Zeichnen nur mit dem Pencil (pointerType "pen") erlauben
+  // Zeichnen ausschließlich mit dem Pencil (pointerType "pen") erlauben
   if (e.pointerType !== "pen") return;
+
+  pencilPointerActive = true;
   canvas.setPointerCapture(e.pointerId);
   startDrawing(e);
 }
@@ -2428,6 +2444,8 @@ function handlePointerMove(e) {
 
 function handlePointerUp(e) {
   if (e.pointerType !== "pen") return;
+
+  pencilPointerActive = false;
   canvas.releasePointerCapture(e.pointerId);
   stopDrawing(e);
 }
