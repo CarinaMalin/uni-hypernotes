@@ -3653,6 +3653,56 @@ if (syncSaveBtn && syncIdInput) {
   })();
 </script>
 
+<script id="notebook-system">
+  (() => {
+    const subjects = [
+      "Mathematik 1",
+      "Mathematikübung",
+      "Einführung in das Programmieren",
+      "Zellbiologie",
+      "Biochemie",
+      "Allgemeine Chemie",
+      "Physikalische Chemie"
+    ];
+
+    const notebookTitleEl = document.getElementById("notebookTitle");
+    const notebookSubjectSelect = document.getElementById("notebookSubject");
+    const notebookSubjectBadge = document.getElementById("notebookSubjectBadge");
+    const notebookMetaEl = document.getElementById("notebookMeta");
+    const pageMetaTitle = document.getElementById("pageTitleDisplay");
+    const pageMetaInfo = document.getElementById("pageMetaInfo");
+    const pageListEl = document.getElementById("pageList");
+
+    const originalSaveData = window.saveData;
+
+    const ensureDate = (value) => value || new Date().toISOString();
+
+    function normalizeData() {
+      if (!data.notebooks) data.notebooks = [];
+      data.notebooks = data.notebooks.map((nb, nbIndex) => {
+        const normalizedPages = (nb.pages || []).map((p, pIndex) => {
+          const title = p.title || p.name || `Seite ${pIndex + 1}`;
+          return {
+            ...p,
+            title,
+            name: title,
+            createdAt: ensureDate(p.createdAt),
+            updatedAt: ensureDate(p.updatedAt)
+          };
+        });
+        const title = nb.title || nb.name || `Notizbuch ${nbIndex + 1}`;
+        return {
+          ...nb,
+          title,
+          name: title,
+          subject: nb.subject || null,
+          createdAt: ensureDate(nb.createdAt),
+          updatedAt: ensureDate(nb.updatedAt),
+          pages: normalizedPages
+        };
+      });
+    }
+    
 <script id="flashcards-system">
    // HIER BAUT Codex das Karteikarten-System ein
 </script>
@@ -3660,3 +3710,4 @@ if (syncSaveBtn && syncIdInput) {
 
 </body>
 </html>
+
