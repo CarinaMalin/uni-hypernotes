@@ -1649,7 +1649,7 @@ const tabButtons = document.querySelectorAll(".tab-btn");
 const sections = {
     notes:    document.getElementById("notesLayout"),
     cards:    document.getElementById("cardsSection"),
-    planner:  document.getElementById("planerSection"),   // Achtung: "planerSection"
+    planner:  document.getElementById("plannerSection"),
     formulas: document.getElementById("formulasSection"),
     tools:    document.getElementById("toolsSection"),
     learn:    document.getElementById("learnSection"),
@@ -1671,11 +1671,9 @@ tabButtons.forEach(btn => {
             .filter(Boolean)
             .forEach(sec => sec.classList.remove("active"));
 
-        // 3. gewünschte Section aktivieren (falls vorhanden)
-        const target = sections[tab];
-        if (target) {
-            target.classList.add("active");
-        }
+        // 3. gewünschte Section aktivieren (falls vorhanden), ansonsten die Notizen wieder aktivieren
+        const target = sections[tab] || sections.notes;
+        target.classList.add("active");
     });
 });
 
