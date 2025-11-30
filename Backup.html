@@ -1,10 +1,7 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
-
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-
   <meta charset="UTF-8">
   <title>Uni Hyper Notes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -652,75 +649,6 @@
   text-align: center;
 }
 
-/* Normale Karteikarten-Eingabefelder ausblenden */
-#cardQuestion,
-#cardAnswer,
-#cardTags,
-#addCardBtn,
-#cardList {
-  display: none;
-}
-
-
-/* Layout für 20-Aminosäuren-Bereich */
-#aminoLayout {
-  display: flex;
-  gap: 32px;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
-
-/* Linke Spalte: Liste */
-#aminoListContainer {
-  flex: 0 0 260px;
-  max-width: 260px;
-  background-color: #181a24;
-  border-radius: 12px;
-  padding: 12px 16px;
-  border: 1px solid rgba(255,255,255,0.06);
-  font-size: 13px;
-  line-height: 1.4;
-  max-height: 360px;
-  overflow-y: auto;
-}
-
-#aminoList {
-  padding-left: 18px;
-  margin-top: 8px;
-}
-
-/* Rechte Spalte: Karte + Buttons */
-#aminoMain {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-#flashcardPreview {
-  margin: 0 0 16px 0;
-}
-
-#aminoControls {
-  margin-top: 8px;
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-
-/* Responsive */
-@media (max-width: 1000px) {
-  #aminoLayout {
-    flex-direction: column;
-  }
-
-  #aminoListContainer {
-    max-width: none;
-    width: 100%;
-  }
-}
-
-
 </style>
 
 </head>
@@ -829,40 +757,26 @@
       </div>
 
       <div class="card">
-<!-- ===== 20 Aminosäuren – Block ===== -->
-<div class="card" id="aminoBlock">
-  <div style="display:flex; justify-content:space-between; align-items:center;">
-    <h3 style="margin:0;">20 Aminosäuren</h3>
-    <button id="aminoFocusBtn">Lernmodus starten</button>
-  </div>
+        <h3>Karteikarten in Deck</h3>
 
-  <!-- ausklappbarer Inhalt -->
-<div id="aminoContent" style="margin-top:15px;display:none;">
+ <!-- Hier wird später die Aminosäure-Struktur angezeigt -->
+     <div id="flashcardPreview" style="margin:20px 0;"></div>
 
-  <div id="aminoLayout">
-    <!-- Linke Spalte: Liste -->
-    <div id="aminoListContainer">
-      <strong>Alle Aminosäuren:</strong>
-      <ul id="aminoList"></ul>
-    </div>
-
-    <!-- Rechte Spalte: Karte + Buttons -->
-    <div id="aminoMain">
-      <!-- Aktuelle Amino-Karte -->
-      <div id="flashcardPreview"></div>
-
-      <!-- Buttons zum Lernen -->
-      <div id="aminoControls">
-        <button id="aminoFlipBtn">Vorder-/Rückseite</button>
-        <button id="aminoNextBtn">Nächste Aminosäure</button>
-        <button id="aminoRandomBtn">Zufällig</button>
-      </div>
-    </div>
-  </div>
-
+<div id="aminoControls" style="margin:10px 0; display:flex; gap:8px; justify-content:center;">
+  <button id="aminoFlipBtn">Vorder-/Rückseite</button>
+  <button id="aminoNextBtn">Nächste Aminosäure</button>
+  <button id="aminoRandomBtn">Zufällig</button>
 </div>
 
 
+        <div class="row">
+          <div><textarea id="cardQuestion" placeholder="Frage / Vorderseite"></textarea></div>
+          <div><textarea id="cardAnswer" placeholder="Antwort / Rückseite"></textarea></div>
+        </div>
+        <div class="row">
+          <div><input type="text" id="cardTags" placeholder="Tags (z.B. Säure-Base, wichtig)"></div>
+          <div style="flex:0 0 auto;"><button id="addCardBtn">＋ Karte speichern</button></div>
+        </div>
         <div id="cardList"></div>
       </div>
 
@@ -1643,41 +1557,18 @@ let data = {
     const STORAGE_KEY = "uniHyperNotes_v3";
 
     // ---------- COMMON DOM ----------
-// ---------- TABBAR / SECTIONS ----------
-// ---------- TABBAR / SECTIONS ----------
-const tabButtons = document.querySelectorAll(".tab-btn");
-const sections = {
-    notes:    document.getElementById("notesLayout"),
-    cards:    document.getElementById("cardsSection"),
-    planner:  document.getElementById("planerSection"),   // Achtung: "planerSection"
-    formulas: document.getElementById("formulasSection"),
-    tools:    document.getElementById("toolsSection"),
-    learn:    document.getElementById("learnSection"),
-    tasks:    document.getElementById("tasksSection"),
-    brain:    document.getElementById("brainSection"),
-    stats:    document.getElementById("statsSection"),
-};
-
-// Tabs umschalten
-tabButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-        const tab = btn.dataset.tab;
-
-        // 1. alle Tab-Buttons inaktiv
-        tabButtons.forEach(b => b.classList.remove("active"));
-
-        // 2. alle Sections inaktiv – nur echte Elemente (filter(Boolean))
-        Object.values(sections)
-            .filter(Boolean)
-            .forEach(sec => sec.classList.remove("active"));
-
-        // 3. gewünschte Section aktivieren (falls vorhanden)
-        const target = sections[tab];
-        if (target) {
-            target.classList.add("active");
-        }
-    });
-});
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const sections = {
+      notes: document.getElementById("notesLayout"),
+      cards: document.getElementById("cardsSection"),
+      planner: document.getElementById("plannerSection"),
+      formulas: document.getElementById("formulasSection"),
+      tools: document.getElementById("toolsSection"),
+      learn: document.getElementById("learnSection"),
+      tasks: document.getElementById("tasksSection"),
+      brain: document.getElementById("brainSection"),
+      stats: document.getElementById("statsSection")
+    };
 
     const darkModeBtn = document.getElementById("darkModeBtn");
     const exportJsonBtn = document.getElementById("exportJsonBtn");
@@ -1870,35 +1761,22 @@ async function syncFromCloud() {
     darkModeBtn.addEventListener("click", toggleTheme);
 
     // ---------- Tabs ----------
-    // -------- Tabs umschalten --------
-tabButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    const tab = btn.dataset.tab;
-
-    // 1. alle Tab-Buttons inaktiv
-    tabButtons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    // 2. alle Sections durchgehen
-    Object.entries(sections).forEach(([key, sec]) => {
-      if (!sec) return; // falls es die Section nicht gibt -> einfach überspringen
-
-      const isActive = key === tab;
-      sec.classList.toggle("active", isActive);
-
-      // Spezialfall: Notizen-Layout ist flex
-      if (key === "notes") {
-        sec.style.display = isActive ? "flex" : "none";
-      } else {
-        sec.style.display = isActive ? "block" : "none";
-      }
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const tab = btn.getAttribute("data-tab");
+        Object.keys(sections).forEach(k => {
+          if (k === "notes") {
+            sections[k].classList.toggle("active", tab === "notes");
+            sections[k].style.display = tab === "notes" ? "flex" : "none";
+          } else {
+            sections[k].classList.toggle("active", k === tab);
+          }
+        });
+        if (tab === "stats") renderStats();
+      });
     });
-
-    // 3. Stats neu rendern, wenn Stats-Tab aktiv
-    if (tab === "stats") renderStats();
-  });
-});
-
 
     // ---------- Notebooks & Seiten ----------
     function renderNotebookSelect() {
@@ -2828,7 +2706,7 @@ importJsonInput.addEventListener("change", () => {
     }
 
     addDeckBtn.addEventListener("click", addDeck);
- // addCardBtn.addEventListener("click", addCard);
+    addCardBtn.addEventListener("click", addCard);
     startStudyBtn.addEventListener("click", startStudy);
     revealAnswerBtn.addEventListener("click", revealAnswer);
     studyGradeBtns.forEach(b => b.addEventListener("click", gradeStudy));
@@ -3787,7 +3665,7 @@ H3N+ — C — C — COO-
 
 {
   id: "asp",
-  name: "Aspartat",
+  name: "Asparaginsäure",
   three: "Asp",
   one: "D",
   category: "negativ geladen (sauer, Carboxylat-Seitenkette)",
@@ -3816,73 +3694,31 @@ let showBack = false;
 // 3. Karte rendern
 function renderAminoCard() {
   const container = document.getElementById("flashcardPreview");
-  if (!container || !aminoCards.length) return;
+  if (!container || aminoCards.length === 0) return;
 
   const card = aminoCards[currentAminoIndex];
 
   let content;
   if (!showBack) {
-    // Vorderseite: Infos + Aufgabe
-    content = `Name: ${card.name} (${card.three}, ${card.one})
+    // Vorderseite: Infos & Aufgabe
+    content =
+`Name: ${card.name} (${card.three}, ${card.one})
 Eigenschaft: ${card.category}
 
-📝 Aufgabe: Zeichne die vollständige Strukturformel.`;
+✏️ Aufgabe: Zeichne die vollständige Strukturformel.`;
   } else {
     // Rückseite: Struktur in voller Schreibweise
     content = card.structure;
   }
 
-  container.innerHTML = `<div class="amino-pretty">${content}</div>`;
-
+  container.innerHTML = `
+    <div class="amino-pretty">
+${content}
+    </div>
+  `;
 }
 
-// 4. Liste aller Aminosäuren aufbauen
-function renderAminoList() {
-  const ul = document.getElementById("aminoList");
-  if (!ul) return;
-
-  ul.innerHTML = "";
-  aminoCards.forEach((card, index) => {
-    const li = document.createElement("li");
-    li.textContent = `${index + 1}. ${card.name} (${card.three})`;
-    ul.appendChild(li);
-  });
-}
-
-// 5. UI (Fokus / Ein-/Ausklappen) vorbereiten
-function initAminoUI() {
-  const focusBtn = document.getElementById("aminoFocusBtn");
-  const content = document.getElementById("aminoContent");
-  const cardsSection = document.getElementById("cardsSection");
-
-  if (!focusBtn || !content || !cardsSection) return;
-
-  focusBtn.addEventListener("click", () => {
-    const isOpen = content.style.display === "block";
-
-    if (!isOpen) {
-      // Lernmodus AN
-      content.style.display = "block";
-      focusBtn.textContent = "Lernmodus beenden";
-
-      cardsSection.querySelectorAll(".card").forEach(cardDiv => {
-        if (!cardDiv.contains(content) && !cardDiv.contains(focusBtn)) {
-          cardDiv.style.opacity = "0.15";
-        }
-      });
-    } else {
-      // Lernmodus AUS
-      content.style.display = "none";
-      focusBtn.textContent = "Lernmodus starten";
-
-      cardsSection.querySelectorAll(".card").forEach(cardDiv => {
-        cardDiv.style.opacity = "1";
-      });
-    }
-  });
-}
-
-// 6. Buttons fürs Lernen
+// 4. Buttons verdrahten
 function initAminoFlashcards() {
   const flipBtn = document.getElementById("aminoFlipBtn");
   const nextBtn = document.getElementById("aminoNextBtn");
@@ -3898,7 +3734,7 @@ function initAminoFlashcards() {
   if (nextBtn) {
     nextBtn.addEventListener("click", () => {
       currentAminoIndex = (currentAminoIndex + 1) % aminoCards.length;
-      showBack = false;        // neue Karte -> wieder mit Vorderseite starten
+      showBack = false; // immer wieder mit Frage anfangen
       renderAminoCard();
     });
   }
@@ -3910,21 +3746,20 @@ function initAminoFlashcards() {
       renderAminoCard();
     });
   }
+
+  // erste Karte anzeigen
+  renderAminoCard();
 }
 
-// 7. Starten, sobald das Skript geladen ist
-renderAminoCard();
-renderAminoList();
-initAminoUI();
+// 5. Starten, sobald das Skript geladen ist
 initAminoFlashcards();
-
 </script>
 
-<script>
-document.addEventListener('dblclick', function (e) {
-    e.preventDefault();
-}, { passive: false });
-</script>
+
+
+
+
+
 
 
 </body>
