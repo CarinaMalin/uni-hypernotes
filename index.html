@@ -1509,6 +1509,20 @@
             </div>
           </div>
 
+          <!-- Aminosäuren Skelettformeln -->
+          <div class="biochem-tool-card" onclick="openBiochemTool('skelett')" style="cursor: pointer;">
+            <div style="font-size: 32px; margin-bottom: 8px;">📐</div>
+            <h4 style="margin-bottom: 6px;">Aminosäuren - Skelettformeln</h4>
+            <p style="font-size: 12px; opacity: 0.8; line-height: 1.4;">
+              Reine 2D-Skelettformeln im Line-Angle-Stil, kategorisiert nach Eigenschaften
+            </p>
+            <div style="margin-top: 8px;">
+              <span class="badge">2D-Strukturen</span>
+              <span class="badge">Line-Angle</span>
+              <span class="badge">Zwitterion</span>
+            </div>
+          </div>
+
           <!-- Periodensystem (Platzhalter) -->
           <div class="biochem-tool-card" style="opacity: 0.5; cursor: not-allowed;">
             <div style="font-size: 32px; margin-bottom: 8px;">⚛️</div>
@@ -1585,6 +1599,22 @@
           src="amino-tool/index.html" 
           style="width: 100%; height: calc(100% - 60px); border: none; display: block;"
           title="Aminosäuren 3D Viewer"
+        ></iframe>
+      </div>
+
+      <!-- Skelettformeln Tool (einklappbar) -->
+      <div id="biochemSkelettTool" class="card" style="padding: 0; overflow: hidden; height: calc(100vh - 150px); display: none;">
+        <div style="padding: 15px; background: #181b27; border-bottom: 1px solid #2f3445; display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="margin: 0;">📐 Aminosäuren - Skelettformeln</h3>
+          <button onclick="closeBiochemTool()" style="border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.05); padding: 6px 16px; background: rgba(9, 11, 25, 0.9); color: var(--text); cursor: pointer;">
+            ← Zurück zur Übersicht
+          </button>
+        </div>
+        <iframe 
+          id="skelettFrame" 
+          src="amino-tool/skelett.html" 
+          style="width: 100%; height: calc(100% - 60px); border: none; display: block;"
+          title="Aminosäuren Skelettformeln"
         ></iframe>
       </div>
     </div>
@@ -4342,9 +4372,16 @@ async function syncFromCloud() {
 
     // ---------- Bio/Chemie Tools ----------
     function openBiochemTool(toolName) {
+      // Schließe Übersicht
+      document.getElementById('biochemOverview').style.display = 'none';
+      
+      // Öffne das gewünschte Tool
       if (toolName === 'amino') {
-        document.getElementById('biochemOverview').style.display = 'none';
         document.getElementById('biochemAminoTool').style.display = 'block';
+        document.getElementById('biochemSkelettTool').style.display = 'none';
+      } else if (toolName === 'skelett') {
+        document.getElementById('biochemAminoTool').style.display = 'none';
+        document.getElementById('biochemSkelettTool').style.display = 'block';
       }
       // Hier können später weitere Tools hinzugefügt werden
       // else if (toolName === 'periodic') { ... }
@@ -4353,6 +4390,7 @@ async function syncFromCloud() {
     function closeBiochemTool() {
       document.getElementById('biochemOverview').style.display = 'block';
       document.getElementById('biochemAminoTool').style.display = 'none';
+      document.getElementById('biochemSkelettTool').style.display = 'none';
       // Hier später alle anderen Tools auch schließen
     }
 
