@@ -1586,35 +1586,19 @@
         </div>
       </div>
 
-      <!-- Aminosäuren Tool (einklappbar) -->
-      <div id="biochemAminoTool" class="card" style="padding: 0; overflow: hidden; height: calc(100vh - 150px); display: none;">
+      <!-- Bio/Chemie Tool Container (dynamisch) -->
+      <div id="biochemToolContainer" class="card" style="padding: 0; overflow: hidden; height: calc(100vh - 150px); display: none;">
         <div style="padding: 15px; background: #181b27; border-bottom: 1px solid #2f3445; display: flex; justify-content: space-between; align-items: center;">
-          <h3 style="margin: 0;">🧬 20 Proteinogene Aminosäuren</h3>
+          <h3 id="biochemToolTitle" style="margin: 0;">🧬 Aminosäuren</h3>
           <button onclick="closeBiochemTool()" style="border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.05); padding: 6px 16px; background: rgba(9, 11, 25, 0.9); color: var(--text); cursor: pointer;">
             ← Zurück zur Übersicht
           </button>
         </div>
         <iframe 
           id="aminoFrame" 
-          src="amino-tool/index.html" 
+          src="" 
           style="width: 100%; height: calc(100% - 60px); border: none; display: block;"
-          title="Aminosäuren 3D Viewer"
-        ></iframe>
-      </div>
-
-      <!-- Skelettformeln Tool (einklappbar) -->
-      <div id="biochemSkelettTool" class="card" style="padding: 0; overflow: hidden; height: calc(100vh - 150px); display: none;">
-        <div style="padding: 15px; background: #181b27; border-bottom: 1px solid #2f3445; display: flex; justify-content: space-between; align-items: center;">
-          <h3 style="margin: 0;">📐 Aminosäuren - Skelettformeln</h3>
-          <button onclick="closeBiochemTool()" style="border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.05); padding: 6px 16px; background: rgba(9, 11, 25, 0.9); color: var(--text); cursor: pointer;">
-            ← Zurück zur Übersicht
-          </button>
-        </div>
-        <iframe 
-          id="skelettFrame" 
-          src="amino-tool/skelett.html" 
-          style="width: 100%; height: calc(100% - 60px); border: none; display: block;"
-          title="Aminosäuren Skelettformeln"
+          title="Aminosäuren Viewer"
         ></iframe>
       </div>
     </div>
@@ -4372,16 +4356,22 @@ async function syncFromCloud() {
 
     // ---------- Bio/Chemie Tools ----------
     function openBiochemTool(toolName) {
-      // Schließe Übersicht
-      document.getElementById('biochemOverview').style.display = 'none';
+      const frame = document.getElementById('aminoFrame');
+      const title = document.getElementById('biochemToolTitle');
+      const overview = document.getElementById('biochemOverview');
+      const container = document.getElementById('biochemToolContainer');
       
-      // Öffne das gewünschte Tool
+      // Schließe Übersicht
+      overview.style.display = 'none';
+      container.style.display = 'block';
+      
+      // Lade das gewünschte Tool
       if (toolName === 'amino') {
-        document.getElementById('biochemAminoTool').style.display = 'block';
-        document.getElementById('biochemSkelettTool').style.display = 'none';
+        frame.src = 'amino-tool/index.html';
+        title.textContent = '🧬 20 Proteinogene Aminosäuren';
       } else if (toolName === 'skelett') {
-        document.getElementById('biochemAminoTool').style.display = 'none';
-        document.getElementById('biochemSkelettTool').style.display = 'block';
+        frame.src = 'amino-tool/skelett.html';
+        title.textContent = '📐 Aminosäuren - Skelettformeln';
       }
       // Hier können später weitere Tools hinzugefügt werden
       // else if (toolName === 'periodic') { ... }
@@ -4389,14 +4379,25 @@ async function syncFromCloud() {
 
     function closeBiochemTool() {
       document.getElementById('biochemOverview').style.display = 'block';
-      document.getElementById('biochemAminoTool').style.display = 'none';
-      document.getElementById('biochemSkelettTool').style.display = 'none';
-      // Hier später alle anderen Tools auch schließen
+      document.getElementById('biochemToolContainer').style.display = 'none';
+      // iframe src leeren um Ressourcen zu sparen
+      document.getElementById('aminoFrame').src = '';
+    }
+
+    // Alternative Funktionen (falls du sie einzeln aufrufen willst)
+    function openAmino3D() {
+      openBiochemTool('amino');
+    }
+    
+    function openAminoSkelett() {
+      openBiochemTool('skelett');
     }
 
     // Mache Funktionen global verfügbar
     window.openBiochemTool = openBiochemTool;
     window.closeBiochemTool = closeBiochemTool;
+    window.openAmino3D = openAmino3D;
+    window.openAminoSkelett = openAminoSkelett;
 
     // ---------- Tabs ----------
     tabButtons.forEach(btn => {
