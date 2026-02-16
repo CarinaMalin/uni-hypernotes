@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20 Aminosäuren - Skelettformeln</title>
+    
+    <script src="https://unpkg.com/smiles-drawer@2.0.1/dist/smiles-drawer.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+            background: radial-gradient(circle at top, #2a3245 0, #10121a 45%, #05060a 100%);
+            color: #f7f7ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            color: #7b8cff;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1em;
+            color: #a4aac5;
+            margin-bottom: 40px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .amino-card {
+            background: #1f2230;
+            border: 2px solid #2f3445;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .amino-card:hover {
+            transform: translateY(-5px);
+            border-color: #7b8cff;
+            box-shadow: 0 8px 20px rgba(123, 140, 255, 0.3);
+        }
+
+        .amino-card canvas {
+            width: 100% !important;
+            height: 150px !important;
+            margin-bottom: 15px;
+        }
+
+        .amino-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f7f7ff;
+            margin-bottom: 4px;
+        }
+
+        .amino-code {
+            font-size: 13px;
+            color: #7b8cff;
+            font-weight: 600;
+        }
+
+        .category-label {
+            font-size: 11px;
+            color: #a4aac5;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 4px solid #7b8cff;
+        }
+
+        .category-hydrophob .category-label { color: #42a5f5; }
+        .category-polar .category-label { color: #ffa726; }
+        .category-positiv .category-label { color: #66bb6a; }
+        .category-negativ .category-label { color: #ef5350; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧬 20 Proteinogene Aminosäuren</h1>
+        <p class="subtitle">Skelettformeln in Line-Angle-Darstellung · Zwitterion-Form (NH₃⁺, COO⁻) · L-Konfiguration</p>
+
+        <div class="section-title">💧 Hydrophobe Aminosäuren</div>
+        <div class="grid" id="gridHydrophob"></div>
+
+        <div class="section-title">🌊 Polare Aminosäuren</div>
+        <div class="grid" id="gridPolar"></div>
+
+        <div class="section-title">⚡ Positiv geladene Aminosäuren</div>
+        <div class="grid" id="gridPositiv"></div>
+
+        <div class="section-title">⚡ Negativ geladene Aminosäuren</div>
+        <div class="grid" id="gridNegativ"></div>
+    </div>
+
+    <script>
+        const aminoAcids = [
+            // Hydrophob
+            { name: 'Glycin', code: 'Gly (G)', smiles: 'C(C(=O)[O-])[NH3+]', category: 'hydrophob' },
+            { name: 'Alanin', code: 'Ala (A)', smiles: 'C[C@@H](C(=O)[O-])[NH3+]', category: 'hydrophob' },
+            { name: 'Valin', code: 'Val (V)', smiles: 'CC(C)[C@@H](C(=O)[O-])[NH3+]', category: 'hydrophob' },
+            { name: 'Leucin', code: 'Leu (L)', smiles: 'CC(C)C[C@@H](C(=O)[O-])[NH3+]', category: 'hydrophob' },
+            { name: 'Isoleucin', code: 'Ile (I)', smiles: 'CC[C@H](C)[C@@H](C(=O)[O-])[NH3+]', category: 'hydrophob' },
+            { name: 'Prolin', code: 'Pro (P)', smiles: 'C1C[C@H](N(C1))[C@@H](C(=O)[O-])[NH2+]', category: 'hydrophob' },
+            { name: 'Phenylalanin', code: 'Phe (F)', smiles: 'C1=CC=C(C=C1)C[C@@H](C(=O)[O-])[NH3+]', category: 'hydrophob' },
+            { name: 'Tryptophan', code: 'Trp (W)', smiles: 'C1=CC=C2C(=C1)C(=CN2)C[C@@H](C(=O)[O-])[NH3+]', category: 'hydrophob' },
+            { name: 'Methionin', code: 'Met (M)', smiles: 'CSCC[C@@H](C(=O)[O-])[NH3+]', category: 'hydrophob' },
+            
+            // Polar
+            { name: 'Serin', code: 'Ser (S)', smiles: 'C([C@@H](C(=O)[O-])[NH3+])O', category: 'polar' },
+            { name: 'Threonin', code: 'Thr (T)', smiles: 'C[C@H]([C@@H](C(=O)[O-])[NH3+])O', category: 'polar' },
+            { name: 'Cystein', code: 'Cys (C)', smiles: 'C([C@@H](C(=O)[O-])[NH3+])S', category: 'polar' },
+            { name: 'Tyrosin', code: 'Tyr (Y)', smiles: 'C1=CC(=CC=C1C[C@@H](C(=O)[O-])[NH3+])O', category: 'polar' },
+            { name: 'Asparagin', code: 'Asn (N)', smiles: 'C([C@@H](C(=O)[O-])[NH3+])C(=O)N', category: 'polar' },
+            { name: 'Glutamin', code: 'Gln (Q)', smiles: 'C(CC(=O)N)[C@@H](C(=O)[O-])[NH3+]', category: 'polar' },
+            
+            // Positiv
+            { name: 'Lysin', code: 'Lys (K)', smiles: 'C(CC[NH3+])C[C@@H](C(=O)[O-])[NH3+]', category: 'positiv' },
+            { name: 'Arginin', code: 'Arg (R)', smiles: 'C(C[C@@H](C(=O)[O-])[NH3+])CNC(=[NH2+])N', category: 'positiv' },
+            { name: 'Histidin', code: 'His (H)', smiles: 'C1=C(NC=[NH+]1)C[C@@H](C(=O)[O-])[NH3+]', category: 'positiv' },
+            
+            // Negativ
+            { name: 'Aspartat', code: 'Asp (D)', smiles: 'C([C@@H](C(=O)[O-])[NH3+])C(=O)[O-]', category: 'negativ' },
+            { name: 'Glutamat', code: 'Glu (E)', smiles: 'C(CC(=O)[O-])[C@@H](C(=O)[O-])[NH3+]', category: 'negativ' }
+        ];
+
+        // SmilesDrawer konfigurieren
+        const smilesDrawer = new SmilesDrawer.SvgDrawer({
+            width: 200,
+            height: 150,
+            bondThickness: 2,
+            fontSizeLarge: 8,
+            fontSizeSmall: 6,
+            padding: 15,
+            atomVisualization: 'default',
+            explicitHydrogens: false,
+            terminalCarbons: false,
+            themes: {
+                dark: {
+                    C: '#f7f7ff',
+                    O: '#ef5350',
+                    N: '#42a5f5',
+                    S: '#ffa726',
+                    P: '#ab47bc',
+                    H: '#bdbdbd'
+                }
+            }
+        });
+
+        // Aminosäuren nach Kategorie rendern
+        function renderCategory(category, gridId) {
+            const grid = document.getElementById(gridId);
+            const filtered = aminoAcids.filter(a => a.category === category);
+            
+            filtered.forEach(amino => {
+                const card = document.createElement('div');
+                card.className = `amino-card category-${amino.category}`;
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = 200;
+                canvas.height = 150;
+                
+                const name = document.createElement('div');
+                name.className = 'amino-name';
+                name.textContent = amino.name;
+                
+                const code = document.createElement('div');
+                code.className = 'amino-code';
+                code.textContent = amino.code;
+                
+                const categoryLabel = document.createElement('div');
+                categoryLabel.className = 'category-label';
+                categoryLabel.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                
+                card.appendChild(canvas);
+                card.appendChild(name);
+                card.appendChild(code);
+                card.appendChild(categoryLabel);
+                
+                grid.appendChild(card);
+                
+                // Zeichne Skelettformel
+                try {
+                    SmilesDrawer.parse(amino.smiles, function(tree) {
+                        smilesDrawer.draw(tree, canvas, 'dark', false);
+                    });
+                } catch (error) {
+                    console.error(`Fehler bei ${amino.name}:`, error);
+                }
+            });
+        }
+
+        // Alle Kategorien rendern
+        window.addEventListener('load', () => {
+            renderCategory('hydrophob', 'gridHydrophob');
+            renderCategory('polar', 'gridPolar');
+            renderCategory('positiv', 'gridPositiv');
+            renderCategory('negativ', 'gridNegativ');
+        });
+    </script>
+</body>
+</html>
