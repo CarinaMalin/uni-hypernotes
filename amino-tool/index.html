@@ -16,8 +16,9 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+            background: radial-gradient(circle at top, #2a3245 0, #10121a 45%, #05060a 100%);
+            color: #f7f7ff;
             min-height: 100vh;
             padding: 20px;
         }
@@ -25,17 +26,19 @@
         .container {
             max-width: 1600px;
             margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            background: #1f2230;
+            border-radius: 18px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
             overflow: hidden;
+            border: 1px solid #2f3445;
         }
 
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #7b8cff 0%, #8b9cff 100%);
             color: white;
             padding: 30px;
             text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         h1 {
@@ -50,8 +53,8 @@
 
         .top-controls {
             padding: 20px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
+            background: #181b27;
+            border-bottom: 1px solid #2f3445;
             display: flex;
             gap: 15px;
             align-items: center;
@@ -369,6 +372,185 @@
         .category-positiv { background: #e8f5e9; }
         .category-negativ { background: #fce4ec; }
 
+        /* ========== DARK THEME OVERRIDE (passend zu Uni Hyper Notes) ========== */
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+            background: radial-gradient(circle at top, #2a3245 0, #10121a 45%, #05060a 100%);
+            color: #f7f7ff;
+        }
+
+        .container {
+            background: #1f2230;
+            border: 1px solid #2f3445;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+        }
+
+        header {
+            background: linear-gradient(135deg, #7b8cff 0%, #8b9cff 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .top-controls {
+            background: #181b27;
+            border-bottom: 1px solid #2f3445;
+        }
+
+        #searchInput {
+            background: #1f2230;
+            border: 2px solid #2f3445;
+            color: #f7f7ff;
+        }
+
+        #searchInput:focus {
+            border-color: #7b8cff;
+        }
+
+        .mode-btn {
+            border: 2px solid #7b8cff;
+            background: rgba(123, 140, 255, 0.16);
+            color: #7b8cff;
+        }
+
+        .mode-btn:hover {
+            background: #7b8cff;
+            color: white;
+        }
+
+        .mode-btn.active {
+            background: #7b8cff;
+            color: white;
+        }
+
+        .amino-card {
+            background: #181b27;
+            border: 2px solid #2f3445;
+        }
+
+        .amino-card:hover {
+            border-color: #7b8cff;
+            box-shadow: 0 8px 20px rgba(123, 140, 255, 0.3);
+        }
+
+        .amino-card.active {
+            border-color: #7b8cff;
+            background: rgba(123, 140, 255, 0.16);
+            box-shadow: 0 8px 20px rgba(123, 140, 255, 0.4);
+        }
+
+        .amino-name {
+            color: #f7f7ff;
+        }
+
+        .amino-code {
+            color: #7b8cff;
+        }
+
+        .amino-category {
+            color: #a4aac5;
+        }
+
+        .viewer-panel {
+            background: #181b27;
+            border-left: 2px solid #2f3445;
+        }
+
+        .viewer-title {
+            color: #f7f7ff;
+        }
+
+        .viewer-details {
+            color: #a4aac5;
+        }
+
+        .control-btn {
+            border: 2px solid #7b8cff;
+            background: rgba(123, 140, 255, 0.16);
+            color: #7b8cff;
+        }
+
+        .control-btn:hover {
+            background: #7b8cff;
+            color: white;
+        }
+
+        .control-btn.active {
+            background: #7b8cff;
+            color: white;
+        }
+
+        .viewer-3d {
+            background: #0d0f16;
+            border: 2px solid #2f3445;
+        }
+
+        .viewer-info {
+            background: #1f2230;
+            border: 1px solid #2f3445;
+        }
+
+        .info-row {
+            border-bottom: 1px solid #2f3445;
+        }
+
+        .info-label {
+            color: #a4aac5;
+        }
+
+        .info-value {
+            color: #f7f7ff;
+        }
+
+        .placeholder {
+            color: #a4aac5;
+        }
+
+        .loading {
+            color: #7b8cff;
+        }
+
+        .quiz-mode {
+            background: #1f2230;
+            border: 2px solid #7b8cff;
+        }
+
+        .quiz-question {
+            color: #f7f7ff;
+        }
+
+        .quiz-option {
+            border: 2px solid #2f3445;
+            background: #181b27;
+            color: #f7f7ff;
+        }
+
+        .quiz-option:hover {
+            border-color: #7b8cff;
+            background: rgba(123, 140, 255, 0.16);
+        }
+
+        .quiz-result {
+            color: #f7f7ff;
+        }
+
+        .quiz-score {
+            color: #a4aac5;
+        }
+
+        .category-hydrophob { background: rgba(33, 150, 243, 0.15); }
+        .category-polar { background: rgba(255, 152, 0, 0.15); }
+        .category-positiv { background: rgba(76, 175, 80, 0.15); }
+        .category-negativ { background: rgba(244, 67, 54, 0.15); }
+
+        .essential-yes {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+        }
+
+        .essential-no {
+            background: rgba(123, 140, 255, 0.2);
+            color: #8b9cff;
+        }
+
         @media (max-width: 1200px) {
             .main-content {
                 flex-direction: column;
@@ -377,7 +559,7 @@
             .viewer-panel {
                 width: 100%;
                 border-left: none;
-                border-top: 2px solid #e0e0e0;
+                border-top: 2px solid #2f3445;
             }
         }
     </style>
@@ -523,7 +705,6 @@
                     <button class="control-btn active" id="toggleHydrogens">💧 H-Atome</button>
                     <button class="control-btn active" id="toggleSpin">🔄 Rotation</button>
                     <button class="control-btn" id="screenshot">📸 Screenshot</button>
-                    ${amino.chiral ? '<button class="control-btn" id="highlightChiral">⭐ Chiral-C</button>' : ''}
                 </div>
                 <div class="viewer-3d" id="viewer3d">
                     <div class="loading">Lade 3D-Struktur von PubChem...</div>
@@ -572,7 +753,6 @@
                 document.getElementById('toggleHydrogens')?.addEventListener('click', toggleHydrogens);
                 document.getElementById('toggleSpin')?.addEventListener('click', toggleSpin);
                 document.getElementById('screenshot')?.addEventListener('click', takeScreenshot);
-                document.getElementById('highlightChiral')?.addEventListener('click', highlightChiralCenter);
 
                 // Atom Labels beim Hover
                 viewer3D.setHoverable({}, true, function(atom, viewer, event, container) {
@@ -641,16 +821,95 @@
         function highlightChiralCenter() {
             if (!viewer3D || !selectedAminoAcid.chiral) return;
             
-            // Markiere das alpha-Carbon (CA)
-            viewer3D.setStyle({ atom: 'CA' }, {
-                stick: { colorscheme: 'Jmol', radius: 0.2 },
-                sphere: { colorscheme: 'yellowCarbon', scale: 0.5 }
-            });
-            viewer3D.render();
-            
-            setTimeout(() => {
-                updateViewerStyle();
-            }, 3000);
+            try {
+                const model = viewer3D.getModel();
+                const atoms = model.selectedAtoms({});
+                
+                // Finde das alpha-Carbon (Cα)
+                // Das alpha-Carbon ist das C-Atom das gebunden ist an:
+                // 1) Ein Stickstoff (N) - die Aminogruppe
+                // 2) Ein Kohlenstoff (C) vom Carboxyl
+                // 3) Die Seitenkette (R)
+                // 4) Ein Wasserstoff (H)
+                
+                let alphaCarbon = null;
+                
+                // Strategie: Finde C-Atome die an N gebunden sind
+                atoms.forEach(atom => {
+                    if (atom.elem === 'C') {
+                        // Prüfe ob dieses C an ein N gebunden ist
+                        let hasNitrogenNeighbor = false;
+                        let hasCarbonNeighbor = false;
+                        
+                        // Prüfe Nachbarn durch Bindungen
+                        if (atom.bonds) {
+                            atom.bonds.forEach(bondedAtom => {
+                                if (bondedAtom.elem === 'N') {
+                                    hasNitrogenNeighbor = true;
+                                }
+                                if (bondedAtom.elem === 'C') {
+                                    hasCarbonNeighbor = true;
+                                }
+                            });
+                        }
+                        
+                        // Das alpha-C ist an BEIDE gebunden (N und ein anderes C)
+                        if (hasNitrogenNeighbor && hasCarbonNeighbor && !alphaCarbon) {
+                            alphaCarbon = atom;
+                        }
+                    }
+                });
+                
+                if (alphaCarbon) {
+                    // Setze alle Atome normal
+                    viewer3D.setStyle({}, {
+                        stick: { colorscheme: 'Jmol', radius: 0.15 },
+                        sphere: { colorscheme: 'Jmol', scale: 0.3 }
+                    });
+                    
+                    // Highlighte NUR das alpha-Carbon in gold
+                    viewer3D.setStyle({ serial: alphaCarbon.serial }, {
+                        stick: { color: '#ffd700', radius: 0.25 },
+                        sphere: { color: '#ffd700', scale: 0.7 }
+                    });
+                    
+                    viewer3D.render();
+                    
+                    // Info für User
+                    const infoDiv = document.createElement('div');
+                    infoDiv.style.position = 'absolute';
+                    infoDiv.style.top = '10px';
+                    infoDiv.style.left = '50%';
+                    infoDiv.style.transform = 'translateX(-50%)';
+                    infoDiv.style.background = 'rgba(255, 215, 0, 0.95)';
+                    infoDiv.style.color = '#333';
+                    infoDiv.style.padding = '10px 18px';
+                    infoDiv.style.borderRadius = '8px';
+                    infoDiv.style.fontSize = '13px';
+                    infoDiv.style.fontWeight = '600';
+                    infoDiv.style.zIndex = '1000';
+                    infoDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+                    infoDiv.innerHTML = '⭐ <strong>Chirales Zentrum</strong> = Goldene Kugel (Alpha-Carbon, Cα)';
+                    
+                    const viewer3dElement = document.getElementById('viewer3d');
+                    viewer3dElement.style.position = 'relative';
+                    viewer3dElement.appendChild(infoDiv);
+                    
+                    // Nach 4 Sekunden zurücksetzen
+                    setTimeout(() => {
+                        updateViewerStyle();
+                        if (infoDiv.parentNode) {
+                            infoDiv.remove();
+                        }
+                    }, 4000);
+                } else {
+                    // Fallback wenn alpha-C nicht gefunden wurde
+                    alert('⭐ Chirales Zentrum: Das Alpha-Carbon (Cα) ist das zentrale C-Atom zwischen NH₃⁺ und COO⁻ in L-Konfiguration!');
+                }
+            } catch (error) {
+                console.error('Fehler beim Highlighten:', error);
+                alert('⭐ Chirales Zentrum: Das Alpha-Carbon (Cα) ist das zentrale C-Atom zwischen NH₃⁺ und COO⁻!');
+            }
         }
 
         // Quiz Mode
