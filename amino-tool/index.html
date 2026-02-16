@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20 Proteinogene Aminosäuren - Interaktiv</title>
+    
+    <script src="https://unpkg.com/smiles-drawer@2.0.1/dist/smiles-drawer.min.js"></script>
+    <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .top-controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        #searchInput {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #searchInput:focus {
+            border-color: #667eea;
+        }
+
+        .mode-btn {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .main-content {
+            display: flex;
+            min-height: 700px;
+        }
+
+        .amino-grid {
+            flex: 1;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            overflow-y: auto;
+            max-height: 800px;
+        }
+
+        .amino-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .amino-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .amino-card.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .amino-card canvas {
+            width: 100% !important;
+            height: 120px !important;
+            margin-bottom: 10px;
+        }
+
+        .amino-name {
+            font-weight: 600;
+            color: #333;
+            margin: 8px 0 4px 0;
+            font-size: 14px;
+        }
+
+        .amino-code {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .amino-category {
+            font-size: 10px;
+            color: #666;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .viewer-panel {
+            width: 550px;
+            border-left: 2px solid #e0e0e0;
+            padding: 30px;
+            background: #fafbfc;
+        }
+
+        .viewer-header {
+            margin-bottom: 15px;
+        }
+
+        .viewer-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .viewer-details {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .viewer-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .control-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .viewer-3d {
+            width: 100%;
+            height: 350px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .viewer-info {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 13px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 13px;
+        }
+
+        .essential-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .essential-yes {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .essential-no {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            font-size: 18px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        /* Quiz Mode */
+        .quiz-mode {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px solid #667eea;
+        }
+
+        .quiz-question {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quiz-option {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .quiz-option.correct {
+            border-color: #4caf50;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .quiz-option.wrong {
+            border-color: #f44336;
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .quiz-result {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .quiz-result.correct {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .quiz-result.wrong {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .quiz-score {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        /* Kategorien-Farben */
+        .category-hydrophob { background: #e3f2fd; }
+        .category-polar { background: #fff3e0; }
+        .category-positiv { background: #e8f5e9; }
+        .category-negativ { background: #fce4ec; }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .viewer-panel {
+                width: 100%;
+                border-left: none;
+                border-top: 2px solid #e0e0e0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧬 20 Proteinogene Aminosäuren</h1>
+            <p class="subtitle">Interaktive 2D/3D-Darstellung · L-Konfiguration · Zwitterion-Form · PubChem-Strukturen</p>
+        </header>
+
+        <div class="top-controls">
+            <input type="text" id="searchInput" placeholder="🔍 Suche nach Name oder Code...">
+            <button class="mode-btn active" id="normalMode">📚 Normal</button>
+            <button class="mode-btn" id="quizMode">🎯 Quiz</button>
+        </div>
+
+        <div class="main-content">
+            <div class="amino-grid" id="aminoGrid"></div>
+
+            <div class="viewer-panel" id="viewerPanel">
+                <div class="placeholder">
+                    <p>👈 Klicke auf eine Aminosäure oder starte das Quiz</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const aminoAcids = [
+            { name: 'Glycin', code1: 'G', code3: 'Gly', category: 'Hydrophob', smiles: 'C(C(=O)[O-])[NH3+]', formula: 'C₂H₅NO₂', cid: '750', mw: '75.07', essential: false, frequency: '7.2%', chiral: false },
+            { name: 'Alanin', code1: 'A', code3: 'Ala', category: 'Hydrophob', smiles: 'C[C@@H](C(=O)[O-])[NH3+]', formula: 'C₃H₇NO₂', cid: '5950', mw: '89.09', essential: false, frequency: '8.3%', chiral: true },
+            { name: 'Valin', code1: 'V', code3: 'Val', category: 'Hydrophob', smiles: 'CC(C)[C@@H](C(=O)[O-])[NH3+]', formula: 'C₅H₁₁NO₂', cid: '6287', mw: '117.15', essential: true, frequency: '6.6%', chiral: true },
+            { name: 'Leucin', code1: 'L', code3: 'Leu', category: 'Hydrophob', smiles: 'CC(C)C[C@@H](C(=O)[O-])[NH3+]', formula: 'C₆H₁₃NO₂', cid: '6106', mw: '131.17', essential: true, frequency: '9.6%', chiral: true },
+            { name: 'Isoleucin', code1: 'I', code3: 'Ile', category: 'Hydrophob', smiles: 'CC[C@H](C)[C@@H](C(=O)[O-])[NH3+]', formula: 'C₆H₁₃NO₂', cid: '6306', mw: '131.17', essential: true, frequency: '5.9%', chiral: true },
+            { name: 'Prolin', code1: 'P', code3: 'Pro', category: 'Hydrophob', smiles: 'C1C[C@H](N(C1))[C@@H](C(=O)[O-])[NH2+]', formula: 'C₅H₉NO₂', cid: '145742', mw: '115.13', essential: false, frequency: '4.7%', chiral: true },
+            { name: 'Phenylalanin', code1: 'F', code3: 'Phe', category: 'Hydrophob', smiles: 'C1=CC=C(C=C1)C[C@@H](C(=O)[O-])[NH3+]', formula: 'C₉H₁₁NO₂', cid: '6140', mw: '165.19', essential: true, frequency: '3.9%', chiral: true },
+            { name: 'Tryptophan', code1: 'W', code3: 'Trp', category: 'Hydrophob', smiles: 'C1=CC=C2C(=C1)C(=CN2)C[C@@H](C(=O)[O-])[NH3+]', formula: 'C₁₁H₁₂N₂O₂', cid: '6305', mw: '204.23', essential: true, frequency: '1.1%', chiral: true },
+            { name: 'Methionin', code1: 'M', code3: 'Met', category: 'Hydrophob', smiles: 'CSCC[C@@H](C(=O)[O-])[NH3+]', formula: 'C₅H₁₁NO₂S', cid: '6137', mw: '149.21', essential: true, frequency: '2.4%', chiral: true },
+            { name: 'Serin', code1: 'S', code3: 'Ser', category: 'Polar', smiles: 'C([C@@H](C(=O)[O-])[NH3+])O', formula: 'C₃H₇NO₃', cid: '5951', mw: '105.09', essential: false, frequency: '6.6%', chiral: true },
+            { name: 'Threonin', code1: 'T', code3: 'Thr', category: 'Polar', smiles: 'C[C@H]([C@@H](C(=O)[O-])[NH3+])O', formula: 'C₄H₉NO₃', cid: '6288', mw: '119.12', essential: true, frequency: '5.3%', chiral: true },
+            { name: 'Cystein', code1: 'C', code3: 'Cys', category: 'Polar', smiles: 'C([C@@H](C(=O)[O-])[NH3+])S', formula: 'C₃H₇NO₂S', cid: '5862', mw: '121.16', essential: false, frequency: '1.4%', chiral: true },
+            { name: 'Tyrosin', code1: 'Y', code3: 'Tyr', category: 'Polar', smiles: 'C1=CC(=CC=C1C[C@@H](C(=O)[O-])[NH3+])O', formula: 'C₉H₁₁NO₃', cid: '6057', mw: '181.19', essential: false, frequency: '2.9%', chiral: true },
+            { name: 'Asparagin', code1: 'N', code3: 'Asn', category: 'Polar', smiles: 'C([C@@H](C(=O)[O-])[NH3+])C(=O)N', formula: 'C₄H₈N₂O₃', cid: '6267', mw: '132.12', essential: false, frequency: '4.0%', chiral: true },
+            { name: 'Glutamin', code1: 'Q', code3: 'Gln', category: 'Polar', smiles: 'C(CC(=O)N)[C@@H](C(=O)[O-])[NH3+]', formula: 'C₅H₁₀N₂O₃', cid: '5961', mw: '146.15', essential: false, frequency: '3.9%', chiral: true },
+            { name: 'Lysin', code1: 'K', code3: 'Lys', category: 'Positiv', smiles: 'C(CC[NH3+])C[C@@H](C(=O)[O-])[NH3+]', formula: 'C₆H₁₄N₂O₂', cid: '5962', mw: '146.19', essential: true, frequency: '5.8%', chiral: true },
+            { name: 'Arginin', code1: 'R', code3: 'Arg', category: 'Positiv', smiles: 'C(C[C@@H](C(=O)[O-])[NH3+])CNC(=[NH2+])N', formula: 'C₆H₁₄N₄O₂', cid: '6322', mw: '174.20', essential: false, frequency: '5.5%', chiral: true },
+            { name: 'Histidin', code1: 'H', code3: 'His', category: 'Positiv', smiles: 'C1=C(NC=[NH+]1)C[C@@H](C(=O)[O-])[NH3+]', formula: 'C₆H₉N₃O₂', cid: '6274', mw: '155.16', essential: true, frequency: '2.3%', chiral: true },
+            { name: 'Aspartat', code1: 'D', code3: 'Asp', category: 'Negativ', smiles: 'C([C@@H](C(=O)[O-])[NH3+])C(=O)[O-]', formula: 'C₄H₇NO₄', cid: '5960', mw: '133.10', essential: false, frequency: '5.3%', chiral: true },
+            { name: 'Glutamat', code1: 'E', code3: 'Glu', category: 'Negativ', smiles: 'C(CC(=O)[O-])[C@@H](C(=O)[O-])[NH3+]', formula: 'C₅H₉NO₄', cid: '33032', mw: '147.13', essential: false, frequency: '6.3%', chiral: true }
+        ];
+
+        let smilesDrawer;
+        let selectedAminoAcid = null;
+        let viewer3D = null;
+        let isSpinning = true;
+        let showHydrogens = true;
+        let quizMode = false;
+        let quizScore = { correct: 0, total: 0 };
+        let currentQuiz = null;
+
+        function initSmilesDrawer() {
+            smilesDrawer = new SmilesDrawer.SvgDrawer({
+                width: 180, height: 120, bondThickness: 1.5,
+                fontSizeLarge: 6, fontSizeSmall: 4, padding: 10,
+                atomVisualization: 'default', explicitHydrogens: false,
+                terminalCarbons: false, debug: false,
+                themes: {
+                    dark: { C: '#222', O: '#e74c3c', N: '#3498db', S: '#f39c12', P: '#9b59b6', H: '#95a5a6' },
+                    light: { C: '#222', O: '#e74c3c', N: '#3498db', S: '#f39c12', P: '#9b59b6', H: '#95a5a6' }
+                }
+            });
+        }
+
+        function renderAminoGrid() {
+            const grid = document.getElementById('aminoGrid');
+            grid.innerHTML = '';
+
+            aminoAcids.forEach((amino, index) => {
+                const card = document.createElement('div');
+                card.className = `amino-card category-${amino.category.toLowerCase()}`;
+                card.onclick = () => quizMode ? null : selectAminoAcid(index);
+                if (quizMode) card.style.cursor = 'not-allowed';
+
+                const canvas = document.createElement('canvas');
+                canvas.width = 180;
+                canvas.height = 120;
+                card.appendChild(canvas);
+
+                try {
+                    SmilesDrawer.parse(amino.smiles, function(tree) {
+                        smilesDrawer.draw(tree, canvas, 'light', false);
+                    });
+                } catch (error) {
+                    console.error(`Fehler beim Zeichnen von ${amino.name}:`, error);
+                }
+
+                const name = document.createElement('div');
+                name.className = 'amino-name';
+                name.textContent = amino.name;
+                card.appendChild(name);
+
+                const code = document.createElement('div');
+                code.className = 'amino-code';
+                code.textContent = `${amino.code3} (${amino.code1})`;
+                card.appendChild(code);
+
+                const category = document.createElement('div');
+                category.className = 'amino-category';
+                category.textContent = amino.category;
+                card.appendChild(category);
+
+                grid.appendChild(card);
+            });
+        }
+
+        function selectAminoAcid(index) {
+            if (quizMode) return;
+            
+            selectedAminoAcid = aminoAcids[index];
+            
+            document.querySelectorAll('.amino-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.amino-card')[index].classList.add('active');
+            render3DViewer(selectedAminoAcid);
+        }
+
+        async function render3DViewer(amino) {
+            const panel = document.getElementById('viewerPanel');
+            
+            const essentialBadge = amino.essential 
+                ? '<span class="essential-badge essential-yes">Essentiell</span>' 
+                : '<span class="essential-badge essential-no">Nicht-essentiell</span>';
+            
+            panel.innerHTML = `
+                <div class="viewer-header">
+                    <div class="viewer-title">${amino.name} ${essentialBadge}</div>
+                    <div class="viewer-details">${amino.code3} (${amino.code1}) · ${amino.formula}</div>
+                </div>
+                <div class="viewer-controls">
+                    <button class="control-btn active" id="toggleHydrogens">💧 H-Atome</button>
+                    <button class="control-btn active" id="toggleSpin">🔄 Rotation</button>
+                    <button class="control-btn" id="screenshot">📸 Screenshot</button>
+                    ${amino.chiral ? '<button class="control-btn" id="highlightChiral">⭐ Chiral-C</button>' : ''}
+                </div>
+                <div class="viewer-3d" id="viewer3d">
+                    <div class="loading">Lade 3D-Struktur von PubChem...</div>
+                </div>
+                <div class="viewer-info">
+                    <div class="info-row">
+                        <span class="info-label">Molekulargewicht:</span>
+                        <span class="info-value">${amino.mw} g/mol</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Häufigkeit (Mensch):</span>
+                        <span class="info-value">${amino.frequency}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Kategorie:</span>
+                        <span class="info-value">${amino.category}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Chirales Zentrum:</span>
+                        <span class="info-value">${amino.chiral ? 'Ja (L-Form)' : 'Nein (achiral)'}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">PubChem CID:</span>
+                        <span class="info-value">${amino.cid}</span>
+                    </div>
+                </div>
+            `;
+
+            const element = document.getElementById('viewer3d');
+            const config = { backgroundColor: 'white' };
+            viewer3D = $3Dmol.createViewer(element, config);
+
+            try {
+                const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${amino.cid}/record/SDF/?record_type=3d`;
+                const response = await fetch(url);
+                const sdfData = await response.text();
+                
+                viewer3D.addModel(sdfData, 'sdf');
+                updateViewerStyle();
+                viewer3D.zoomTo();
+                viewer3D.zoom(1.2);
+                viewer3D.render();
+                if (isSpinning) viewer3D.spin(true);
+
+                // Event Listeners für Buttons
+                document.getElementById('toggleHydrogens')?.addEventListener('click', toggleHydrogens);
+                document.getElementById('toggleSpin')?.addEventListener('click', toggleSpin);
+                document.getElementById('screenshot')?.addEventListener('click', takeScreenshot);
+                document.getElementById('highlightChiral')?.addEventListener('click', highlightChiralCenter);
+
+                // Atom Labels beim Hover
+                viewer3D.setHoverable({}, true, function(atom, viewer, event, container) {
+                    if (!atom.label) {
+                        atom.label = viewer.addLabel(
+                            atom.elem + (atom.serial || ''),
+                            { position: atom, backgroundColor: 'mintcream', fontColor: 'black' }
+                        );
+                    }
+                }, function(atom) {
+                    if (atom.label) {
+                        viewer3D.removeLabel(atom.label);
+                        delete atom.label;
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Fehler beim Laden der 3D-Struktur:', error);
+                element.innerHTML = '<div class="placeholder">Fehler beim Laden der 3D-Struktur von PubChem.</div>';
+            }
+        }
+
+        function updateViewerStyle() {
+            if (!viewer3D) return;
+            
+            const selector = showHydrogens ? {} : { elem: '!H' };
+            
+            viewer3D.setStyle(selector, {
+                stick: { colorscheme: 'Jmol', radius: 0.15 },
+                sphere: { colorscheme: 'Jmol', scale: 0.3 }
+            });
+            
+            if (!showHydrogens) {
+                viewer3D.setStyle({ elem: 'H' }, {});
+            }
+            
+            viewer3D.render();
+        }
+
+        function toggleHydrogens() {
+            showHydrogens = !showHydrogens;
+            const btn = document.getElementById('toggleHydrogens');
+            btn.classList.toggle('active');
+            updateViewerStyle();
+        }
+
+        function toggleSpin() {
+            isSpinning = !isSpinning;
+            const btn = document.getElementById('toggleSpin');
+            btn.classList.toggle('active');
+            if (viewer3D) {
+                viewer3D.spin(isSpinning);
+            }
+        }
+
+        function takeScreenshot() {
+            if (!viewer3D) return;
+            viewer3D.pngURI(function(uri) {
+                const link = document.createElement('a');
+                link.href = uri;
+                link.download = `${selectedAmioAcid.name}_3D.png`;
+                link.click();
+            });
+        }
+
+        function highlightChiralCenter() {
+            if (!viewer3D || !selectedAminoAcid.chiral) return;
+            
+            // Markiere das alpha-Carbon (CA)
+            viewer3D.setStyle({ atom: 'CA' }, {
+                stick: { colorscheme: 'Jmol', radius: 0.2 },
+                sphere: { colorscheme: 'yellowCarbon', scale: 0.5 }
+            });
+            viewer3D.render();
+            
+            setTimeout(() => {
+                updateViewerStyle();
+            }, 3000);
+        }
+
+        // Quiz Mode
+        function startQuiz() {
+            quizMode = true;
+            document.getElementById('normalMode').classList.remove('active');
+            document.getElementById('quizMode').classList.add('active');
+            document.querySelectorAll('.amino-card').forEach(c => c.style.cursor = 'not-allowed');
+            
+            nextQuizQuestion();
+        }
+
+        function nextQuizQuestion() {
+            const randomAmino = aminoAcids[Math.floor(Math.random() * aminoAcids.length)];
+            const wrongOptions = aminoAcids
+                .filter(a => a.code1 !== randomAmino.code1)
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 3);
+            
+            const allOptions = [randomAmino, ...wrongOptions]
+                .sort(() => 0.5 - Math.random());
+            
+            currentQuiz = { correct: randomAmino, options: allOptions, answered: false };
+            
+            const panel = document.getElementById('viewerPanel');
+            panel.innerHTML = `
+                <div class="quiz-mode">
+                    <div class="quiz-question">Welche Aminosäure ist das?</div>
+                    <div class="viewer-3d" id="viewer3d">
+                        <div class="loading">Lade Struktur...</div>
+                    </div>
+                    <div class="quiz-options" id="quizOptions">
+                        ${allOptions.map(a => `
+                            <div class="quiz-option" data-code="${a.code1}">
+                                ${a.name} (${a.code1})
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div id="quizResult"></div>
+                    <div class="quiz-score">Score: ${quizScore.correct} / ${quizScore.total}</div>
+                    <button class="mode-btn" id="nextQuestion" style="width:100%; margin-top:10px; display:none;">Nächste Frage</button>
+                    <button class="mode-btn" id="exitQuiz" style="width:100%; margin-top:10px;">Quiz beenden</button>
+                </div>
+            `;
+            
+            // Lade 3D-Struktur
+            loadQuiz3D(randomAmino);
+            
+            // Event Listeners
+            document.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.addEventListener('click', () => answerQuiz(opt.dataset.code));
+            });
+            document.getElementById('exitQuiz').addEventListener('click', exitQuiz);
+        }
+
+        async function loadQuiz3D(amino) {
+            const element = document.getElementById('viewer3d');
+            const config = { backgroundColor: 'white' };
+            viewer3D = $3Dmol.createViewer(element, config);
+            
+            try {
+                const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${amino.cid}/record/SDF/?record_type=3d`;
+                const response = await fetch(url);
+                const sdfData = await response.text();
+                
+                viewer3D.addModel(sdfData, 'sdf');
+                viewer3D.setStyle({}, {
+                    stick: { colorscheme: 'Jmol', radius: 0.15 },
+                    sphere: { colorscheme: 'Jmol', scale: 0.3 }
+                });
+                viewer3D.zoomTo();
+                viewer3D.zoom(1.2);
+                viewer3D.render();
+                viewer3D.spin(true);
+            } catch (error) {
+                console.error('Quiz 3D Fehler:', error);
+            }
+        }
+
+        function answerQuiz(selectedCode) {
+            if (currentQuiz.answered) return;
+            
+            currentQuiz.answered = true;
+            quizScore.total++;
+            
+            const isCorrect = selectedCode === currentQuiz.correct.code1;
+            if (isCorrect) quizScore.correct++;
+            
+            document.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.style.cursor = 'not-allowed';
+                if (opt.dataset.code === currentQuiz.correct.code1) {
+                    opt.classList.add('correct');
+                } else if (opt.dataset.code === selectedCode) {
+                    opt.classList.add('wrong');
+                }
+            });
+            
+            const resultDiv = document.getElementById('quizResult');
+            resultDiv.className = `quiz-result ${isCorrect ? 'correct' : 'wrong'}`;
+            resultDiv.textContent = isCorrect 
+                ? '✅ Richtig!' 
+                : `❌ Falsch! Die richtige Antwort ist ${currentQuiz.correct.name}`;
+            
+            document.querySelector('.quiz-score').textContent = `Score: ${quizScore.correct} / ${quizScore.total}`;
+            
+            const nextBtn = document.getElementById('nextQuestion');
+            nextBtn.style.display = 'block';
+            nextBtn.addEventListener('click', nextQuizQuestion);
+        }
+
+        function exitQuiz() {
+            quizMode = false;
+            document.getElementById('normalMode').classList.add('active');
+            document.getElementById('quizMode').classList.remove('active');
+            document.querySelectorAll('.amino-card').forEach(c => c.style.cursor = 'pointer');
+            
+            const panel = document.getElementById('viewerPanel');
+            panel.innerHTML = '<div class="placeholder"><p>👈 Klicke auf eine Aminosäure</p></div>';
+            
+            if (quizScore.total > 0) {
+                const percentage = Math.round((quizScore.correct / quizScore.total) * 100);
+                alert(`Quiz beendet!\n\nErgebnis: ${quizScore.correct} / ${quizScore.total} (${percentage}%)`);
+            }
+            
+            quizScore = { correct: 0, total: 0 };
+        }
+
+        // Search
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const cards = document.querySelectorAll('.amino-card');
+                
+                cards.forEach((card, index) => {
+                    const amino = aminoAcids[index];
+                    const matches = 
+                        amino.name.toLowerCase().includes(query) ||
+                        amino.code1.toLowerCase().includes(query) ||
+                        amino.code3.toLowerCase().includes(query);
+                    
+                    card.style.display = matches ? 'block' : 'none';
+                });
+            });
+
+            document.getElementById('normalMode').addEventListener('click', exitQuiz);
+            document.getElementById('quizMode').addEventListener('click', startQuiz);
+        });
+
+        window.addEventListener('load', () => {
+            initSmilesDrawer();
+            renderAminoGrid();
+        });
+    </script>
+</body>
+</html>
