@@ -154,21 +154,102 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 .week-event.red{background:rgba(239,68,68,.22);color:#fca5a5;border-left:2px solid var(--red)}
 .week-event.yellow{background:rgba(234,179,8,.2);color:#fde68a;border-left:2px solid var(--yellow)}
 
-/* GOALS */
-.goals-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.goal-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-radius);padding:18px;transition:var(--trans);cursor:pointer}
-.goal-card:hover{border-color:var(--border-glow);box-shadow:0 0 18px rgba(91,110,245,.2);transform:translateY(-3px)}
-.goal-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
-.goal-icon{width:38px;height:38px;flex-shrink:0;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
-.goal-title{font-size:.93rem;font-weight:600}.goal-sub{font-size:.77rem;color:var(--text-muted);margin-top:2px}
-.progress-bar-wrap{background:var(--bg3);border-radius:99px;height:7px;overflow:hidden;margin-bottom:8px}
-.progress-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2));box-shadow:0 0 8px rgba(91,110,245,.4);transition:width .5s cubic-bezier(.4,0,.2,1)}
-.goal-footer{display:flex;align-items:center;justify-content:space-between;font-size:.75rem;color:var(--text-muted)}
-.goal-card-new{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;border:1px dashed var(--border);min-height:160px;cursor:pointer;transition:var(--trans)}
+/* ════ GOALS ════ */
+.goals-layout{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;align-items:start}
+
+.goal-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--card-radius);
+  transition:var(--trans);overflow:hidden;
+  cursor:pointer;
+}
+.goal-card:hover{border-color:var(--border-glow);box-shadow:0 0 20px rgba(91,110,245,.2);transform:translateY(-3px)}
+.goal-card.expanded{border-color:var(--border-glow);box-shadow:0 0 24px rgba(91,110,245,.18)}
+.goal-card.completed{border-color:rgba(34,197,94,.3);box-shadow:0 0 16px rgba(34,197,94,.12)}
+
+/* color accent strip at top */
+.goal-strip{height:3px;border-radius:4px 4px 0 0}
+
+.goal-main{padding:16px 18px 14px}
+.goal-head{display:flex;align-items:flex-start;gap:11px;margin-bottom:14px}
+.goal-icon{width:40px;height:40px;flex-shrink:0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.15rem}
+.goal-info{flex:1;min-width:0}
+.goal-title{font-size:.95rem;font-weight:700;line-height:1.3;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.goal-done-badge{font-size:.68rem;background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.25);padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap}
+.goal-deadline{font-size:.75rem;color:var(--text-muted);margin-top:3px;display:flex;align-items:center;gap:4px}
+.goal-deadline.urgent{color:var(--orange)}.goal-deadline.overdue{color:var(--red)}.goal-deadline.soon{color:var(--yellow)}
+
+/* progress ring + bar */
+.goal-progress-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.goal-ring-wrap{flex-shrink:0;position:relative;width:48px;height:48px}
+.goal-ring-wrap svg{transform:rotate(-90deg)}
+.goal-ring-bg{fill:none;stroke:var(--bg3);stroke-width:4}
+.goal-ring-fill{fill:none;stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1)}
+.goal-ring-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;font-variant-numeric:tabular-nums}
+
+.goal-progress-bar-col{flex:1}
+.goal-bar-bg{background:var(--bg3);border-radius:99px;height:6px;overflow:hidden;margin-bottom:5px}
+.goal-bar-fill{height:100%;border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px rgba(91,110,245,.3)}
+.goal-bar-info{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-muted)}
+
+/* milestones preview in card */
+.goal-milestones-preview{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--border);padding:10px 18px 14px}
+.ms-preview-item{display:flex;align-items:center;gap:9px;font-size:.82rem;color:var(--text-muted);transition:var(--trans)}
+.ms-preview-item.done-ms{color:var(--text-dim);text-decoration:line-through}
+.ms-mini-check{width:16px;height:16px;flex-shrink:0;border-radius:4px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;transition:var(--trans)}
+.ms-mini-check.checked{background:var(--green);border-color:var(--green);box-shadow:0 0 6px rgba(34,197,94,.4)}
+.ms-mini-check.checked::after{content:'✓';color:#fff;font-size:.6rem;font-weight:800}
+.ms-preview-item:hover .ms-mini-check:not(.checked){border-color:var(--accent)}
+.ms-more{font-size:.75rem;color:var(--text-dim);padding:0 0 0 25px}
+
+/* expand toggle */
+.goal-expand-btn{width:100%;background:transparent;border:none;border-top:1px solid var(--border);padding:9px;color:var(--text-dim);font-size:.75rem;cursor:pointer;transition:var(--trans);display:flex;align-items:center;justify-content:center;gap:5px}
+.goal-expand-btn:hover{color:var(--accent);background:rgba(91,110,245,.05)}
+.goal-expand-btn .chevron{transition:transform .22s}
+.goal-expand-btn.open .chevron{transform:rotate(180deg)}
+
+/* expanded detail */
+.goal-detail{display:none;border-top:1px solid var(--border);padding:14px 18px;animation:fadeSlide .2s ease}
+.goal-detail.open{display:block}
+
+.ms-full-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.ms-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);transition:var(--trans);cursor:pointer}
+.ms-item:hover{border-color:var(--accent);box-shadow:0 0 10px rgba(91,110,245,.12);transform:translateX(2px)}
+.ms-item.done-ms{opacity:.55}
+.ms-check{width:20px;height:20px;flex-shrink:0;border-radius:5px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:var(--trans);background:transparent}
+.ms-check:hover{border-color:var(--accent)}
+.ms-check.checked{background:var(--green);border-color:var(--green);box-shadow:0 0 8px rgba(34,197,94,.45)}
+.ms-check.checked::after{content:'✓';color:#fff;font-size:.7rem;font-weight:800}
+.ms-label{flex:1;font-size:.86rem;font-weight:500;transition:var(--trans)}
+.ms-item.done-ms .ms-label{text-decoration:line-through;color:var(--text-muted)}
+.ms-delete-btn{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.75rem;padding:2px 5px;border-radius:4px;opacity:0;transition:opacity .15s}
+.ms-item:hover .ms-delete-btn{opacity:1}
+.ms-delete-btn:hover{color:var(--red);background:rgba(239,68,68,.12)}
+
+.ms-add-row{display:flex;gap:8px;margin-top:4px}
+.ms-add-input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 11px;color:var(--text);font-size:.83rem;outline:none;transition:var(--trans);font-family:inherit}
+.ms-add-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,110,245,.15)}
+.ms-add-input::placeholder{color:var(--text-dim)}
+.ms-add-btn{background:var(--accent);border:none;border-radius:8px;color:#fff;padding:7px 14px;font-size:.82rem;font-weight:600;cursor:pointer;transition:var(--trans)}
+.ms-add-btn:hover{box-shadow:0 0 12px rgba(91,110,245,.5);transform:translateY(-1px)}
+
+.goal-detail-footer{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.btn-danger-sm{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171;border-radius:7px;padding:5px 12px;font-size:.78rem;cursor:pointer;transition:var(--trans)}
+.btn-danger-sm:hover{background:rgba(239,68,68,.2);box-shadow:0 0 10px rgba(239,68,68,.2)}
+
+/* new goal card */
+.goal-card-new{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;border:1px dashed var(--border);min-height:180px;cursor:pointer;transition:var(--trans);border-radius:var(--card-radius)}
 .goal-card-new:hover{border-color:var(--accent);box-shadow:0 0 14px rgba(91,110,245,.18);background:rgba(91,110,245,.04)}
-.goal-card-new .big-plus{font-size:1.8rem;color:var(--text-dim);transition:var(--trans)}
+.goal-card-new .big-plus{font-size:2rem;color:var(--text-dim);transition:var(--trans)}
 .goal-card-new:hover .big-plus,.goal-card-new:hover span{color:var(--accent)}
 .goal-card-new span{font-size:.83rem;color:var(--text-dim);transition:var(--trans)}
+
+/* goals summary bar at top */
+.goals-summary{display:flex;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+.gs-chip{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px 16px;display:flex;align-items:center;gap:9px;font-size:.83rem;transition:var(--trans)}
+.gs-chip:hover{border-color:var(--border-glow);transform:translateY(-1px)}
+.gs-chip .gs-num{font-size:1.25rem;font-weight:800;line-height:1}
+.gs-chip .gs-lbl{color:var(--text-muted);font-size:.77rem}
 
 /* HABITS */
 .habit-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--card-radius);padding:14px 16px;display:flex;align-items:center;gap:14px;transition:var(--trans);margin-bottom:10px}
@@ -459,7 +540,10 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
   </div>
 
   <!-- ZIELE -->
-  <div class="panel" id="panel-ziele"><div class="goals-grid" id="goalsGrid"></div></div>
+  <div class="panel" id="panel-ziele">
+    <div class="goals-summary" id="goalsSummary"></div>
+    <div class="goals-layout" id="goalsGrid"></div>
+  </div>
 
   <!-- HABITS -->
   <div class="panel" id="panel-habits">
@@ -513,16 +597,26 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 <div class="modal-overlay" id="modal-goal">
   <div class="modal">
     <h2>🎯 Neues Ziel</h2>
-    <div class="form-group"><label>Titel</label><input type="text" id="goalTitleInput" placeholder="z.B. Analysis bestehen"></div>
+    <div class="form-group"><label>Ziel-Titel</label><input type="text" id="goalTitleInput" placeholder="z.B. Analysis bestehen"></div>
     <div class="form-row">
-      <div class="form-group"><label>Emoji</label><input type="text" id="goalIconInput" value="🎯" maxlength="2"></div>
-      <div class="form-group"><label>Farbe</label><select id="goalColorInput"><option value="rgba(91,110,245,.18)">Blau</option><option value="rgba(139,92,246,.18)">Lila</option><option value="rgba(34,197,94,.15)">Grün</option><option value="rgba(239,68,68,.15)">Rot</option><option value="rgba(234,179,8,.15)">Gelb</option></select></div>
+      <div class="form-group"><label>Emoji / Icon</label><input type="text" id="goalIconInput" value="🎯" maxlength="2"></div>
+      <div class="form-group"><label>Deadline (optional)</label><input type="date" id="goalDeadlineInput"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>Deadline</label><input type="date" id="goalDeadlineInput"></div>
-      <div class="form-group"><label>Fortschritt %</label><input type="number" id="goalProgressInput" min="0" max="100" value="0"></div>
+    <div class="form-group"><label>Farbe</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="goalColorPicker"></div>
     </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('goal')">Abbrechen</button><button class="btn btn-primary" onclick="saveGoal()">💾 Speichern</button></div>
+    <div class="form-group">
+      <label>Meilensteine (optional – kannst du später hinzufügen)</label>
+      <div id="goalMsInputList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="goalMsInput" class="ms-add-input" placeholder="Meilenstein eingeben...">
+        <button class="ms-add-btn" onclick="addGoalModalMs()">+ Add</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('goal')">Abbrechen</button>
+      <button class="btn btn-primary" onclick="saveGoal()">💾 Speichern</button>
+    </div>
   </div>
 </div>
 
@@ -567,37 +661,22 @@ const COLORS = {
 
 // ═══ STATE ═══════════════════════════════════════════════
 let tasks = [
-  {id:1,title:'Analysis Übungsblatt 5',cat:'Mathe',due:fmt(today),prio:'high',done:false,note:'Kapitel 4.2–4.5'},
-  {id:2,title:'Mechanik Zusammenfassung',cat:'Physik',due:fmt(today),prio:'mid',done:false,note:''},
-  {id:3,title:'Java OOP Aufgaben',cat:'Informatik',due:fmt(addD(today,1)),prio:'low',done:false,note:''},
-  {id:4,title:'Organische Chemie lernen',cat:'Chemie',due:fmt(addD(today,2)),prio:'high',done:false,note:''},
-  {id:5,title:'Statistik Übung',cat:'Mathe',due:fmt(addD(today,-1)),prio:'mid',done:false,note:''},
+  {id:1,title:'Analysis Übungsblatt 1',cat:'Mathe',due:fmt(today),prio:'high',done:false,note:'Kapitel 1–2'},
+  {id:2,title:'Beispiel-Aufgabe (erledigt)',cat:'Sonstiges',due:fmt(addD(today,-1)),prio:'low',done:true,note:''},
 ];
-let nextTaskId = 6;
-
-let goals = [
-  {id:1,title:'Analysis bestehen',icon:'📊',color:'rgba(91,110,245,.18)',progress:62,deadline:fmt(addD(today,30))},
-  {id:2,title:'Englisch-Prüfung',icon:'🌍',color:'rgba(34,197,94,.15)',progress:40,deadline:fmt(addD(today,14))},
-  {id:3,title:'Lernstreak 30 Tage',icon:'🔥',color:'rgba(234,179,8,.15)',progress:17,deadline:fmt(addD(today,25))},
-];
-let nextGoalId = 4;
+let nextTaskId = 3;
 
 let habits = [
-  {id:1,name:'30 min Lernen',icon:'📚',color:'rgba(91,110,245,.18)',days:[1,1,1,0,1,1,0]},
-  {id:2,name:'Karteikarten wiederholen',icon:'🗂',color:'rgba(139,92,246,.18)',days:[1,0,1,1,0,1,0]},
-  {id:3,name:'Sport',icon:'🏃',color:'rgba(34,197,94,.15)',days:[1,1,0,1,1,0,0]},
+  {id:1,name:'30 min Lernen',icon:'📚',color:'rgba(91,110,245,.18)',days:[1,0,1,0,1,0,0]},
 ];
-let nextHabitId = 4;
+let nextHabitId = 2;
 
 // days = array of weekday indices 0=Mon … 6=Sun on which course repeats
 let kurse = [
   {id:1,name:'Analysis II',room:'H1 · D.105',dozent:'Prof. Müller',days:[0,2],start:'08:00',end:'10:00',color:'blue'},
-  {id:2,name:'Lineare Algebra',room:'HS 3',dozent:'Dr. Fischer',days:[1,3],start:'10:15',end:'12:00',color:'purple'},
-  {id:3,name:'Physik Praktikum',room:'P-Bau 02',dozent:'Prof. Schmidt',days:[4],start:'13:00',end:'17:00',color:'green'},
-  {id:4,name:'Informatik Tutorium',room:'Online',dozent:'M. Weber',days:[2],start:'14:00',end:'16:00',color:'cyan'},
-  {id:5,name:'Mathe Tutorium',room:'SR 7',dozent:'—',days:[0],start:'12:00',end:'14:00',color:'yellow'},
+  {id:2,name:'Physik Praktikum',room:'P-Bau 02',dozent:'Prof. Schmidt',days:[4],start:'13:00',end:'16:00',color:'green'},
 ];
-let nextKursId = 6;
+let nextKursId = 3;
 
 let selectedPrio = 'high';
 let kDays = [];       // selected days in kurs modal
@@ -613,7 +692,6 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('todayDate').textContent =
     today.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   document.getElementById('taskDueInput').value = fmt(today);
-  document.getElementById('goalDeadlineInput').value = fmt(addD(today,30));
   buildColorPickerUI();
   renderTasks(); renderCalendar(); renderWeek();
   renderDayView(); renderSpWeek();
@@ -998,18 +1076,277 @@ function deleteKurs(id){
 }
 
 // ═══ GOALS ═══════════════════════════════════════════════
-function renderGoals(){
-  document.getElementById('goalsGrid').innerHTML=goals.map(g=>{
-    const dl=g.deadline?(()=>{const d=new Date(g.deadline);d.setHours(0,0,0,0);const df=Math.round((d-today)/864e5);return df<0?`<span style="color:var(--red)">Abgelaufen</span>`:df===0?`<span style="color:var(--yellow)">Heute!</span>`:`in ${df} Tagen`;})():'';
-    return`<div class="goal-card" onclick="editGoalProgress(${g.id})">
-      <div class="goal-head"><div class="goal-icon" style="background:${g.color}">${g.icon}</div><div><div class="goal-title">${g.title}</div><div class="goal-sub">🗓 ${dl}</div></div></div>
-      <div class="progress-bar-wrap"><div class="progress-bar" style="width:${g.progress}%"></div></div>
-      <div class="goal-footer"><span>${g.progress}% abgeschlossen</span><span>${g.progress>=100?'🏆 Fertig!':''}</span></div>
-    </div>`;
-  }).join('')+`<div class="goal-card goal-card-new" onclick="openModal('goal')"><div class="big-plus">+</div><span>Neues Ziel erstellen</span></div>`;
+const GOAL_COLORS = [
+  {key:'blue',  hex:'#5b6ef5', bg:'rgba(91,110,245,.18)',  bar:'linear-gradient(90deg,#5b6ef5,#8b5cf6)'},
+  {key:'purple',hex:'#8b5cf6', bg:'rgba(139,92,246,.18)',  bar:'linear-gradient(90deg,#8b5cf6,#ec4899)'},
+  {key:'green', hex:'#22c55e', bg:'rgba(34,197,94,.15)',   bar:'linear-gradient(90deg,#22c55e,#06b6d4)'},
+  {key:'red',   hex:'#ef4444', bg:'rgba(239,68,68,.15)',   bar:'linear-gradient(90deg,#ef4444,#f97316)'},
+  {key:'yellow',hex:'#eab308', bg:'rgba(234,179,8,.15)',   bar:'linear-gradient(90deg,#eab308,#f97316)'},
+  {key:'cyan',  hex:'#06b6d4', bg:'rgba(6,182,212,.15)',   bar:'linear-gradient(90deg,#06b6d4,#5b6ef5)'},
+  {key:'pink',  hex:'#ec4899', bg:'rgba(236,72,153,.15)',  bar:'linear-gradient(90deg,#ec4899,#8b5cf6)'},
+  {key:'orange',hex:'#f97316', bg:'rgba(249,115,22,.15)',  bar:'linear-gradient(90deg,#f97316,#eab308)'},
+];
+
+let goals = [
+  {id:1, title:'Erstes Ziel – hier klicken!', icon:'🎯', color:'blue', deadline:fmt(addD(today,30)),
+    milestones:[
+      {id:1,text:'Meilenstein 1 (abgehakt)', done:true},
+      {id:2,text:'Meilenstein 2 (offen)',   done:false},
+    ]},
+];
+let nextGoalId = 2;
+let nextMsId   = 100;
+let goalColor  = 'blue';
+let modalMsList = [];  // milestones being added in modal
+
+function goalPct(g){
+  if(!g.milestones.length) return 0;
+  return Math.round(g.milestones.filter(m=>m.done).length / g.milestones.length * 100);
 }
-function editGoalProgress(id){const g=goals.find(x=>x.id===id);if(!g)return;const v=prompt(`Fortschritt für "${g.title}" (0–100%):`,g.progress);if(v===null)return;g.progress=Math.min(100,Math.max(0,parseInt(v)||0));renderGoals();showToast('✓ Aktualisiert','success');}
-function saveGoal(){const t=document.getElementById('goalTitleInput').value.trim();if(!t){showToast('❌ Bitte Titel');return;}goals.push({id:nextGoalId++,title:t,icon:document.getElementById('goalIconInput').value||'🎯',color:document.getElementById('goalColorInput').value,progress:parseInt(document.getElementById('goalProgressInput').value)||0,deadline:document.getElementById('goalDeadlineInput').value});closeModal('goal');renderGoals();showToast('✓ Ziel gespeichert!','success');}
+function deadlineInfo(dl){
+  if(!dl) return {text:'Kein Datum',cls:''};
+  const d=new Date(dl);d.setHours(0,0,0,0);
+  const diff=Math.round((d-today)/864e5);
+  if(diff<0) return {text:`${Math.abs(diff)}T überfällig`,cls:'overdue'};
+  if(diff===0) return {text:'Heute fällig!',cls:'urgent'};
+  if(diff<=3) return {text:`${diff} Tage noch`,cls:'urgent'};
+  if(diff<=7) return {text:`${diff} Tage noch`,cls:'soon'};
+  return {text:`${diff} Tage noch`,cls:''};
+}
+
+function buildGoalColorPicker(){
+  const cp=document.getElementById('goalColorPicker');
+  if(!cp)return;cp.innerHTML='';
+  GOAL_COLORS.forEach(c=>{
+    const d=document.createElement('div');
+    d.className='cpick-dot'+(c.key==='blue'?' sel':'');
+    d.style.cssText=`width:28px;height:28px;border-radius:50%;background:${c.hex};cursor:pointer;transition:var(--trans);border:2px solid transparent;flex-shrink:0`;
+    d.dataset.c=c.key;d.title=c.key;
+    d.addEventListener('click',()=>{
+      goalColor=c.key;
+      document.querySelectorAll('#goalColorPicker .cpick-dot').forEach(x=>{x.style.borderColor='transparent';x.style.boxShadow='none';});
+      d.style.borderColor='#fff';d.style.boxShadow=`0 0 0 2px ${c.hex}`;
+    });
+    cp.appendChild(d);
+  });
+}
+
+function addGoalModalMs(){
+  const inp=document.getElementById('goalMsInput');
+  const txt=inp.value.trim();if(!txt)return;
+  modalMsList.push({id:nextMsId++,text:txt,done:false});
+  inp.value='';
+  renderModalMsList();
+  inp.focus();
+}
+function removeModalMs(id){
+  modalMsList=modalMsList.filter(m=>m.id!==id);
+  renderModalMsList();
+}
+function renderModalMsList(){
+  const el=document.getElementById('goalMsInputList');if(!el)return;
+  el.innerHTML=modalMsList.map(m=>`
+    <div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-size:.83rem">
+      <span style="flex:1;color:var(--text)">${m.text}</span>
+      <button onclick="removeModalMs(${m.id})" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.8rem;padding:0 3px" title="Entfernen">✕</button>
+    </div>`).join('');
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.activeElement?.id==='goalMsInput'){e.preventDefault();addGoalModalMs();}
+});
+
+function openGoalModal(){
+  goalColor='blue';modalMsList=[];
+  document.getElementById('goalTitleInput').value='';
+  document.getElementById('goalIconInput').value='🎯';
+  document.getElementById('goalDeadlineInput').value='';
+  document.getElementById('goalMsInputList').innerHTML='';
+  document.getElementById('goalMsInput').value='';
+  buildGoalColorPicker();
+  openModal('goal');
+}
+
+function saveGoal(){
+  const t=document.getElementById('goalTitleInput').value.trim();
+  if(!t){showToast('❌ Bitte Titel eingeben');return;}
+  goals.push({
+    id:nextGoalId++,
+    title:t,
+    icon:document.getElementById('goalIconInput').value||'🎯',
+    color:goalColor,
+    deadline:document.getElementById('goalDeadlineInput').value,
+    milestones:[...modalMsList],
+  });
+  closeModal('goal');renderGoals();showToast('✓ Ziel erstellt!','success');
+}
+
+function toggleMilestone(gid, mid){
+  const g=goals.find(x=>x.id===gid);if(!g)return;
+  const m=g.milestones.find(x=>x.id===mid);if(!m)return;
+  m.done=!m.done;
+  if(m.done && goalPct(g)===100) showToast('🏆 Ziel erreicht: '+g.title,'success');
+  else if(m.done) showToast('✓ Meilenstein abgehakt!','success');
+  renderGoals();
+  // keep card expanded
+  setTimeout(()=>{
+    const detail=document.getElementById(`gd-${gid}`);
+    const btn=document.getElementById(`ge-${gid}`);
+    if(detail){detail.classList.add('open');if(btn)btn.classList.add('open');}
+  },10);
+}
+
+function addMilestone(gid){
+  const inp=document.getElementById(`ms-inp-${gid}`);
+  if(!inp)return;const txt=inp.value.trim();if(!txt)return;
+  const g=goals.find(x=>x.id===gid);if(!g)return;
+  g.milestones.push({id:nextMsId++,text:txt,done:false});
+  inp.value='';renderGoals();
+  setTimeout(()=>{
+    const detail=document.getElementById(`gd-${gid}`);
+    const btn=document.getElementById(`ge-${gid}`);
+    if(detail){detail.classList.add('open');if(btn)btn.classList.add('open');}
+    document.getElementById(`ms-inp-${gid}`)?.focus();
+  },10);
+}
+
+function deleteMilestone(gid,mid){
+  const g=goals.find(x=>x.id===gid);if(!g)return;
+  g.milestones=g.milestones.filter(m=>m.id!==mid);
+  renderGoals();
+  setTimeout(()=>{
+    const detail=document.getElementById(`gd-${gid}`);
+    const btn=document.getElementById(`ge-${gid}`);
+    if(detail){detail.classList.add('open');if(btn)btn.classList.add('open');}
+  },10);
+}
+
+function deleteGoal(gid){
+  if(!confirm('Ziel wirklich löschen?'))return;
+  goals=goals.filter(g=>g.id!==gid);
+  renderGoals();showToast('🗑 Ziel gelöscht');
+}
+
+function toggleGoalExpand(gid){
+  const detail=document.getElementById(`gd-${gid}`);
+  const btn=document.getElementById(`ge-${gid}`);
+  if(!detail)return;
+  const opening=!detail.classList.contains('open');
+  detail.classList.toggle('open');
+  if(btn)btn.classList.toggle('open');
+  // focus input when opening
+  if(opening) setTimeout(()=>document.getElementById(`ms-inp-${gid}`)?.focus(),150);
+}
+
+// SVG ring helper (r=20, circumference≈125.7)
+function ringHTML(pct, color){
+  const R=20, C=2*Math.PI*R;
+  const offset=C-(pct/100)*C;
+  return `<svg width="48" height="48" viewBox="0 0 48 48">
+    <circle class="goal-ring-bg" cx="24" cy="24" r="${R}"/>
+    <circle class="goal-ring-fill" cx="24" cy="24" r="${R}"
+      stroke="${color}" stroke-dasharray="${C}" stroke-dashoffset="${offset}"/>
+  </svg>`;
+}
+
+function renderGoals(){
+  // summary chips
+  const total=goals.length;
+  const done=goals.filter(g=>goalPct(g)===100).length;
+  const overdue=goals.filter(g=>g.deadline&&goalPct(g)<100&&new Date(g.deadline)<today).length;
+  document.getElementById('goalsSummary').innerHTML=`
+    <div class="gs-chip"><div class="gs-num" style="color:var(--accent)">${total}</div><div class="gs-lbl">Ziele gesamt</div></div>
+    <div class="gs-chip"><div class="gs-num" style="color:var(--green)">${done}</div><div class="gs-lbl">Erreicht 🏆</div></div>
+    <div class="gs-chip"><div class="gs-num" style="color:var(--red)">${overdue}</div><div class="gs-lbl">Überfällig ⚠</div></div>
+    <div class="gs-chip"><div class="gs-num" style="color:var(--yellow)">${total-done-overdue}</div><div class="gs-lbl">In Arbeit</div></div>
+  `;
+
+  const grid=document.getElementById('goalsGrid');
+  grid.innerHTML='';
+
+  goals.forEach(g=>{
+    const pct=goalPct(g);
+    const completed=pct===100;
+    const col=GOAL_COLORS.find(c=>c.key===g.color)||GOAL_COLORS[0];
+    const dl=deadlineInfo(g.deadline);
+    const doneCnt=g.milestones.filter(m=>m.done).length;
+    const totalMs=g.milestones.length;
+
+    // preview: show first 3 milestones
+    const previewMs=g.milestones.slice(0,3);
+    const moreMs=g.milestones.length-3;
+
+    const card=document.createElement('div');
+    card.className=`goal-card${completed?' completed':''}`;
+    card.innerHTML=`
+      <div class="goal-strip" style="background:${col.hex}"></div>
+      <div class="goal-main">
+        <div class="goal-head">
+          <div class="goal-icon" style="background:${col.bg}">${g.icon}</div>
+          <div class="goal-info">
+            <div class="goal-title">
+              ${g.title}
+              ${completed?'<span class="goal-done-badge">🏆 Erreicht!</span>':''}
+            </div>
+            ${g.deadline?`<div class="goal-deadline ${dl.cls}">📅 ${dl.text}</div>`:'<div class="goal-deadline" style="color:var(--text-dim)">Kein Datum</div>'}
+          </div>
+        </div>
+        <div class="goal-progress-row">
+          <div class="goal-ring-wrap">
+            ${ringHTML(pct, col.hex)}
+            <div class="goal-ring-pct" style="color:${col.hex}">${pct}%</div>
+          </div>
+          <div class="goal-progress-bar-col">
+            <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${pct}%;background:${col.bar}"></div></div>
+            <div class="goal-bar-info">
+              <span>${totalMs>0?`${doneCnt}/${totalMs} Meilensteine`:'Keine Meilensteine'}</span>
+              <span style="${pct===100?'color:var(--green)':''}">${pct===100?'Fertig! ✓':'offen'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      ${previewMs.length?`
+      <div class="goal-milestones-preview">
+        ${previewMs.map(m=>`
+          <div class="ms-preview-item ${m.done?'done-ms':''}" onclick="event.stopPropagation();toggleMilestone(${g.id},${m.id})">
+            <div class="ms-mini-check ${m.done?'checked':''}"></div>
+            <span>${m.text}</span>
+          </div>`).join('')}
+        ${moreMs>0?`<div class="ms-more">+${moreMs} weitere</div>`:''}
+      </div>`:''}
+      <button class="goal-expand-btn" id="ge-${g.id}" onclick="event.stopPropagation();toggleGoalExpand(${g.id})">
+        <span>${g.milestones.length?'Alle Meilensteine':'Meilensteine hinzufügen'}</span>
+        <span class="chevron">▾</span>
+      </button>
+      <div class="goal-detail" id="gd-${g.id}">
+        <div class="ms-full-list" id="ms-list-${g.id}">
+          ${g.milestones.length?g.milestones.map(m=>`
+            <div class="ms-item ${m.done?'done-ms':''}" onclick="toggleMilestone(${g.id},${m.id})">
+              <div class="ms-check ${m.done?'checked':''}"></div>
+              <span class="ms-label">${m.text}</span>
+              <button class="ms-delete-btn" onclick="event.stopPropagation();deleteMilestone(${g.id},${m.id})" title="Löschen">✕</button>
+            </div>`).join(''):'<div style="font-size:.82rem;color:var(--text-dim);padding:4px 0">Noch keine Meilensteine – füge unten welche hinzu!</div>'}
+        </div>
+        <div class="ms-add-row">
+          <input type="text" class="ms-add-input" id="ms-inp-${g.id}" placeholder="Neuen Meilenstein eingeben..."
+            onkeydown="if(event.key==='Enter'){event.preventDefault();addMilestone(${g.id})}">
+          <button class="ms-add-btn" onclick="addMilestone(${g.id})">+ Add</button>
+        </div>
+        <div class="goal-detail-footer">
+          <button class="btn-danger-sm" onclick="deleteGoal(${g.id})">🗑 Ziel löschen</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // new goal card
+  const newCard=document.createElement('div');
+  newCard.className='goal-card-new';
+  newCard.innerHTML=`<div class="big-plus">+</div><span>Neues Ziel erstellen</span>`;
+  newCard.onclick=openGoalModal;
+  grid.appendChild(newCard);
+}
 
 // ═══ HABITS ══════════════════════════════════════════════
 const DI=['Mo','Di','Mi','Do','Fr','Sa','So'];
