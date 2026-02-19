@@ -1661,6 +1661,11 @@ function escapeHtml(str){
    Boot
    ========================================================= */
 function renderAll(){
+  // Templates immer sicherstellen (auch nach Cloud-Load/Import)
+  if(typeof ensureTemplates_AC_Versuch1 === "function"){
+    try{ ensureTemplates_AC_Versuch1(); }catch(e){}
+  }
+
   renderHome();
   if(currentExpId){
     renderDetail();
