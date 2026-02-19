@@ -197,6 +197,7 @@
     .tab-btn[data-tab="tasks"]::before { content: "📌"; }
     .tab-btn[data-tab="biochem"]::before { content: "🧬"; }
     .tab-btn[data-tab="brain"]::before { content: "💭"; }
+    .tab-btn[data-tab="lab"]::before { content: "🧪"; }
     .tab-btn[data-tab="stats"]::before { content: "📊"; }
 
     .tab-btn.active {
@@ -400,18 +401,6 @@
 
     .section.active {
       display: block;
-    }
-
-    /* Planner iframe fills full height */
-    #plannerSection.active {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      padding: 0;
-    }
-    #plannerSection iframe {
-      flex: 1;
-      min-height: 0;
     }
     /* cardsSection display handled in K2 CSS block below */
 
@@ -928,6 +917,7 @@
     <button class="tab-btn" data-tab="tasks">Aufgaben</button>
     <button class="tab-btn" data-tab="biochem">Bio/Chemie</button>
     <button class="tab-btn" data-tab="brain">Brain-Dump</button>
+    <button class="tab-btn" data-tab="lab">Labor</button>
     <button class="tab-btn" data-tab="stats">Stats</button>
   </div>
 
@@ -1000,14 +990,38 @@
       </iframe>
     </div>
 
-    <!-- PLANER-TAB -->
-    <div id="plannerSection" class="section" style="padding:0;overflow:hidden;">
+    <!-- LABMODE-TAB -->
+    <div id="labSection" class="section">
       <iframe
-        id="plannerFrame"
-        src="planner/index.html"
-        style="width:100%;height:100%;border:none;display:block;"
-        title="Planner"
+        id="labmode-frame"
+        src="./lab/"
+        style="width:100%; height:100%; border:none; display:block; background:transparent;"
+        allow="clipboard-read; clipboard-write"
       ></iframe>
+    </div>
+
+    <!-- PLANER-TAB -->
+    <div id="plannerSection" class="section">
+      <div class="card">
+        <h3>Deine nächsten Prüfungen</h3>
+        <div class="row">
+          <div><input type="text" id="examName" placeholder="Modul / Prüfung"></div>
+          <div><input type="date" id="examDate"></div>
+          <div><input type="number" id="examWeight" placeholder="ECTS / Wichtigkeit" min="1"></div>
+          <div style="flex:0 0 auto;"><button id="addExamBtn">＋ Prüfung speichern</button></div>
+        </div>
+        <div id="examList"></div>
+      </div>
+
+      <div class="card">
+        <h3>Fokus heute</h3>
+        <div class="row">
+          <div><input type="text" id="blockTopic" placeholder="Thema (z.B. Allg. Chemie – Säure-Base)"></div>
+          <div><input type="number" id="blockMinutes" placeholder="Minuten (z.B. 45)" min="5"></div>
+          <div style="flex:0 0 auto;"><button id="startBlockBtn">⏱️ Fokus starten</button></div>
+        </div>
+        <div id="focusStatus" style="margin-top:6px; font-size:13px;"></div>
+      </div>
     </div>
 
     <!-- FORMELN-TAB -->
@@ -3996,6 +4010,7 @@ let data = {
     const sections = {
       notes: document.getElementById("notesLayout"),
       cards: document.getElementById("cardsSection"),
+      lab: document.getElementById("labSection"),
       planner: document.getElementById("plannerSection"),
       formulas: document.getElementById("formulasSection"),
       tools: document.getElementById("toolsSection"),
@@ -4959,7 +4974,7 @@ importJsonInput.addEventListener("change", () => {
       renderPageList();
       redrawActivePage();
       // renderDecks() - handled by Karteikarten2 separately
-      // renderExams() – moved to Planner.html iframe
+      renderExams();
       renderFormulas();
       renderTasks();
       renderBrainHistory();
@@ -4984,7 +4999,89 @@ importJsonInput.addEventListener("change", () => {
     /* OLD CARDS CODE REMOVED */
 
     // ---------- PLANER ----------
-    // Planner is now a separate Planner.html loaded via iframe – no JS needed here.
+    const examName = document.getElementById("examName");
+    const examDate = document.getElementById("examDate");
+    const examWeight = document.getElementById("examWeight");
+    const addExamBtn = document.getElementById("addExamBtn");
+    const examListDiv = document.getElementById("examList");
+    const blockTopic = document.getElementById("blockTopic");
+    const blockMinutes = document.getElementById("blockMinutes");
+    const startBlockBtn = document.getElementById("startBlockBtn");
+    const focusStatus = document.getElementById("focusStatus");
+    let blockTimer = null;
+    let blockEndTime = null;
+
+    function renderExams() {
+      examListDiv.innerHTML = "";
+      const exams = data.planner.exams.slice().sort((a, b) => (a.date || "") < (b.date || "") ? -1 : 1);
+      exams.forEach(ex => {
+        const div = document.createElement("div");
+        div.className = "card";
+        const d = ex.date ? new Date(ex.date) : null;
+        let daysText = "–";
+        if (d) {
+          const diff = Math.round((d.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+          daysText = diff >= 0 ? `in ${diff} Tagen` : `${-diff} Tage her`;
+        }
+        div.innerHTML = `
+          <div style="font-weight:600;">${ex.name}</div>
+          <div style="font-size:13px; margin-top:4px;">Datum: ${d ? d.toLocaleDateString() : "kein Datum"} | Wichtigkeit: ${ex.weight || "-"}</div>
+          <div style="font-size:12px; margin-top:4px; opacity:0.8;">${daysText}</div>`;
+        examListDiv.appendChild(div);
+      });
+    }
+
+    function addExam() {
+      const name = examName.value.trim();
+      const date = examDate.value || null;
+      const weight = examWeight.value ? parseInt(examWeight.value, 10) : null;
+      if (!name) return;
+      data.planner.exams.push({ id: "exam-" + Date.now(), name, date, weight });
+      examName.value = "";
+      examDate.value = "";
+      examWeight.value = "";
+      saveData();
+      renderExams();
+    }
+
+    function startFocusBlock() {
+      const topic = blockTopic.value.trim();
+      let minutes = parseInt(blockMinutes.value, 10);
+      if (!topic || !minutes || minutes < 5) return;
+      const session = {
+        id: "fs-" + Date.now(),
+        topic,
+        minutes,
+        timestamp: Date.now()
+      };
+      data.planner.focusSessions.push(session);
+      saveData();
+      blockEndTime = Date.now() + minutes * 60 * 1000;
+      updateFocusStatus();
+      if (blockTimer) clearInterval(blockTimer);
+      blockTimer = setInterval(updateFocusStatus, 1000);
+    }
+
+    function updateFocusStatus() {
+      if (!blockEndTime) {
+        focusStatus.textContent = "";
+        return;
+      }
+      const diff = blockEndTime - Date.now();
+      if (diff <= 0) {
+        focusStatus.textContent = "Fokus-Block beendet – nice!";
+        clearInterval(blockTimer);
+        blockTimer = null;
+        blockEndTime = null;
+        return;
+      }
+      const m = Math.floor(diff / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      focusStatus.textContent = `Fokus läuft – noch ${m}m ${s}s`;
+    }
+
+    addExamBtn.addEventListener("click", addExam);
+    startBlockBtn.addEventListener("click", startFocusBlock);
 
     // ---------- FORMELN ----------
     const formulaName = document.getElementById("formulaName");
@@ -5305,9 +5402,9 @@ importJsonInput.addEventListener("change", () => {
     const statsContent = document.getElementById("statsContent");
 
     function renderStats() {
-      const sessions = (data.planner && data.planner.focusSessions) ? data.planner.focusSessions : [];
+      const sessions = data.planner.focusSessions || [];
       if (sessions.length === 0) {
-        statsContent.textContent = "Fokus-Sessions werden jetzt im Planner-Tab erfasst.";
+        statsContent.textContent = "Noch keine Fokus-Sessions gespeichert.";
         return;
       }
       const totalMinutes = sessions.reduce((sum, s) => sum + (s.minutes || 0), 0);
@@ -5458,7 +5555,7 @@ importJsonInput.addEventListener("change", () => {
       renderPageList();
       redrawActivePage();
       // renderDecks() - handled by Karteikarten2
-      // renderExams() – moved to Planner.html iframe
+      renderExams();
       renderFormulas();
       renderTasks();
       renderBrainHistory();
