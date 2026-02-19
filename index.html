@@ -197,7 +197,6 @@
     .tab-btn[data-tab="tasks"]::before { content: "📌"; }
     .tab-btn[data-tab="biochem"]::before { content: "🧬"; }
     .tab-btn[data-tab="brain"]::before { content: "💭"; }
-    .tab-btn[data-tab="lab"]::before { content: "🧪"; }
     .tab-btn[data-tab="stats"]::before { content: "📊"; }
 
     .tab-btn.active {
@@ -918,7 +917,7 @@
     <button class="tab-btn" data-tab="biochem">Bio/Chemie</button>
     <button class="tab-btn" data-tab="brain">Brain-Dump</button>
     <button class="tab-btn" data-tab="lab">Labor</button>
-    <button class="tab-btn" data-tab="stats">Stats</button>
+      <button class="tab-btn" data-tab="stats">Stats</button>
   </div>
 
   <div id="main">
@@ -990,27 +989,26 @@
       </iframe>
     </div>
 
-    <!-- LABMODE-TAB -->
-    <div id="labSection" class="section">
-      <iframe
-        id="labmode-frame"
-        src="./lab/"
-        style="width:100%; height:100%; border:none; display:block; background:transparent;"
-        allow="clipboard-read; clipboard-write"
-      ></iframe>
-    </div>
-
+    
     <!-- PLANER-TAB -->
     <div id="plannerSection" class="section">
-      <iframe
-        id="planner-frame"
-        src="./planner/"
-        style="width:100%; height:100%; border:none; display:block; background:transparent;"
-        allowfullscreen
-      ></iframe>
+      <div class="card" style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <div>
+          <h3>📅 Planer</h3>
+          <div class="muted">Eingebettete Planner-App aus <code>./planner/</code></div>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn btn-secondary" href="./planner/" target="_blank" rel="noopener">↗️ Vollbild</a>
+          <button class="btn btn-secondary" id="plannerReloadBtn">↻ Neu laden</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0; overflow:hidden; margin-top:12px;">
+        <iframe id="plannerFrame" src="./planner/" style="width:100%; height:78vh; border:0; display:block;" loading="lazy"></iframe>
+      </div>
     </div>
 
     <!-- FORMELN-TAB -->
+
     <div id="formulasSection" class="section">
       <div class="card">
         <h3>Formel hinzufügen</h3>
@@ -3996,7 +3994,6 @@ let data = {
     const sections = {
       notes: document.getElementById("notesLayout"),
       cards: document.getElementById("cardsSection"),
-      lab: document.getElementById("labSection"),
       planner: document.getElementById("plannerSection"),
       formulas: document.getElementById("formulasSection"),
       tools: document.getElementById("toolsSection"),
@@ -4004,6 +4001,7 @@ let data = {
       tasks: document.getElementById("tasksSection"),
       biochem: document.getElementById("biochemSection"),
       brain: document.getElementById("brainSection"),
+      lab: document.getElementById("labSection"),
       stats: document.getElementById("statsSection")
     };
 
@@ -4215,6 +4213,12 @@ async function syncFromCloud() {
       });
     });
 
+
+    // ---------- Embedded iframes: reload helpers ----------
+    const labReloadBtn = document.getElementById("labReloadBtn");
+    const plannerReloadBtn = document.getElementById("plannerReloadBtn");
+    labReloadBtn?.addEventListener("click", ()=>{ const f=document.getElementById("labFrame"); if(f) f.src = f.src; });
+    plannerReloadBtn?.addEventListener("click", ()=>{ const f=document.getElementById("plannerFrame"); if(f) f.src = f.src; });
     // ---------- Notebooks & Seiten ----------
     function renderNotebookSelect() {
       notebookSelect.innerHTML = "";
@@ -4985,7 +4989,9 @@ importJsonInput.addEventListener("change", () => {
     /* OLD CARDS CODE REMOVED */
 
     // ---------- PLANER ----------
+    // (Planner läuft jetzt im iframe. Der alte interne Planer-Code ist daher optional.)
     const examName = document.getElementById("examName");
+    if(examName){
     const examDate = document.getElementById("examDate");
     const examWeight = document.getElementById("examWeight");
     const addExamBtn = document.getElementById("addExamBtn");
@@ -5068,6 +5074,8 @@ importJsonInput.addEventListener("change", () => {
 
     addExamBtn.addEventListener("click", addExam);
     startBlockBtn.addEventListener("click", startFocusBlock);
+
+    }
 
     // ---------- FORMELN ----------
     const formulaName = document.getElementById("formulaName");
