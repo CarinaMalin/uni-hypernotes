@@ -223,165 +223,384 @@
       display: none;
       min-height: 0;
       background: transparent;
+      position: relative;
     }
 
     #notesLayout.section.active {
       display: flex;
-    }
-
-    #sidebarNotes {
-      width: 130px;
-      background: linear-gradient(180deg, rgba(15, 18, 32, 0.98), rgba(12, 14, 26, 0.98));
-      border-radius: var(--radius-card);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      box-shadow: var(--shadow-soft);
-      padding: 10px 8px 10px 10px;
-      display: flex;
-      flex-direction: column;
       gap: 8px;
     }
 
+    /* Seiten-Kontextmenü */
+    #pageContextMenu {
+      position: fixed;
+      background: rgba(18, 21, 38, 0.98);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 5px;
+      z-index: 200;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.55);
+      min-width: 150px;
+      display: none;
+    }
+    .ctx-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.1s;
+      color: var(--text);
+      user-select: none;
+    }
+    .ctx-menu-item:hover { background: rgba(255,255,255,0.09); }
+    .ctx-menu-item.danger { color: var(--danger); }
+
+    /* ── Sidebar Toggle Button (im Flex-Flow zwischen Sidebar und Canvas) ── */
+    #sidebarToggleBtn {
+      flex-shrink: 0;
+      width: 18px;
+      align-self: stretch;
+      border-radius: 8px;
+      padding: 0;
+      font-size: 9px;
+      background: rgba(123, 140, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.18s ease background, 0.18s ease color;
+      writing-mode: vertical-rl;
+      letter-spacing: 1px;
+    }
+    #sidebarToggleBtn:hover { background: rgba(123, 140, 255, 0.28); color: var(--text); }
+
+    /* ── Sidebar ── */
+    #sidebarNotes {
+      width: 190px;
+      min-width: 190px;
+      background: linear-gradient(180deg, rgba(15, 18, 32, 0.99), rgba(10, 12, 22, 0.99));
+      border-radius: var(--radius-card);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: var(--shadow-soft);
+      padding: 10px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+      transition: width 0.22s ease, min-width 0.22s ease, padding 0.22s ease, opacity 0.22s ease;
+    }
+    #sidebarNotes.collapsed {
+      width: 0;
+      min-width: 0;
+      padding: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Notebook row */
+    #notebookRow {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    #notebookRow select {
+      flex: 1;
+      font-size: 11px;
+      min-width: 0;
+      border-radius: 8px;
+      padding: 5px 7px;
+    }
+    #notebookRow button {
+      padding: 5px 7px;
+      font-size: 12px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      min-width: 28px;
+      min-height: 28px;
+    }
+
+    /* Pages header */
     #sidebar-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
-
     #sidebar-section-title {
-      font-size: 11px;
+      font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      opacity: 0.72;
+      opacity: 0.6;
+      font-weight: 600;
+    }
+    #sidebar-header button {
+      padding: 4px 9px;
+      font-size: 14px;
+      min-height: 30px;
+      min-width: 30px;
     }
 
-    #sidebarNotes button {
-      font-size: 11px;
-      padding: 3px 8px;
-    }
-
-    #templateSelect {
-      width: 100%;
-      margin-top: 4px;
-      font-size: 11px;
-      padding-block: 4px;
-    }
-
+    /* Page list */
     #pageList {
       flex: 1;
       overflow-y: auto;
-      padding-right: 4px;
-      margin-top: 4px;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 2px;
     }
+    #pageList::-webkit-scrollbar { width: 3px; }
+    #pageList::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 2px; }
 
+    /* Page thumbnail – GoodNotes style */
     .page-thumb {
       position: relative;
       background: rgba(10, 12, 24, 0.96);
-      border-radius: 12px;
-      border: 1.5px solid transparent;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
-      margin-bottom: 7px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(255,255,255,0.07);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.4);
       cursor: pointer;
-      padding: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      text-align: center;
-      color: var(--muted);
-      transition: 0.15s ease border-color, 0.15s ease transform, 0.15s ease background-color;
+      overflow: hidden;
+      transition: border-color 0.14s, box-shadow 0.14s, transform 0.1s;
+      user-select: none;
     }
-
+    .page-thumb:active { transform: scale(0.97); }
     .page-thumb.active {
       border-color: var(--accent);
-      background: rgba(123, 140, 255, 0.18);
-      color: var(--text);
-      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(123,140,255,0.3);
     }
 
-    .page-thumb span.index {
-      position: absolute;
-      bottom: 4px;
-      right: 6px;
+    /* Canvas preview inside thumbnail */
+    .page-thumb-canvas {
+      width: 100%;
+      height: 95px;
+      display: block;
+      background: #fbfbff;
+      border-radius: 8px 8px 0 0;
+    }
+    body.light .page-thumb-canvas { background: #fff; }
+
+    /* Label bar */
+    .page-thumb-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 7px;
+      background: rgba(18, 21, 38, 0.96);
+    }
+    .page-thumb.active .page-thumb-label { background: rgba(123,140,255,0.2); }
+    .page-thumb-name {
+      font-size: 10px;
+      color: var(--muted);
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .page-thumb.active .page-thumb-name { color: var(--text); }
+    .page-thumb-num {
       font-size: 9px;
-      opacity: 0.7;
+      opacity: 0.45;
+      margin-left: 4px;
+      flex-shrink: 0;
     }
 
+    /* Delete button (visible on hover / long press) */
+    .page-thumb-delete {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.88);
+      color: white;
+      font-size: 13px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      line-height: 1;
+      border: none;
+      cursor: pointer;
+      z-index: 3;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .page-thumb:hover .page-thumb-delete,
+    .page-thumb.show-delete .page-thumb-delete { display: flex; }
+
+    /* Template controls */
+    #templateControls {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    #templateControls label {
+      font-size: 10px;
+      opacity: 0.55;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+    #templateControls select {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      width: 100%;
+    }
+
+    /* ── Canvas wrapper ── */
     #canvasWrapper {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       padding: 6px;
       min-width: 0;
-      gap: 8px;
+      gap: 6px;
+      overflow: hidden;
     }
 
+    /* Toolbar */
     #toolbar {
       display: flex;
       align-items: center;
-      gap: 6px;
-      background: radial-gradient(circle at top left, rgba(123, 140, 255, 0.3), rgba(15, 16, 32, 0.98));
-      padding: 6px 12px;
+      gap: 3px;
+      background: radial-gradient(circle at top left, rgba(123,140,255,0.28), rgba(14,16,30,0.97));
+      padding: 5px 10px;
       border-radius: 999px;
       box-shadow: var(--shadow-soft);
       flex-wrap: wrap;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      max-width: 100%;
+      width: fit-content;
+    }
+    body.light #toolbar {
+      background: radial-gradient(circle at top left, rgba(123,140,255,0.14), rgba(255,255,255,0.97));
+    }
+    body.light #sidebarNotes {
+      background: linear-gradient(180deg, rgba(245,247,255,0.99), rgba(238,241,255,0.99));
+      border-color: rgba(0,0,0,0.07);
+    }
+    body.light #sidebar-header { border-top-color: rgba(0,0,0,0.07); }
+    body.light .page-thumb { background: rgba(240,242,255,0.98); border-color: rgba(0,0,0,0.09); }
+    body.light .page-thumb.active { border-color: var(--accent); }
+    body.light .page-thumb-label { background: rgba(225,228,250,0.96); }
+    body.light .page-thumb.active .page-thumb-label { background: rgba(74,92,255,0.15); }
+    body.light .page-thumb-name { color: #3a3d5c; }
+    body.light .page-thumb.active .page-thumb-name { color: #1a1c2c; }
+    body.light #templateControls { border-top-color: rgba(0,0,0,0.07); }
+    body.light #sidebarToggleBtn { background: rgba(74,92,255,0.1); border-color: rgba(0,0,0,0.08); color: #3a3d5c; }
+    body.light .tool-btn { background: rgba(240,242,255,0.9); border-color: rgba(0,0,0,0.07); color: #4a4d6a; }
+    body.light .tool-btn.active { background: rgba(74,92,255,0.2); border-color: var(--accent); color: #1a1c2c; }
+    body.light .stroke-btn.active { background: rgba(74,92,255,0.18); border-color: var(--accent); }
+    body.light .toolbar-sep { background: rgba(0,0,0,0.1); }
+    body.light #pageContextMenu { background: rgba(245,247,255,0.98); border-color: rgba(0,0,0,0.1); }
+    body.light .ctx-menu-item { color: #1a1c2c; }
+    body.light .ctx-menu-item:hover { background: rgba(0,0,0,0.05); }
+
+    /* Toolbar separator */
+    .toolbar-sep {
+      width: 1px;
+      height: 20px;
+      background: rgba(255,255,255,0.09);
+      margin: 0 3px;
+      flex-shrink: 0;
     }
 
-    body.light #toolbar {
-      background: radial-gradient(circle at top left, rgba(123, 140, 255, 0.16), #ffffff);
+    /* Canvas container – clips overflow during zoom */
+    #canvasContainer {
+      flex: 1;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-radius: 14px;
     }
 
     #canvas {
       background: #fbfbff;
-      border-radius: 22px;
-      box-shadow: 0 22px 55px rgba(5, 6, 17, 0.85);
+      border-radius: 18px;
+      box-shadow: 0 22px 55px rgba(5,6,17,0.85);
       touch-action: none;
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0,0,0,0.08);
+      transform-origin: center center;
+      will-change: transform;
+      cursor: crosshair;
     }
-
-    body.light #canvas {
-      background: #ffffff;
-    }
+    body.light #canvas { background: #ffffff; }
 
     input[type="color"] {
       border: none;
       background: transparent;
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       padding: 0;
-      border-radius: 999px;
+      border-radius: 50%;
       overflow: hidden;
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.18);
+      cursor: pointer;
     }
 
     .tool-btn {
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 4px 10px;
-      font-size: 12px;
-      background: rgba(6, 8, 20, 0.9);
+      border-radius: 9px;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 6px 9px;
+      font-size: 14px;
+      background: rgba(6,8,20,0.82);
       cursor: pointer;
       color: var(--muted);
+      min-height: 34px;
+      min-width: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
-
     .tool-btn.active {
       border-color: var(--accent);
-      background: rgba(123, 140, 255, 0.28);
+      background: rgba(123,140,255,0.26);
       color: var(--text);
     }
 
     .stroke-btn {
-      padding: 3px 8px;
-      font-size: 11px;
-      opacity: 0.85;
+      padding: 5px 10px;
+      font-size: 13px;
+      min-height: 32px;
+      border-radius: 8px;
     }
-
     .stroke-btn.active {
       border-color: var(--accent);
-      background: rgba(123, 140, 255, 0.18);
+      background: rgba(123,140,255,0.18);
       color: var(--text);
+    }
+
+    /* Zoom indicator */
+    #zoomLabel {
+      font-size: 11px;
+      opacity: 0.65;
+      min-width: 40px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    /* Touch mode toggle */
+    #touchModeBtn.scroll-mode {
+      border-color: var(--warning);
+      background: rgba(245,158,11,0.2);
+      color: var(--warning);
     }
 
     label {
@@ -590,11 +809,20 @@
     }
 
     @media (max-width: 860px) {
-      #sidebarNotes { width: 105px; }
-      button, select { font-size: 11px; padding: 4px 9px; }
-      #toolbar { font-size: 11px; padding-inline: 10px; }
+      #sidebarNotes { width: 160px; min-width: 160px; }
+      button, select { font-size: 11px; padding: 4px 8px; }
+      #toolbar { padding: 4px 8px; }
+      .tool-btn { min-height: 38px; min-width: 38px; font-size: 15px; }
       #learnLayout { flex-direction: column; }
       #learnSidebar { width: 100%; flex-direction: row; overflow-x: auto; }
+    }
+    /* iPad: bigger touch targets */
+    @media (hover: none) and (pointer: coarse) {
+      .tool-btn { min-height: 44px; min-width: 44px; font-size: 16px; padding: 8px; }
+      .stroke-btn { min-height: 40px; padding: 7px 13px; }
+      #sidebar-header button { min-height: 38px; min-width: 38px; }
+      .page-thumb-canvas { height: 110px; }
+      #notebookRow button { min-height: 34px; min-width: 34px; }
     }
 
 
@@ -905,15 +1133,13 @@
   <div id="topbar">
     <div id="topbar-left">
       <div id="appTitle">Uni Hyper Notes</div>
-      <select id="notebookSelect"></select>
-      <button id="addNotebookBtn">＋ Notizbuch</button>
     </div>
     <div id="topbar-right">
       <button id="darkModeBtn">🌙 / ☀️</button>
-      <button id="exportPageBtn">🖼️ Seite als PNG</button>
-      <button id="exportJsonBtn">💾 Backup</button>
-              <button id="importJsonBtn">📂 Backup laden</button>
-              <input type="file" id="importJsonInput" accept="application/json" style="display:none;">
+      <button id="exportPageBtn" title="Seite als PNG exportieren">🖼️ PNG</button>
+      <button id="exportJsonBtn" title="Backup herunterladen">💾 Backup</button>
+      <button id="importJsonBtn" title="Backup laden">📂 Laden</button>
+      <input type="file" id="importJsonInput" accept="application/json" style="display:none;">
     </div>
   </div>
 
@@ -934,59 +1160,93 @@
   <div id="main">
     <!-- NOTIZEN-TAB -->
     <div id="notesLayout" class="section active">
+
+      <!-- ── Sidebar ── -->
       <div id="sidebarNotes">
+
+        <!-- Notizbuch-Auswahl -->
+        <div id="notebookRow">
+          <select id="notebookSelect" title="Notizbuch wählen"></select>
+          <button id="addNotebookBtn" title="Neues Notizbuch">＋</button>
+          <button id="deleteNotebookBtn" title="Notizbuch löschen" style="color:var(--danger)">🗑</button>
+        </div>
+
+        <!-- Seiten-Header -->
         <div id="sidebar-header">
-          <div><div id="sidebar-section-title">Seiten</div></div>
+          <span id="sidebar-section-title">Seiten</span>
           <button id="addPageBtn" title="Neue Seite">＋</button>
         </div>
-        <div>
-          <label for="templateSelect">Template:</label><br>
+
+        <!-- Seiten-Thumbnails -->
+        <div id="pageList"></div>
+
+        <!-- Template-Einstellungen -->
+        <div id="templateControls">
+          <label for="templateSelect">Vorlage</label>
           <select id="templateSelect">
             <option value="blank">Blanko</option>
             <option value="lined">Liniert</option>
-            <option value="dotted">Dotted</option>
+            <option value="dotted">Gepunktet</option>
             <option value="grid">Kariert</option>
           </select>
+          <label for="templateSizeSelect">Rastergröße</label>
+          <select id="templateSizeSelect">
+            <option value="small">Fein</option>
+            <option value="medium" selected>Mittel</option>
+            <option value="large">Groß</option>
+          </select>
         </div>
-
-<div style="margin-top:6px;">
-  <label for="templateSizeSelect">Rastergröße:</label><br>
-  <select id="templateSizeSelect">
-    <option value="small">Fein</option>
-    <option value="medium" selected>Mittel</option>
-    <option value="large">Groß</option>
-  </select>
-</div>
-
-
-        <div id="pageList"></div>
       </div>
 
+      <!-- Sidebar-Toggle (zwischen Sidebar und Canvas) -->
+      <button id="sidebarToggleBtn" title="Sidebar ein-/ausblenden">◀</button>
+
+      <!-- ── Canvas-Bereich ── -->
       <div id="canvasWrapper">
+
+        <!-- Toolbar -->
         <div id="toolbar">
-          <label>Tool:</label>
-          <button class="tool-btn active" data-tool="pen">Stift</button>
-          <button class="tool-btn" data-tool="highlighter">Marker</button>
-          <button class="tool-btn" data-tool="eraser">Radierer</button>
-          <button class="tool-btn" data-tool="line">Linie</button>
-          <button class="tool-btn" data-tool="rect">Rechteck</button>
-          <button class="tool-btn" data-tool="circle">Kreis</button>
+          <!-- Zeichenwerkzeuge -->
+          <button class="tool-btn active" data-tool="pen" title="Stift">✏️</button>
+          <button class="tool-btn" data-tool="highlighter" title="Marker">🖊️</button>
+          <button class="tool-btn" data-tool="eraser" title="Radierer">⬜</button>
+          <button class="tool-btn" data-tool="line" title="Linie">╱</button>
+          <button class="tool-btn" data-tool="rect" title="Rechteck">▭</button>
+          <button class="tool-btn" data-tool="circle" title="Kreis">◯</button>
 
-          <label>Farbe:</label>
-          <input type="color" id="colorPicker" value="#000000">
+          <div class="toolbar-sep"></div>
 
-          <label>Stärke:</label>
-          <button class="stroke-btn active" data-width="2">Dünn</button>
-          <button class="stroke-btn" data-width="5">Mittel</button>
-          <button class="stroke-btn" data-width="9">Dick</button>
+          <!-- Farbe & Stärke -->
+          <input type="color" id="colorPicker" value="#000000" title="Farbe wählen">
+          <button class="stroke-btn active" data-width="2" title="Dünn">·</button>
+          <button class="stroke-btn" data-width="5" title="Mittel">—</button>
+          <button class="stroke-btn" data-width="9" title="Dick">━</button>
 
-          <button id="undoBtn">↶ Undo</button>
-          <button id="redoBtn">↷ Redo</button>
+          <div class="toolbar-sep"></div>
 
-          <button id="clearBtn">🧹 Seite leeren</button>
+          <!-- Aktionen -->
+          <button id="undoBtn" title="Rückgängig (Strg+Z)">↶</button>
+          <button id="redoBtn" title="Wiederholen (Strg+Y)">↷</button>
+          <button id="clearBtn" title="Seite leeren">🧹</button>
+
+          <div class="toolbar-sep"></div>
+
+          <!-- Zoom-Steuerung -->
+          <button id="zoomOutBtn" title="Herauszoomen">−</button>
+          <span id="zoomLabel">100%</span>
+          <button id="zoomInBtn" title="Hineinzoomen">＋</button>
+          <button id="zoomResetBtn" title="Zoom zurücksetzen">⊡</button>
+
+          <div class="toolbar-sep"></div>
+
+          <!-- Touch-Modus (Finger: Zeichnen / Scrollen) -->
+          <button id="touchModeBtn" title="Touch-Modus umschalten" style="font-size:13px;">✍️</button>
         </div>
 
-        <canvas id="canvas"></canvas>
+        <!-- Canvas-Container (Overflow für Zoom/Pan) -->
+        <div id="canvasContainer">
+          <canvas id="canvas"></canvas>
+        </div>
       </div>
     </div>
 
@@ -4021,20 +4281,47 @@ let data = {
 canvas.style.touchAction = "none";
 
 
-// --- Zoom & Pan (Basis, auch wenn wir noch kein Pinch nutzen) ---
+// --- Zoom & Pan ---
 let zoom = 1;
 let panX = 0;
 let panY = 0;
-
 let isPinching = false;
 let lastPinchDist = 0;
 let lastPinchCenter = null;
+let touchMode = "draw"; // "draw" | "scroll"
+let panStart = null; // for 1-finger pan in scroll mode
+
+// Wendet CSS-Transform auf Canvas an und aktualisiert Zoom-Label
+function updateCanvasTransform() {
+  canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+  const zl = document.getElementById("zoomLabel");
+  if (zl) zl.textContent = Math.round(zoom * 100) + "%";
+}
+
+function resetZoom() {
+  zoom = 1; panX = 0; panY = 0;
+  updateCanvasTransform();
+}
+
+// Zoom auf einen Bildschirm-Punkt (cx, cy) - korrekte Zoom-zu-Punkt Formel
+function zoomToPoint(cx, cy, factor) {
+  const rect = canvas.getBoundingClientRect();
+  const screenCX = rect.left + rect.width / 2;
+  const screenCY = rect.top + rect.height / 2;
+  const oldZoom = zoom;
+  zoom = Math.max(0.4, Math.min(5, zoom * factor));
+  // Pan anpassen, sodass der Punkt unter (cx,cy) bleibt
+  panX += (cx - screenCX) * (1 - zoom / oldZoom);
+  panY += (cy - screenCY) * (1 - zoom / oldZoom);
+  updateCanvasTransform();
+}
 
 
     const addPageBtn = document.getElementById("addPageBtn");
     const pageList = document.getElementById("pageList");
     const templateSelect = document.getElementById("templateSelect");
-    const templateSizeSelect = document.getElementById("templateSizeSelect"); // 👈 NEU
+    const templateSizeSelect = document.getElementById("templateSizeSelect");
+    const sidebarNotes = document.getElementById("sidebarNotes");
 
 // Pencil-Zeichnen über Pointer Events
 
@@ -4263,27 +4550,168 @@ async function syncFromCloud() {
       const nb = getActiveNotebook();
       pageList.innerHTML = "";
       if (!nb) return;
+
       nb.pages.forEach((page, index) => {
         const div = document.createElement("div");
         div.className = "page-thumb" + (page.id === data.activePageId ? " active" : "");
-        div.textContent = page.name;
-        const idx = document.createElement("span");
-        idx.className = "index";
-        idx.textContent = index + 1;
-        div.appendChild(idx);
+
+        // Canvas-Vorschau
+        const previewCanvas = document.createElement("canvas");
+        previewCanvas.className = "page-thumb-canvas";
+        const pw = 174, ph = 95;
+        previewCanvas.width = pw;
+        previewCanvas.height = ph;
+        renderPageThumbnail(page, previewCanvas);
+        div.appendChild(previewCanvas);
+
+        // Label-Leiste
+        const label = document.createElement("div");
+        label.className = "page-thumb-label";
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "page-thumb-name";
+        nameSpan.textContent = page.name;
+        const numSpan = document.createElement("span");
+        numSpan.className = "page-thumb-num";
+        numSpan.textContent = index + 1;
+        label.appendChild(nameSpan);
+        label.appendChild(numSpan);
+        div.appendChild(label);
+
+        // Löschen-Button
+        const delBtn = document.createElement("button");
+        delBtn.className = "page-thumb-delete";
+        delBtn.innerHTML = "×";
+        delBtn.title = "Seite löschen";
+        delBtn.addEventListener("click", e => { e.stopPropagation(); deletePage(page.id); });
+        div.appendChild(delBtn);
+
+        // Seite auswählen
         div.addEventListener("click", () => {
           if (page.id === data.activePageId) return;
           data.activePageId = page.id;
-          undoStack = [];
-          redoStack = [];
+          undoStack = []; redoStack = [];
           renderPageList();
           redrawActivePage();
           saveData();
         });
+
+        // Doppelklick = Umbenennen
+        div.addEventListener("dblclick", e => { e.stopPropagation(); renamePage(page.id); });
+
+        // Rechtsklick = Kontextmenü
+        div.addEventListener("contextmenu", e => {
+          e.preventDefault();
+          showPageContextMenu(e, page.id);
+        });
+
+        // Long-Press auf Touch = Löschen-Button anzeigen
+        let lpTimer = null;
+        div.addEventListener("touchstart", () => {
+          lpTimer = setTimeout(() => div.classList.add("show-delete"), 550);
+        }, { passive: true });
+        div.addEventListener("touchend", () => { clearTimeout(lpTimer); });
+        div.addEventListener("touchmove", () => { clearTimeout(lpTimer); });
+
         pageList.appendChild(div);
       });
+
       const activePage = getActivePage();
       if (activePage) templateSelect.value = activePage.template || "blank";
+    }
+
+    // Rendert eine Seite auf ein kleines Thumbnail-Canvas
+    function renderPageThumbnail(page, thumbCanvas) {
+      const tctx = thumbCanvas.getContext("2d");
+      const tw = thumbCanvas.width;
+      const th = thumbCanvas.height;
+
+      // Weißer Hintergrund
+      tctx.fillStyle = "#fbfbff";
+      tctx.fillRect(0, 0, tw, th);
+
+      // Template fein zeichnen
+      const spacing = 11;
+      tctx.save();
+      tctx.globalAlpha = 0.13;
+      tctx.strokeStyle = "#666";
+      tctx.lineWidth = 0.6;
+      if (page.template === "lined") {
+        for (let y = spacing; y < th; y += spacing) {
+          tctx.beginPath(); tctx.moveTo(0, y); tctx.lineTo(tw, y); tctx.stroke();
+        }
+      } else if (page.template === "grid") {
+        for (let y = spacing; y < th; y += spacing) {
+          tctx.beginPath(); tctx.moveTo(0, y); tctx.lineTo(tw, y); tctx.stroke();
+        }
+        for (let x = spacing; x < tw; x += spacing) {
+          tctx.beginPath(); tctx.moveTo(x, 0); tctx.lineTo(x, th); tctx.stroke();
+        }
+      } else if (page.template === "dotted") {
+        tctx.fillStyle = "#666";
+        for (let y = spacing; y < th; y += spacing)
+          for (let x = spacing; x < tw; x += spacing) {
+            tctx.beginPath(); tctx.arc(x, y, 0.9, 0, Math.PI * 2); tctx.fill();
+          }
+      }
+      tctx.restore();
+
+      // Strokes zeichnen (skaliert auf Thumbnail-Größe)
+      if (!page.strokes || page.strokes.length === 0) return;
+      const mainW = canvas.width || 800;
+      const mainH = canvas.height || 600;
+
+      page.strokes.forEach(stroke => {
+        if (!stroke.points || stroke.points.length < 2) return;
+        tctx.save();
+        if (stroke.tool === "eraser") {
+          tctx.globalCompositeOperation = "destination-out";
+          tctx.strokeStyle = "rgba(0,0,0,1)";
+        } else {
+          tctx.strokeStyle = stroke.color || "#000";
+          if (stroke.tool === "highlighter") tctx.globalAlpha = 0.35;
+        }
+        tctx.lineWidth = Math.max(0.5, (stroke.width || 2) * (tw / mainW));
+        tctx.lineCap = "round";
+        tctx.lineJoin = "round";
+        tctx.beginPath();
+        tctx.moveTo(stroke.points[0].x * tw, stroke.points[0].y * th);
+        for (let i = 1; i < stroke.points.length; i++) {
+          tctx.lineTo(stroke.points[i].x * tw, stroke.points[i].y * th);
+        }
+        tctx.stroke();
+        tctx.restore();
+      });
+    }
+
+    // Kontextmenü für Seiten
+    function showPageContextMenu(evt, pageId) {
+      let menu = document.getElementById("pageContextMenu");
+      if (!menu) {
+        menu = document.createElement("div");
+        menu.id = "pageContextMenu";
+        document.body.appendChild(menu);
+      }
+      menu.innerHTML = `
+        <div class="ctx-menu-item" data-action="rename">✏️ Umbenennen</div>
+        <div class="ctx-menu-item" data-action="duplicate">📋 Duplizieren</div>
+        <div class="ctx-menu-item danger" data-action="delete">🗑️ Löschen</div>
+      `;
+      menu.style.display = "block";
+      menu.style.left = Math.min(evt.clientX, window.innerWidth - 160) + "px";
+      menu.style.top = Math.min(evt.clientY, window.innerHeight - 120) + "px";
+
+      menu.querySelectorAll(".ctx-menu-item").forEach(item => {
+        item.addEventListener("click", () => {
+          const action = item.dataset.action;
+          if (action === "rename") renamePage(pageId);
+          else if (action === "duplicate") duplicatePage(pageId);
+          else if (action === "delete") deletePage(pageId);
+          menu.style.display = "none";
+        });
+      });
+
+      const hide = e => { if (!menu.contains(e.target)) { menu.style.display = "none"; document.removeEventListener("click", hide); } };
+      setTimeout(() => document.addEventListener("click", hide), 0);
     }
 
     function addPage() {
@@ -4312,21 +4740,96 @@ async function syncFromCloud() {
       saveData();
     }
 
+    function deletePage(pageId) {
+      const nb = getActiveNotebook();
+      if (!nb) return;
+      if (nb.pages.length <= 1) {
+        alert("Du kannst die letzte Seite nicht löschen.");
+        return;
+      }
+      if (!confirm("Diese Seite wirklich löschen?")) return;
+      const idx = nb.pages.findIndex(p => p.id === pageId);
+      nb.pages.splice(idx, 1);
+      if (data.activePageId === pageId) {
+        data.activePageId = nb.pages[Math.max(0, idx - 1)].id;
+      }
+      undoStack = []; redoStack = [];
+      renderPageList();
+      redrawActivePage();
+      saveData();
+    }
+
+    function renamePage(pageId) {
+      const nb = getActiveNotebook();
+      if (!nb) return;
+      const page = nb.pages.find(p => p.id === pageId);
+      if (!page) return;
+      const name = prompt("Seitenname:", page.name);
+      if (!name || name.trim() === page.name) return;
+      page.name = name.trim();
+      renderPageList();
+      saveData();
+    }
+
+    function duplicatePage(pageId) {
+      const nb = getActiveNotebook();
+      if (!nb) return;
+      const page = nb.pages.find(p => p.id === pageId);
+      if (!page) return;
+      const copy = JSON.parse(JSON.stringify(page));
+      copy.id = "p-" + Date.now();
+      copy.name = page.name + " (Kopie)";
+      const idx = nb.pages.findIndex(p => p.id === pageId);
+      nb.pages.splice(idx + 1, 0, copy);
+      data.activePageId = copy.id;
+      undoStack = []; redoStack = [];
+      renderPageList();
+      redrawActivePage();
+      saveData();
+    }
+
+    function deleteNotebook() {
+      if (data.notebooks.length <= 1) {
+        alert("Das letzte Notizbuch kann nicht gelöscht werden.");
+        return;
+      }
+      const nb = getActiveNotebook();
+      if (!nb) return;
+      if (!confirm(`Notizbuch "${nb.name}" wirklich löschen?\nAlle ${nb.pages.length} Seite(n) gehen verloren.`)) return;
+      const idx = data.notebooks.findIndex(n => n.id === nb.id);
+      data.notebooks.splice(idx, 1);
+      data.activeNotebookId = data.notebooks[Math.max(0, idx - 1)].id;
+      const newNb = getActiveNotebook();
+      data.activePageId = newNb?.pages[0]?.id || null;
+      undoStack = []; redoStack = [];
+      renderNotebookSelect();
+      renderPageList();
+      redrawActivePage();
+      saveData();
+    }
+
+    function renameNotebook() {
+      const nb = getActiveNotebook();
+      if (!nb) return;
+      const name = prompt("Notizbuch umbenennen:", nb.name);
+      if (!name || name.trim() === nb.name) return;
+      nb.name = name.trim();
+      renderNotebookSelect();
+      saveData();
+    }
+
 
     function resizeCanvas() {
-  const isLandscape = window.innerWidth > window.innerHeight; // 👈 NEU
-  const margin = isLandscape ? 10 : 20;
+  const container = document.getElementById("canvasContainer") || document.getElementById("canvasWrapper");
+  const margin = 12;
+  const w = container.clientWidth - margin * 2;
+  const h = container.clientHeight - margin * 2;
 
-  const wrapper = document.getElementById("canvasWrapper");
-  const w = wrapper.clientWidth - margin * 2;
-  const h = wrapper.clientHeight - margin * 2 - 40;
-
-  const aspect = 1 / 1.414; // A4
+  const aspect = 1 / 1.414; // A4-Querformat
   let cw = w, ch = w / aspect;
-  if (ch > h) {
-    ch = h;
-    cw = h * aspect;
-  }
+  if (ch > h) { ch = h; cw = h * aspect; }
+  cw = Math.max(200, Math.round(cw));
+  ch = Math.max(200, Math.round(ch));
 
   const page = getActivePage();
   const oldStrokes = page ? JSON.parse(JSON.stringify(page.strokes)) : null;
@@ -4335,11 +4838,9 @@ async function syncFromCloud() {
   canvas.width = cw;
   canvas.height = ch;
 
-// Zoom & Pan beim Resize zurücksetzen (optional)
-zoom = 1;
-panX = 0;
-panY = 0;
-
+  // Zoom & Pan beim Resize zurücksetzen
+  zoom = 1; panX = 0; panY = 0;
+  updateCanvasTransform();
 
   if (page && oldStrokes) {
     page.strokes = oldStrokes;
@@ -4563,17 +5064,20 @@ function getTouchCenter(touches) {
 
 function handleTouchStart(e) {
   if (!e.touches || e.touches.length === 0) return;
-
-  // Browser-Scroll/Zoom verhindern
   e.preventDefault();
 
   if (e.touches.length === 1) {
-    // 👉 1 Finger = normal zeichnen
     isPinching = false;
-    startDrawing(e);
+    if (touchMode === "scroll") {
+      // 1-Finger = Canvas verschieben
+      panStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    } else {
+      startDrawing(e);
+    }
   } else if (e.touches.length === 2) {
-    // 👉 2 Finger = Pinch-Zoom starten
+    // 2 Finger = Pinch-Zoom & Pan
     isPinching = true;
+    if (drawing) { drawing = false; currentStroke = null; } // Zeichnen abbrechen
     lastPinchDist = getTouchDistance(e.touches);
     lastPinchCenter = getTouchCenter(e.touches);
   }
@@ -4583,45 +5087,57 @@ function handleTouchMove(e) {
   if (!e.touches || e.touches.length === 0) return;
 
   if (isPinching && e.touches.length === 2) {
-    // 👉 Pinch aktiv
     e.preventDefault();
-
     const newDist = getTouchDistance(e.touches);
     const newCenter = getTouchCenter(e.touches);
 
-    // Zoom-Faktor anpassen
-    const scaleChange = newDist / (lastPinchDist || newDist);
-    zoom *= scaleChange;
+    if (lastPinchDist > 0 && lastPinchCenter) {
+      const scaleChange = newDist / lastPinchDist;
+      const oldZoom = zoom;
+      zoom = Math.max(0.4, Math.min(5, zoom * scaleChange));
 
-    // Grenzen setzen (wie GoodNotes-ish)
-    zoom = Math.max(0.5, Math.min(zoom, 4));
+      // Canvas-Mittelpunkt in Bildschirmkoordinaten
+      const rect = canvas.getBoundingClientRect();
+      const screenCX = rect.left + rect.width / 2;
+      const screenCY = rect.top + rect.height / 2;
 
-    // Pan unter den Fingern anpassen
-    if (lastPinchCenter) {
+      // Pan so anpassen, dass der Pinch-Punkt bleibt
+      panX += (lastPinchCenter.x - screenCX) * (1 - zoom / oldZoom);
+      panY += (lastPinchCenter.y - screenCY) * (1 - zoom / oldZoom);
+
+      // Finger-Bewegung als Pan übernehmen
       panX += newCenter.x - lastPinchCenter.x;
       panY += newCenter.y - lastPinchCenter.y;
     }
 
     lastPinchDist = newDist;
     lastPinchCenter = newCenter;
-
     updateCanvasTransform();
+
   } else if (!isPinching && e.touches.length === 1) {
-    // 👉 normales Zeichnen mit einem Finger
-    moveDrawing(e); // nutzt dein normPos(e)
+    if (touchMode === "scroll") {
+      // 1-Finger Pan im Scroll-Modus
+      e.preventDefault();
+      if (panStart) {
+        panX += e.touches[0].clientX - panStart.x;
+        panY += e.touches[0].clientY - panStart.y;
+        panStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        updateCanvasTransform();
+      }
+    } else {
+      moveDrawing(e);
+    }
   }
 }
 
 function handleTouchEnd(e) {
-  // Pinch beenden, wenn weniger als 2 Finger
   if (isPinching && (!e.touches || e.touches.length < 2)) {
     isPinching = false;
     lastPinchDist = 0;
     lastPinchCenter = null;
   }
-
-  // Wenn gar kein Finger mehr drauf -> Zeichnung abschließen
   if (!e.touches || e.touches.length === 0) {
+    panStart = null;
     stopDrawing(e);
   }
 }
@@ -4884,6 +5400,66 @@ canvas.addEventListener("touchcancel",handleTouchEnd,   { passive: false });
     addPageBtn.addEventListener("click", addPage);
     templateSelect.addEventListener("change", e => setPageTemplate(e.target.value));
     exportPageBtn.addEventListener("click", exportPageAsPNG);
+
+    // Notebook löschen
+    const deleteNotebookBtn = document.getElementById("deleteNotebookBtn");
+    if (deleteNotebookBtn) deleteNotebookBtn.addEventListener("click", deleteNotebook);
+
+    // Sidebar Toggle
+    const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
+    if (sidebarToggleBtn) {
+      sidebarToggleBtn.addEventListener("click", () => {
+        const collapsed = sidebarNotes.classList.toggle("collapsed");
+        sidebarToggleBtn.textContent = collapsed ? "▶" : "◀";
+        sidebarToggleBtn.style.left = collapsed ? "0" : "0";
+        setTimeout(resizeCanvas, 250); // Canvas nach Animation neu berechnen
+      });
+    }
+
+    // Zoom-Buttons
+    const zoomInBtn = document.getElementById("zoomInBtn");
+    const zoomOutBtn = document.getElementById("zoomOutBtn");
+    const zoomResetBtn = document.getElementById("zoomResetBtn");
+    if (zoomInBtn) zoomInBtn.addEventListener("click", () => {
+      const rect = canvas.getBoundingClientRect();
+      zoomToPoint(rect.left + rect.width/2, rect.top + rect.height/2, 1.3);
+    });
+    if (zoomOutBtn) zoomOutBtn.addEventListener("click", () => {
+      const rect = canvas.getBoundingClientRect();
+      zoomToPoint(rect.left + rect.width/2, rect.top + rect.height/2, 1/1.3);
+    });
+    if (zoomResetBtn) zoomResetBtn.addEventListener("click", resetZoom);
+
+    // Touch-Modus Toggle (Zeichnen ↔ Scrollen)
+    const touchModeBtn = document.getElementById("touchModeBtn");
+    if (touchModeBtn) {
+      touchModeBtn.addEventListener("click", () => {
+        touchMode = touchMode === "draw" ? "scroll" : "draw";
+        touchModeBtn.textContent = touchMode === "draw" ? "✍️" : "👆";
+        touchModeBtn.classList.toggle("scroll-mode", touchMode === "scroll");
+        touchModeBtn.title = touchMode === "draw" ? "Touch-Modus: Zeichnen (klicken für Scrollen)" : "Touch-Modus: Scrollen (klicken für Zeichnen)";
+      });
+    }
+
+    // Scroll-Zoom mit Mausrad (Desktop/Magic Trackpad)
+    const canvasContainer = document.getElementById("canvasContainer");
+    if (canvasContainer) {
+      canvasContainer.addEventListener("wheel", e => {
+        e.preventDefault();
+        const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+        zoomToPoint(e.clientX, e.clientY, factor);
+      }, { passive: false });
+    }
+
+    // Tastaturkürzel
+    document.addEventListener("keydown", e => {
+      if (e.target !== document.body && e.target.tagName !== "CANVAS") return;
+      if ((e.ctrlKey || e.metaKey) && e.key === "z") { e.preventDefault(); doUndo(); }
+      if ((e.ctrlKey || e.metaKey) && (e.key === "y" || (e.shiftKey && e.key === "z"))) { e.preventDefault(); doRedo(); }
+      if ((e.ctrlKey || e.metaKey) && e.key === "0") { e.preventDefault(); resetZoom(); }
+      if ((e.ctrlKey || e.metaKey) && e.key === "=") { e.preventDefault(); zoomToPoint(window.innerWidth/2, window.innerHeight/2, 1.3); }
+      if ((e.ctrlKey || e.metaKey) && e.key === "-") { e.preventDefault(); zoomToPoint(window.innerWidth/2, window.innerHeight/2, 1/1.3); }
+    });
 
     // Rastergröße ändern
 if (templateSizeSelect) {
