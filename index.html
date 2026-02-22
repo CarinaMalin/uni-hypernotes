@@ -563,6 +563,33 @@
     }
     .nb-btn-create:hover { opacity: 0.88; }
 
+    /* Bearbeiten-Button auf Karte */
+    .nb-card-edit-btn {
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.45);
+      border: 1.5px solid rgba(255,255,255,0.22);
+      color: #fff;
+      font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s, background 0.15s;
+      z-index: 2;
+      padding: 0;
+    }
+    .nb-card:hover .nb-card-edit-btn { opacity: 1; }
+    .nb-card-edit-btn:hover { background: rgba(0,0,0,0.7); }
+    /* iPad / Touch: immer sichtbar */
+    @media (hover: none) { .nb-card-edit-btn { opacity: 0.82; } }
+
+    /* Aktives Notizbuch – weißer Ring */
+    .nb-card.nb-active {
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.88), 0 8px 28px rgba(0,0,0,0.5);
+    }
+
     /* Light-Mode-Overrides */
     body.light #notebookLibrary    { background: #eef0fa; }
     body.light .nb-add-card        { border-color: rgba(0,0,0,0.13); color: rgba(0,0,0,0.38); }
@@ -682,6 +709,54 @@
     }
     .page-thumb:hover .page-thumb-delete,
     .page-thumb.show-delete .page-thumb-delete { display: flex; }
+
+    /* Drag & Drop – Seiten umsortieren */
+    .page-thumb.dragging  { opacity: 0.3; }
+    .page-thumb.drag-over {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 4px rgba(123,140,255,0.18);
+    }
+    .page-thumb { cursor: grab; }
+    .page-thumb:active { cursor: grabbing; }
+
+    /* Template-Picker Popover */
+    .page-tmpl-picker {
+      position: fixed;
+      background: #1e2135;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 12px;
+      padding: 5px;
+      box-shadow: 0 14px 44px rgba(0,0,0,0.75);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 148px;
+    }
+    .page-tmpl-picker button {
+      text-align: left;
+      padding: 9px 13px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #f0f0ff;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.12s;
+    }
+    .page-tmpl-picker button:hover { background: rgba(255,255,255,0.1); }
+    .page-tmpl-picker .tmpl-icon {
+      font-size: 15px;
+      width: 20px;
+      text-align: center;
+    }
+    body.light .page-tmpl-picker { background: #ffffff; border-color: rgba(0,0,0,0.12); box-shadow: 0 14px 44px rgba(0,0,0,0.18); }
+    body.light .page-tmpl-picker button { color: #1a1a2e; }
+    body.light .page-tmpl-picker button:hover { background: rgba(0,0,0,0.06); }
 
     /* Template controls */
     #templateControls {
@@ -4813,32 +4888,32 @@ async function syncFromCloud() {
 
       data.notebooks.forEach(nb => {
         const pageCount = nb.pages ? nb.pages.length : 0;
+        const isActive  = nb.id === data.activeNotebookId;
         const card = document.createElement("div");
-        card.className = "nb-card";
+        card.className = "nb-card" + (isActive ? " nb-active" : "");
         card.innerHTML = `
           <div class="nb-card-cover" style="background:${nb.color}">
             <span style="position:relative;z-index:1">${nb.emoji}</span>
+            <button class="nb-card-edit-btn" title="Bearbeiten">✏️</button>
           </div>
           <div class="nb-card-info">
             <div class="nb-card-name">${nb.name}</div>
             <div class="nb-card-meta">${pageCount} Seite${pageCount !== 1 ? "n" : ""}</div>
           </div>`;
+
+        // Karte klicken → Notizbuch öffnen
         card.addEventListener("click", () => {
           switchNotebook(nb.id);
           hideLibrary();
         });
-        // Rechtsklick: Umbenennen
-        card.addEventListener("contextmenu", e => {
-          e.preventDefault();
-          const name = prompt("Notizbuch umbenennen:", nb.name);
-          if (name && name.trim()) {
-            nb.name = name.trim();
-            saveData();
-            renderNotebookLibrary();
-            renderNotebookSelect();
-            updateNotebookNameDisplay();
-          }
+
+        // Edit-Button: stoppt Propagation, öffnet Modal im Bearbeiten-Modus
+        const editBtn = card.querySelector(".nb-card-edit-btn");
+        editBtn.addEventListener("click", e => {
+          e.stopPropagation();
+          showNbCreateModal(nb.id);
         });
+
         grid.appendChild(card);
       });
 
@@ -4856,14 +4931,30 @@ async function syncFromCloud() {
       if (el && nb) el.textContent = nb.name;
     }
 
-    // ── Create-Modal ──────────────────────────────────────────
+    // ── Create / Edit-Modal ───────────────────────────────────
     let _nbPickColor = NB_COLORS[0];
     let _nbPickEmoji = "📚";
+    let _nbEditId    = null;   // null = Erstellen, id = Bearbeiten
 
-    function showNbCreateModal() {
+    // Öffnet das Modal – ohne Argument: Neues Notizbuch
+    //                    mit nbId-Argument: Notizbuch bearbeiten
+    function showNbCreateModal(nbIdToEdit) {
       ensureNotebookMeta();
-      _nbPickColor = NB_COLORS[data.notebooks.length % NB_COLORS.length];
-      _nbPickEmoji = NB_EMOJIS[data.notebooks.length % NB_EMOJIS.length];
+      _nbEditId = nbIdToEdit || null;
+      const isEdit = !!_nbEditId;
+      const existing = isEdit ? data.notebooks.find(n => n.id === _nbEditId) : null;
+
+      // Titel + Button-Label anpassen
+      const h3 = document.querySelector(".nb-create-box h3");
+      if (h3) h3.textContent = isEdit ? "Notizbuch bearbeiten" : "Neues Notizbuch";
+      const confirmBtn = document.getElementById("nbConfirmBtn");
+      if (confirmBtn) confirmBtn.textContent = isEdit ? "Speichern ✓" : "Erstellen ✓";
+
+      // Startwerte
+      _nbPickColor = isEdit ? (existing.color || NB_COLORS[0])
+                             : NB_COLORS[data.notebooks.length % NB_COLORS.length];
+      _nbPickEmoji = isEdit ? (existing.emoji || "📚")
+                             : NB_EMOJIS[data.notebooks.length % NB_EMOJIS.length];
 
       // Vorschau
       const preview = document.getElementById("nbCreatePreview");
@@ -4902,11 +4993,11 @@ async function syncFromCloud() {
         emojiGrid.appendChild(btn);
       });
 
-      // Name-Feld leeren + Fokus
+      // Name-Feld
       const nameInput = document.getElementById("nbCreateName");
-      nameInput.value = "";
+      nameInput.value = isEdit ? existing.name : "";
       document.getElementById("nbCreateModal").style.display = "flex";
-      setTimeout(() => nameInput.focus(), 80);
+      setTimeout(() => { nameInput.focus(); if (isEdit) nameInput.select(); }, 80);
     }
 
     function hideNbCreateModal() {
@@ -4915,7 +5006,25 @@ async function syncFromCloud() {
 
     function confirmCreateNotebook() {
       const nameInput = document.getElementById("nbCreateName");
-      const name = nameInput.value.trim() || "Neues Notizbuch";
+      const name = nameInput.value.trim() || (_nbEditId ? "Notizbuch" : "Neues Notizbuch");
+
+      if (_nbEditId) {
+        // ── Bearbeiten: Name, Farbe, Emoji aktualisieren ──
+        const nb = data.notebooks.find(n => n.id === _nbEditId);
+        if (nb) {
+          nb.name  = name;
+          nb.color = _nbPickColor;
+          nb.emoji = _nbPickEmoji;
+          saveData();
+          renderNotebookSelect();
+          updateNotebookNameDisplay();
+          renderNotebookLibrary();
+        }
+        hideNbCreateModal();
+        return;
+      }
+
+      // ── Erstellen: neues Notizbuch anlegen ──
       const nb = {
         id:    "nb-" + Date.now(),
         name,
@@ -4982,6 +5091,8 @@ async function syncFromCloud() {
       saveData();
     }
 
+    let _dragPageId = null;
+
     function renderPageList() {
       const nb = getActiveNotebook();
       pageList.innerHTML = "";
@@ -4990,6 +5101,7 @@ async function syncFromCloud() {
       nb.pages.forEach((page, index) => {
         const div = document.createElement("div");
         div.className = "page-thumb" + (page.id === data.activePageId ? " active" : "");
+        div.draggable = true;
 
         // Canvas-Vorschau
         const previewCanvas = document.createElement("canvas");
@@ -5047,6 +5159,39 @@ async function syncFromCloud() {
         }, { passive: true });
         div.addEventListener("touchend", () => { clearTimeout(lpTimer); });
         div.addEventListener("touchmove", () => { clearTimeout(lpTimer); });
+
+        // ── Drag & Drop: Seiten umsortieren ──────────────────
+        div.addEventListener("dragstart", e => {
+          _dragPageId = page.id;
+          e.dataTransfer.effectAllowed = "move";
+          setTimeout(() => div.classList.add("dragging"), 0);
+        });
+        div.addEventListener("dragend", () => {
+          div.classList.remove("dragging");
+          pageList.querySelectorAll(".page-thumb").forEach(el => el.classList.remove("drag-over"));
+          _dragPageId = null;
+        });
+        div.addEventListener("dragover", e => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+          if (page.id !== _dragPageId) {
+            pageList.querySelectorAll(".page-thumb").forEach(el => el.classList.remove("drag-over"));
+            div.classList.add("drag-over");
+          }
+        });
+        div.addEventListener("drop", e => {
+          e.preventDefault();
+          if (!_dragPageId || _dragPageId === page.id) return;
+          const nb2 = getActiveNotebook();
+          if (!nb2) return;
+          const fromIdx = nb2.pages.findIndex(p => p.id === _dragPageId);
+          const toIdx   = nb2.pages.findIndex(p => p.id === page.id);
+          if (fromIdx === -1 || toIdx === -1) return;
+          const [moved] = nb2.pages.splice(fromIdx, 1);
+          nb2.pages.splice(toIdx, 0, moved);
+          saveData();
+          renderPageList();
+        });
 
         pageList.appendChild(div);
       });
@@ -5150,13 +5295,53 @@ async function syncFromCloud() {
       setTimeout(() => document.addEventListener("click", hide), 0);
     }
 
-    function addPage() {
+    // Template-Picker beim "＋"-Button
+    const NB_TEMPLATES = [
+      { value: "blank",  label: "Blanko",  icon: "⬜" },
+      { value: "lined",  label: "Liniert", icon: "☰"  },
+      { value: "grid",   label: "Kariert", icon: "⊞"  },
+      { value: "dotted", label: "Punkte",  icon: "⠿"  },
+    ];
+
+    function showPageTemplatePicker(e) {
+      const existing = document.getElementById("pageTmplPicker");
+      if (existing) { existing.remove(); return; }
+
+      const picker = document.createElement("div");
+      picker.id = "pageTmplPicker";
+      picker.className = "page-tmpl-picker";
+
+      NB_TEMPLATES.forEach(t => {
+        const btn = document.createElement("button");
+        btn.innerHTML = `<span class="tmpl-icon">${t.icon}</span>${t.label}`;
+        btn.addEventListener("click", () => { picker.remove(); addPage(t.value); });
+        picker.appendChild(btn);
+      });
+
+      // Unter dem Button positionieren
+      const rect = e.currentTarget.getBoundingClientRect();
+      picker.style.top  = (rect.bottom + 6) + "px";
+      picker.style.left = Math.max(4, rect.right - 148) + "px";
+      document.body.appendChild(picker);
+
+      // Schließen bei Klick außerhalb
+      setTimeout(() => {
+        document.addEventListener("click", function hide(ev) {
+          if (!picker.contains(ev.target)) {
+            picker.remove();
+            document.removeEventListener("click", hide);
+          }
+        });
+      }, 0);
+    }
+
+    function addPage(template) {
       const nb = getActiveNotebook();
       if (!nb) return;
       const page = {
         id: "p-" + Date.now(),
         name: "Seite " + (nb.pages.length + 1),
-        template: templateSelect.value || "blank",
+        template: template || templateSelect.value || "blank",
         strokes: []
       };
       nb.pages.push(page);
@@ -5879,7 +6064,7 @@ canvas.addEventListener("touchcancel",handleTouchEnd,   { passive: false });
     clearBtn.addEventListener("click", clearPage);
     addNotebookBtn.addEventListener("click", addNotebook);
     notebookSelect.addEventListener("change", e => switchNotebook(e.target.value));
-    addPageBtn.addEventListener("click", addPage);
+    addPageBtn.addEventListener("click", showPageTemplatePicker);
     templateSelect.addEventListener("change", e => setPageTemplate(e.target.value));
     exportPageBtn.addEventListener("click", exportPageAsPNG);
 
