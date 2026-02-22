@@ -942,15 +942,32 @@
       display: block;
     }
 
-    /* Planner iframe fills full height */
-    #plannerSection.active {
+    /* Planner + Formeln iframe fills full height */
+    #plannerSection.active, #formulasSection.active {
       display: flex;
       flex-direction: column;
       overflow: hidden;
       padding: 0;
     }
-    #plannerSection iframe {
+    #plannerSection iframe, #formulasSection iframe {
       flex: 1;
+      min-height: 0;
+    }
+
+    /* Lernen fills full height with proper flex layout */
+    #learnSection.active {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 10px;
+    }
+    #learnLayout {
+      flex: 1;
+      min-height: 0;
+    }
+    #learnContent {
+      flex: 1;
+      overflow-y: auto;
       min-height: 0;
     }
     /* cardsSection display handled in K2 CSS block below */
@@ -1129,13 +1146,75 @@
       margin-bottom: 4px;
     }
 
+    /* ---- Lernen: Status Dots ---- */
+    .learn-item { display: flex; align-items: center; gap: 6px; }
+    .learn-status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-left: auto; }
+    .learn-s-new      { background: rgba(255,255,255,0.22); }
+    .learn-s-learning { background: #f59e0b; }
+    .learn-s-done     { background: #22c55e; }
+
+    /* ---- Lernen: Status Bar ---- */
+    .learn-status-bar {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      padding-bottom: 10px; margin-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .learn-st-btn {
+      font-size: 11px; padding: 3px 10px; border-radius: 20px;
+      border: 1.5px solid rgba(255,255,255,0.18); background: transparent;
+      color: var(--muted); cursor: pointer; transition: 0.15s;
+    }
+    .learn-st-btn.lsb-new.active     { border-color: rgba(255,255,255,0.5); color: var(--text); background: rgba(255,255,255,0.1); }
+    .learn-st-btn.lsb-learning.active { border-color: #f59e0b; color: #f59e0b; background: rgba(245,158,11,0.12); }
+    .learn-st-btn.lsb-done.active    { border-color: #22c55e; color: #22c55e; background: rgba(34,197,94,0.12); }
+
+    /* ---- Lernen: Quiz Mode ---- */
+    .learn-quiz-toggle { margin-left: auto; font-size: 11px; padding: 4px 12px; border-radius: 20px; }
+    .learn-quiz-toggle.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .learn-reveal-btn {
+      width: 100%; padding: 10px 14px; border-radius: 8px;
+      background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.22);
+      color: var(--muted); font-size: 13px; cursor: pointer; text-align: left;
+      transition: 0.15s; margin-bottom: 6px; display: block;
+    }
+    .learn-reveal-btn:hover { background: rgba(255,255,255,0.09); color: var(--text); }
+    .learn-reveal-content { animation: fadeInDown 0.2s ease; }
+    @keyframes fadeInDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ---- Lernen: Add topic btn ---- */
+    .learn-add-topic-btn {
+      width: 100%; font-size: 11px; padding: 5px 8px; border-radius: 8px;
+      border: 1px dashed rgba(255,255,255,0.18); background: transparent;
+      color: var(--muted); cursor: pointer; transition: 0.15s;
+      margin-top: 4px; text-align: left;
+    }
+    .learn-add-topic-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+    /* ---- Lernen: User Topic Modal ---- */
+    #learnUserModal {
+      display: none; position: fixed; inset: 0; z-index: 400;
+      background: rgba(0,0,0,0.65); align-items: center; justify-content: center;
+    }
+    #learnUserModal.open { display: flex; }
+    .learn-modal-box {
+      background: #1e2135; border-radius: 16px; padding: 22px;
+      width: min(480px, 96vw); display: flex; flex-direction: column; gap: 10px;
+      border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    }
+    body.light .learn-modal-box { background: #ffffff; border-color: rgba(0,0,0,0.12); }
+    .learn-modal-box h3 { margin: 0 0 2px; font-size: 15px; }
+    .learn-modal-box label { font-size: 12px; opacity: 0.7; display: block; margin-bottom: 2px; }
+    .learn-modal-box textarea { width: 100%; min-height: 60px; resize: vertical; box-sizing: border-box; font-size: 12px; }
+    .learn-modal-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 2px; }
+
     @media (max-width: 860px) {
       #sidebarNotes { width: 160px; min-width: 160px; }
       button, select { font-size: 11px; padding: 4px 8px; }
       #toolbar { padding: 4px 8px; }
       .tool-btn { min-height: 38px; min-width: 38px; font-size: 15px; }
       #learnLayout { flex-direction: column; }
-      #learnSidebar { width: 100%; flex-direction: row; overflow-x: auto; }
+      #learnSidebar { width: 100%; flex-direction: row; overflow-x: auto; max-height: 200px; flex-shrink: 0; }
+      #learnSubjects, #learnTopics { max-height: none; overflow-y: visible; }
     }
     /* iPad: bigger touch targets */
     @media (hover: none) and (pointer: coarse) {
@@ -1621,31 +1700,13 @@
     </div>
 
     <!-- FORMELN-TAB -->
-    <div id="formulasSection" class="section">
-      <div class="card">
-        <h3>Formel hinzufügen</h3>
-        <div class="row">
-          <div><input type="text" id="formulaName" placeholder="Name (z.B. ideale Gasgleichung)"></div>
-          <div><input type="text" id="formulaExpression" placeholder="Formel (z.B. p·V = n·R·T)"></div>
-        </div>
-        <div class="row">
-          <div><input type="text" id="formulaTopic" placeholder="Thema (z.B. Allgemeine Chemie / Thermodynamik)"></div>
-          <div><input type="text" id="formulaVariables" placeholder="Variablen & Einheiten (p=..., V=..., ...)"></div>
-        </div>
-        <div class="row">
-          <div><textarea id="formulaNotes" placeholder="Hinweise, typische Fehler, etc."></textarea></div>
-          <div style="flex:0 0 auto; align-self:flex-end; display:flex; flex-direction:column; gap:6px;">
-            <button id="addFormulaBtn">＋ Formel speichern</button>
-            <button id="loadBiotechFormulasBtn" type="button">📥 Biotech-Basisformeln laden</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Formelsammlung</h3>
-        <input type="text" id="formulaFilter" placeholder="Suche nach Name / Thema..." style="margin-bottom:6px;">
-        <div id="formulaList"></div>
-      </div>
+    <div id="formulasSection" class="section" style="padding:0;overflow:hidden;">
+      <iframe
+        id="formelnFrame"
+        src="formeln/index.html"
+        style="width:100%;height:100%;border:none;display:block;"
+        title="Formelsammlung"
+      ></iframe>
     </div>
 
     <!-- TOOLS-TAB (Rechentool) -->
@@ -1999,6 +2060,33 @@
         </div>
         <div id="learnContent">
           <!-- wird per JS gefüllt -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Lernen: Eigenes Thema Modal -->
+    <div id="learnUserModal">
+      <div class="learn-modal-box">
+        <h3 id="learnModalTitle">📖 Eigenes Thema</h3>
+        <div>
+          <label>Titel</label>
+          <input type="text" id="learnUserTitleInput" placeholder="z.B. Glycolyse – Überblick" style="width:100%;box-sizing:border-box;">
+        </div>
+        <div>
+          <label>Lernziele (je eine pro Zeile)</label>
+          <textarea id="learnUserGoalsInput" placeholder="Den Ablauf der Glycolyse benennen.&#10;ATP-Bilanz berechnen."></textarea>
+        </div>
+        <div>
+          <label>Zusammenfassung</label>
+          <textarea id="learnUserSummaryInput" placeholder="Kurze Zusammenfassung des Themas..."></textarea>
+        </div>
+        <div>
+          <label>Wichtige Punkte (je einer pro Zeile)</label>
+          <textarea id="learnUserKeyInput" placeholder="Wichtiger Punkt 1&#10;Wichtiger Punkt 2"></textarea>
+        </div>
+        <div class="learn-modal-row">
+          <button id="learnModalCancelBtn" style="background:rgba(255,255,255,0.06);">Abbrechen</button>
+          <button id="learnModalSaveBtn">Speichern ✓</button>
         </div>
       </div>
     </div>
@@ -4751,15 +4839,19 @@ async function syncToCloud() {
         data.theme = "dark";
         data.cards = { decks: [] };
         data.planner = { exams: [], focusSessions: [] };
-        data.formulas = [];
-        data.tasks = [];
-        data.brain = { entries: [] };
-        data.templateScale = "medium";
+        data.formulas          = [];
+        data.tasks             = [];
+        data.brain             = { entries: [] };
+        data.templateScale     = "medium";
+        data.learnTopicStatus  = {};
+        data.learnUserTopics   = [];
         return;
       }
       try {
         data = JSON.parse(raw);
-        if (!data.templateScale) data.templateScale = "medium"; // 👈 falls altes Backup
+        if (!data.templateScale)     data.templateScale     = "medium"; // 👈 falls altes Backup
+        if (!data.learnTopicStatus)  data.learnTopicStatus  = {};
+        if (!data.learnUserTopics)   data.learnUserTopics   = [];
       } catch (e) {
         console.error("Fehler beim Laden, initialisiere neu", e);
         localStorage.removeItem(STORAGE_KEY);
@@ -6246,131 +6338,8 @@ importJsonInput.addEventListener("change", () => {
     // Planner is now a separate Planner.html loaded via iframe – no JS needed here.
 
     // ---------- FORMELN ----------
-    const formulaName = document.getElementById("formulaName");
-    const formulaExpression = document.getElementById("formulaExpression");
-    const formulaTopic = document.getElementById("formulaTopic");
-    const formulaVariables = document.getElementById("formulaVariables");
-    const formulaNotes = document.getElementById("formulaNotes");
-    const addFormulaBtn = document.getElementById("addFormulaBtn");
-    const loadBiotechFormulasBtn = document.getElementById("loadBiotechFormulasBtn");
-    const formulaFilter = document.getElementById("formulaFilter");
-    const formulaListDiv = document.getElementById("formulaList");
-
-    function renderFormulas() {
-      const q = formulaFilter.value.toLowerCase();
-      formulaListDiv.innerHTML = "";
-      data.formulas
-        .filter(f =>
-          !q ||
-          f.name.toLowerCase().includes(q) ||
-          (f.topic || "").toLowerCase().includes(q)
-        )
-        .forEach(f => {
-          const div = document.createElement("div");
-          div.className = "card";
-          div.innerHTML = `
-            <div style="font-weight:600;">${f.name}</div>
-            <div style="margin-top:4px;">${f.expression}</div>
-            <div style="margin-top:4px; font-size:12px;">
-              Thema: <span class="pill">${f.topic || "-"}</span>
-            </div>
-            <div style="margin-top:4px; font-size:12px; opacity:0.8;">
-              Variablen: ${f.variables || "-"}
-            </div>
-            <div style="margin-top:4px; font-size:12px;">${f.notes || ""}</div>`;
-          formulaListDiv.appendChild(div);
-        });
-    }
-
-    function addFormula() {
-      const name = formulaName.value.trim();
-      const expr = formulaExpression.value.trim();
-      if (!name || !expr) return;
-      data.formulas.push({
-        id: "formula-" + Date.now(),
-        name,
-        expression: expr,
-        topic: formulaTopic.value.trim(),
-        variables: formulaVariables.value.trim(),
-        notes: formulaNotes.value.trim()
-      });
-      formulaName.value = "";
-      formulaExpression.value = "";
-      formulaTopic.value = "";
-      formulaVariables.value = "";
-      formulaNotes.value = "";
-      saveData();
-      renderFormulas();
-    }
-
-    function loadBiotechFormulas() {
-      const presets = [
-        {
-          name: "Ideale Gasgleichung",
-          expression: "p · V = n · R · T",
-          topic: "Allgemeine Chemie / Gase",
-          variables: "p [Pa], V [m³], n [mol], R = 8,314 J·mol⁻¹·K⁻¹, T [K]",
-          notes: "Grundformel für ideale Gase. In PC/Allg. Chemie oft umstellen nach p, V, n oder T."
-        },
-        {
-          name: "Arrhenius-Gleichung",
-          expression: "k = A · e^(−Eₐ / (R · T))",
-          topic: "Allgemeine Chemie / Kinetik",
-          variables: "k [1/s], A: Frequenzfaktor, Eₐ [J/mol], R, T [K]",
-          notes: "Beschreibt Temperaturabhängigkeit der Reaktionsgeschwindigkeit."
-        },
-        {
-          name: "Lambert-Beer-Gesetz",
-          expression: "A = ε · c · l",
-          topic: "Analytik / Spektroskopie",
-          variables: "A: Absorption, ε [L·mol⁻¹·cm⁻¹], c [mol/L], l [cm]",
-          notes: "Standard zur Konzentrationsbestimmung mit Photometer."
-        },
-        {
-          name: "Henderson-Hasselbalch",
-          expression: "pH = pKₐ + log10([A⁻]/[HA])",
-          topic: "Allgemeine Chemie / Säure-Base",
-          variables: "[A⁻]: konjugierte Base, [HA]: Säure",
-          notes: "Wichtig zur Berechnung von Pufferlösungen."
-        },
-        {
-          name: "Verdünnungsgleichung",
-          expression: "c₁ · V₁ = c₂ · V₂",
-          topic: "Allgemeine Chemie / Lösungen",
-          variables: "c in [mol/L], V in [L]",
-          notes: "Basis beim Ansetzen und Verdünnen von Lösungen."
-        },
-        {
-          name: "Stoffmenge",
-          expression: "n = m / M",
-          topic: "Allgemeine Chemie / Grundlagen",
-          variables: "n [mol], m [g], M [g/mol]",
-          notes: "Elementare Umrechnung zwischen Masse und Stoffmenge."
-        }
-      ];
-
-      presets.forEach(f => {
-        const exists = data.formulas.some(ex => ex.name === f.name);
-        if (!exists) {
-          data.formulas.push({
-            id: "formula-" + Date.now() + "-" + Math.random().toString(36).slice(2),
-            name: f.name,
-            expression: f.expression,
-            topic: f.topic,
-            variables: f.variables,
-            notes: f.notes
-          });
-        }
-      });
-
-      saveData();
-      renderFormulas();
-      alert("Biotech/Allg.-Chemie-Basisformeln wurden hinzugefügt (wo sie noch gefehlt haben).");
-    }
-
-    addFormulaBtn.addEventListener("click", addFormula);
-    formulaFilter.addEventListener("input", renderFormulas);
-    loadBiotechFormulasBtn.addEventListener("click", loadBiotechFormulas);
+    // → ausgelagert in formeln/index.html (iframe)
+    function renderFormulas() {} // Stub – wird nicht mehr gebraucht
 
     // ---------- TOOLS / RECHENTOOL ----------
     const toolFormulaSelect = document.getElementById("toolFormulaSelect");
@@ -6587,21 +6556,45 @@ importJsonInput.addEventListener("change", () => {
 
     // ---------- LERNEN ----------
     const learnSubjectsUl = document.getElementById("learnSubjects");
-    const learnTopicsUl = document.getElementById("learnTopics");
+    const learnTopicsUl   = document.getElementById("learnTopics");
     const learnContentDiv = document.getElementById("learnContent");
-    let currentSubjectId = "allg-chem";
-    let currentTopicId = "aufbau-materie";
+    let currentSubjectId  = "allg-chem";
+    let currentTopicId    = "aufbau-materie";
+    let _learnQuizMode    = false;
+    let _learnEditTopicId = null;
 
+    // --- helpers ---
+    function getTopicStatus(subjectId, topicId) {
+      return ((data.learnTopicStatus || {})[subjectId + ":" + topicId]) || "new";
+    }
+    function setTopicStatus(subjectId, topicId, status) {
+      if (!data.learnTopicStatus) data.learnTopicStatus = {};
+      data.learnTopicStatus[subjectId + ":" + topicId] = status;
+      saveData();
+      renderLearnTopics();
+      renderLearnContent();
+    }
+    function getAllTopicsForSubject(subjectId) {
+      const subject  = learnData.subjects.find(s => s.id === subjectId);
+      const builtIn  = subject ? subject.topics : [];
+      const userOwn  = (data.learnUserTopics || []).filter(t => t.subjectId === subjectId);
+      return [...builtIn, ...userOwn];
+    }
+
+    // --- render subjects ---
     function renderLearnSubjects() {
       learnSubjectsUl.innerHTML = "";
       learnData.subjects.forEach(sub => {
         const li = document.createElement("li");
         li.className = "learn-item" + (sub.id === currentSubjectId ? " active" : "");
-        li.textContent = sub.name;
+        const span = document.createElement("span");
+        span.style.cssText = "flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;";
+        span.textContent = sub.name;
+        li.appendChild(span);
         li.addEventListener("click", () => {
           currentSubjectId = sub.id;
-          const firstTopic = sub.topics[0];
-          if (firstTopic) currentTopicId = firstTopic.id;
+          const all = getAllTopicsForSubject(sub.id);
+          if (all.length) currentTopicId = all[0].id;
           renderLearnSubjects();
           renderLearnTopics();
           renderLearnContent();
@@ -6610,14 +6603,19 @@ importJsonInput.addEventListener("change", () => {
       });
     }
 
+    // --- render topics ---
     function renderLearnTopics() {
       learnTopicsUl.innerHTML = "";
-      const subject = learnData.subjects.find(s => s.id === currentSubjectId);
-      if (!subject) return;
-      subject.topics.forEach(t => {
+      const allTopics = getAllTopicsForSubject(currentSubjectId);
+      allTopics.forEach(t => {
+        const status   = getTopicStatus(currentSubjectId, t.id);
+        const dotClass = status === "done" ? "learn-s-done"
+                       : status === "learning" ? "learn-s-learning"
+                       : "learn-s-new";
         const li = document.createElement("li");
         li.className = "learn-item" + (t.id === currentTopicId ? " active" : "");
-        li.textContent = t.title;
+        li.innerHTML = `<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.title}</span>
+                        <span class="learn-status-dot ${dotClass}"></span>`;
         li.addEventListener("click", () => {
           currentTopicId = t.id;
           renderLearnTopics();
@@ -6625,87 +6623,154 @@ importJsonInput.addEventListener("change", () => {
         });
         learnTopicsUl.appendChild(li);
       });
+      // "+ Eigenes Thema" button
+      const addBtn = document.createElement("button");
+      addBtn.className = "learn-add-topic-btn";
+      addBtn.textContent = "＋ Eigenes Thema";
+      addBtn.addEventListener("click", () => showLearnUserModal(null));
+      learnTopicsUl.appendChild(addBtn);
     }
 
- function renderLearnContent() {
-  const subject = learnData.subjects.find(s => s.id === currentSubjectId);
-  if (!subject) {
-    learnContentDiv.innerHTML = "";
-    return;
-  }
+    // --- render content ---
+    function renderLearnContent() {
+      const subject   = learnData.subjects.find(s => s.id === currentSubjectId);
+      const allTopics = getAllTopicsForSubject(currentSubjectId);
+      const topic     = allTopics.find(t => t.id === currentTopicId) || allTopics[0];
+      if (!topic) { learnContentDiv.innerHTML = ""; return; }
 
-  const topic = subject.topics.find(t => t.id === currentTopicId) || subject.topics[0];
-  if (!topic) {
-    learnContentDiv.innerHTML = "";
-    return;
-  }
+      const subjectName = subject ? subject.name : "Eigene Themen";
+      const status      = getTopicStatus(currentSubjectId, topic.id);
+      const isUserTopic = !!topic.userCreated;
 
-  const tagsHtml = (topic.tags || [])
-    .map(tag => `<span class="learn-chip">${tag}</span>`)
-    .join("");
+      // helper: wrap section in reveal-overlay if quiz mode is on
+      function quizSection(title, innerHtml, label) {
+        if (!_learnQuizMode) {
+          return `<div class="learn-section-title">${title}</div>${innerHtml}`;
+        }
+        return `<div class="learn-section-title">${title}</div>
+          <button class="learn-reveal-btn js-reveal-btn">👆 Tippen zum Aufdecken – <em>${label || title}</em></button>
+          <div class="learn-reveal-content" style="display:none;">${innerHtml}</div>`;
+      }
 
-  const goalsHtml = (topic.goals || [])
-    .map(g => `<li>${g}</li>`)
-    .join("");
+      const tagsHtml     = (topic.tags || []).map(tag => `<span class="learn-chip">${tag}</span>`).join("");
+      const goalsHtml    = (topic.goals || []).map(g => `<li>${g}</li>`).join("");
+      const keyHtml      = (topic.keyPoints || []).map(k => `<li>${k}</li>`).join("");
+      const formulasHtml = (topic.formulas || []).map(f => `<li><code>${f}</code></li>`).join("");
+      const visualHtml   = topic.visual
+        ? quizSection("Visuelle Hilfe", `<div class="learn-visual">${topic.visual}</div>`, "Diagramm")
+        : "";
+      const detailHtml   = (topic.detailBlocks || [])
+        .map(b => quizSection(b.title, `<div style="font-size:12px;line-height:1.5;margin-bottom:6px;">${b.content}</div>`, b.title))
+        .join("");
 
-  const keyHtml = (topic.keyPoints || [])
-    .map(k => `<li>${k}</li>`)
-    .join("");
+      learnContentDiv.innerHTML = `
+        <div class="card learn-card">
+          <div class="learn-card-header" style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">
+            <div>
+              <div class="learn-heading">${topic.title}</div>
+              <div class="learn-subheading">${subjectName}</div>
+            </div>
+            <div style="font-size:11px;opacity:0.6;flex-shrink:0;margin-left:8px;">${(topic.tags || []).length} Stichworte</div>
+          </div>
 
-  const formulasHtml = (topic.formulas || [])
-    .map(f => `<li><code>${f}</code></li>`)
-    .join("");
+          <div class="learn-chiprow">${tagsHtml}</div>
 
-  const visualHtml = topic.visual
-    ? `<div class="learn-section-title">Visuelle Hilfe</div>
-       <div class="learn-visual">${topic.visual}</div>`
-    : "";
+          <!-- Status bar -->
+          <div class="learn-status-bar">
+            <span style="font-size:11px;opacity:0.65;">Fortschritt:</span>
+            <button id="lsb-new"      class="learn-st-btn lsb-new      ${status==="new"      ? "active" : ""}">⬜ Neu</button>
+            <button id="lsb-learning" class="learn-st-btn lsb-learning ${status==="learning" ? "active" : ""}">📖 Lerne ich</button>
+            <button id="lsb-done"     class="learn-st-btn lsb-done     ${status==="done"     ? "active" : ""}">✅ Gelernt</button>
+            ${isUserTopic ? `
+              <button id="lsb-edit"   style="font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,0.06);">✏️</button>
+              <button id="lsb-delete" style="font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(255,80,80,0.12);color:#f87171;">🗑️</button>
+            ` : ""}
+            <button id="lsb-quiz" class="learn-quiz-toggle ${_learnQuizMode ? "on" : ""}">🎯 Quiz</button>
+          </div>
 
-  const detailBlocksHtml = (topic.detailBlocks || [])
-    .map(block => `
-      <div class="learn-section-title">${block.title}</div>
-      <div style="font-size:12px; line-height:1.5; margin-bottom:6px;">
-        ${block.content}
-      </div>
-    `)
-    .join("");
+          <div class="learn-section-title">Lernziele</div>
+          <ul class="learn-list">${goalsHtml}</ul>
 
-  learnContentDiv.innerHTML = `
-    <div class="card learn-card">
-      <div class="learn-card-header">
-        <div>
-          <div class="learn-heading">${topic.title}</div>
-          <div class="learn-subheading">${subject.name}</div>
-        </div>
-        <div class="learn-tagcount">
-          ${(topic.tags || []).length} Stichworte
-        </div>
-      </div>
+          ${quizSection("Zusammenfassung",
+            `<p style="font-size:13px;line-height:1.5;margin-top:4px;">${topic.summary || "<em style='opacity:0.5'>Noch keine Zusammenfassung.</em>"}</p>`,
+            "Zusammenfassung")}
 
-      <div class="learn-chiprow">${tagsHtml}</div>
+          ${quizSection("Wichtige Punkte",
+            `<ul class="learn-list">${keyHtml || "<li style='opacity:0.5'>Noch keine Punkte.</li>"}</ul>`,
+            "Punkte")}
 
-      <div class="learn-section-title">Lernziele</div>
-      <ul class="learn-list">${goalsHtml}</ul>
+          ${formulasHtml ? quizSection("Wichtige Formeln",
+            `<ul class="learn-list">${formulasHtml}</ul>`, "Formeln") : ""}
 
-      <div class="learn-section-title">Zusammenfassung</div>
-      <p style="font-size:13px; line-height:1.5; margin-top:4px;">
-        ${topic.summary}
-      </p>
+          ${visualHtml}
+          ${detailHtml}
+        </div>`;
 
-      <div class="learn-section-title">Wichtige Punkte</div>
-      <ul class="learn-list">${keyHtml}</ul>
+      // attach event listeners (no inline onclick needed)
+      document.getElementById("lsb-new")     ?.addEventListener("click", () => setTopicStatus(currentSubjectId, topic.id, "new"));
+      document.getElementById("lsb-learning")?.addEventListener("click", () => setTopicStatus(currentSubjectId, topic.id, "learning"));
+      document.getElementById("lsb-done")    ?.addEventListener("click", () => setTopicStatus(currentSubjectId, topic.id, "done"));
+      document.getElementById("lsb-quiz")    ?.addEventListener("click", () => { _learnQuizMode = !_learnQuizMode; renderLearnContent(); });
+      document.getElementById("lsb-edit")    ?.addEventListener("click", () => showLearnUserModal(topic.id));
+      document.getElementById("lsb-delete")  ?.addEventListener("click", () => deleteLearnUserTopic(topic.id));
 
-      ${formulasHtml
-        ? `<div class="learn-section-title">Wichtige Formeln (Überblick)</div>
-           <ul class="learn-list">${formulasHtml}</ul>`
-        : ""}
+      // reveal buttons (quiz mode)
+      learnContentDiv.querySelectorAll(".js-reveal-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          btn.style.display = "none";
+          const content = btn.nextElementSibling;
+          if (content) content.style.display = "";
+        });
+      });
+    }
 
-      ${visualHtml}
-
-      ${detailBlocksHtml}
-    </div>
-  `;
-}
+    // --- user topic CRUD ---
+    function showLearnUserModal(topicId) {
+      _learnEditTopicId = topicId || null;
+      const existing    = topicId ? (data.learnUserTopics || []).find(t => t.id === topicId) : null;
+      document.getElementById("learnModalTitle").textContent      = existing ? "✏️ Thema bearbeiten" : "📖 Eigenes Thema";
+      document.getElementById("learnUserTitleInput").value        = existing ? existing.title      : "";
+      document.getElementById("learnUserGoalsInput").value        = existing ? (existing.goals    || []).join("\n") : "";
+      document.getElementById("learnUserSummaryInput").value      = existing ? (existing.summary  || "")           : "";
+      document.getElementById("learnUserKeyInput").value          = existing ? (existing.keyPoints|| []).join("\n") : "";
+      document.getElementById("learnUserModal").classList.add("open");
+    }
+    function hideLearnUserModal() {
+      document.getElementById("learnUserModal").classList.remove("open");
+    }
+    function saveLearnUserTopic() {
+      const title = document.getElementById("learnUserTitleInput").value.trim();
+      if (!title) { alert("Bitte einen Titel eingeben."); return; }
+      const goals     = document.getElementById("learnUserGoalsInput").value.split("\n").map(s => s.trim()).filter(Boolean);
+      const summary   = document.getElementById("learnUserSummaryInput").value.trim();
+      const keyPoints = document.getElementById("learnUserKeyInput").value.split("\n").map(s => s.trim()).filter(Boolean);
+      if (!data.learnUserTopics) data.learnUserTopics = [];
+      if (_learnEditTopicId) {
+        const idx = data.learnUserTopics.findIndex(t => t.id === _learnEditTopicId);
+        if (idx >= 0) data.learnUserTopics[idx] = { ...data.learnUserTopics[idx], title, goals, summary, keyPoints };
+      } else {
+        const nt = { id: "ut-" + Date.now(), subjectId: currentSubjectId, userCreated: true, title, goals, summary, keyPoints, tags: [], formulas: [] };
+        data.learnUserTopics.push(nt);
+        currentTopicId = nt.id;
+      }
+      saveData();
+      hideLearnUserModal();
+      renderLearnTopics();
+      renderLearnContent();
+    }
+    function deleteLearnUserTopic(topicId) {
+      if (!confirm("Eigenes Thema löschen?")) return;
+      data.learnUserTopics = (data.learnUserTopics || []).filter(t => t.id !== topicId);
+      saveData();
+      const remaining = getAllTopicsForSubject(currentSubjectId);
+      currentTopicId  = remaining.length ? remaining[0].id : null;
+      renderLearnTopics();
+      renderLearnContent();
+    }
+    // modal event listeners
+    document.getElementById("learnModalCancelBtn")?.addEventListener("click", hideLearnUserModal);
+    document.getElementById("learnModalSaveBtn")  ?.addEventListener("click", saveLearnUserTopic);
+    document.getElementById("learnUserModal")      ?.addEventListener("click", e => { if (e.target === e.currentTarget) hideLearnUserModal(); });
 
 
     // ---------- INIT ----------
