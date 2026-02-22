@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formelsammlung</title>
+
+<!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="initApp()"></script>
+
+<style>
+  /* ── Reset & Tokens ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #161821;
+    --surface: #1e2135;
+    --border:  rgba(255,255,255,0.09);
+    --text:    #f0f0ff;
+    --muted:   rgba(240,240,255,0.45);
+    --accent:  #7b8cff;
+    --accent2: #a78bfa;
+    --danger:  #ef4444;
+    --radius:  14px;
+  }
+  body.light {
+    --bg:      #eef0fa;
+    --surface: #ffffff;
+    --border:  rgba(0,0,0,0.09);
+    --text:    #1a1a2e;
+    --muted:   rgba(0,0,0,0.45);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* ── Layout ─────────────────────────────────────────────── */
+  .app {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    grid-template-rows: 56px 1fr;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+  header {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 20px;
+  }
+  header h1 { font-size: 16px; font-weight: 700; flex: 1; }
+  header .search {
+    flex: 1;
+    max-width: 320px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+  }
+  header .search::placeholder { color: var(--muted); }
+  .topic-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    max-width: 400px;
+  }
+  .topic-pills::-webkit-scrollbar { display: none; }
+  .pill-btn {
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .pill-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ── Sidebar (Eingabe) ───────────────────────────────────── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 18px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .sidebar h2 { font-size: 13px; font-weight: 700; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* ── Form inputs ─────────────────────────────────────────── */
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+  .field input, .field textarea, .field select {
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.15s;
+  }
+  .field input:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .field textarea { min-height: 64px; }
+
+  /* LaTeX toggle */
+  .latex-toggle {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .latex-toggle input { accent-color: var(--accent); cursor: pointer; }
+
+  /* LaTeX Live-Vorschau */
+  .latex-preview {
+    min-height: 40px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: var(--bg);
+    border: 1px dashed var(--border);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    overflow-x: auto;
+  }
+  .latex-preview.has-content { color: var(--text); }
+  .latex-preview .katex-error { color: #f87171; font-size: 12px; }
+
+  /* Buttons */
+  .btn {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); color: #fff; width: 100%; }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-secondary {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 100%;
+    font-weight: 400;
+    font-size: 12px;
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .divider { border: none; border-top: 1px solid var(--border); }
+
+  /* ── Formel-Grid ─────────────────────────────────────────── */
+  .list {
+    padding: 18px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-content: start;
+  }
+
+  .formula-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    position: relative;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .formula-card:hover {
+    border-color: rgba(123,140,255,0.35);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  }
+
+  .fc-name {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .fc-expr {
+    font-size: 20px;
+    padding: 10px 0 12px;
+    overflow-x: auto;
+    text-align: center;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Plain-text Formeln */
+  .fc-expr.plain {
+    font-family: "Georgia", serif;
+    font-size: 17px;
+    font-style: italic;
+    color: var(--text);
+  }
+  .fc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+    align-items: center;
+  }
+  .topic-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(123,140,255,0.15);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .fc-vars {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+  .fc-notes {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* Card actions */
+  .fc-actions {
+    position: absolute;
+    top: 12px; right: 12px;
+    display: flex;
+    gap: 5px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .formula-card:hover .fc-actions { opacity: 1; }
+  .fc-btn {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.12s, color 0.12s;
+  }
+  .fc-btn:hover { background: var(--surface); color: var(--text); }
+  .fc-btn.del:hover { background: rgba(239,68,68,0.15); color: var(--danger); border-color: var(--danger); }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+  .empty p { font-size: 14px; }
+
+  /* Edit modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px;
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+  }
+  .modal-box h3 { font-size: 15px; font-weight: 700; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+  .btn-sm { padding: 8px 16px; border-radius: 9px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+  .btn-sm.cancel { background: rgba(255,255,255,0.07); color: var(--muted); }
+  .btn-sm.save { background: var(--accent); color: #fff; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <header>
+    <h1>∑ Formelsammlung</h1>
+    <input class="search" id="searchInput" type="text" placeholder="Name oder Thema suchen…">
+    <div class="topic-pills" id="topicPills"></div>
+  </header>
+
+  <!-- ── Sidebar: Neue Formel ────────────────────────────── -->
+  <aside class="sidebar">
+    <h2 id="formSidebarTitle">Neue Formel</h2>
+
+    <div class="field">
+      <label>Name</label>
+      <input id="fName" type="text" placeholder="z.B. Ideale Gasgleichung">
+    </div>
+
+    <div class="field">
+      <label>Formel</label>
+      <input id="fExpr" type="text" placeholder="z.B. p \cdot V = n \cdot R \cdot T">
+      <label class="latex-toggle">
+        <input type="checkbox" id="fLatex" checked> LaTeX-Modus
+      </label>
+    </div>
+
+    <!-- Live-Vorschau -->
+    <div class="latex-preview" id="fPreview">Vorschau erscheint hier…</div>
+
+    <div class="field">
+      <label>Thema / Kategorie</label>
+      <input id="fTopic" type="text" placeholder="z.B. Thermodynamik">
+    </div>
+
+    <div class="field">
+      <label>Variablen &amp; Einheiten</label>
+      <textarea id="fVars" placeholder="p = Druck [Pa], V = Volumen [m³], …"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Hinweise</label>
+      <textarea id="fNotes" placeholder="Typische Fehler, Herleitungen, …"></textarea>
+    </div>
+
+    <button class="btn btn-primary" id="fSaveBtn">＋ Formel speichern</button>
+    <button class="btn btn-secondary" id="fCancelBtn" style="display:none">Abbrechen</button>
+
+    <hr class="divider">
+
+    <button class="btn btn-secondary" id="loadPresetsBtn">📥 Biotech-Basisformeln laden</button>
+  </aside>
+
+  <!-- ── Formel-Liste ────────────────────────────────────── -->
+  <main class="list" id="formulaList"></main>
+
+</div>
+
+<!-- Edit-Modal (wird per JS befüllt) -->
+<div class="modal-overlay" id="editModal" style="display:none">
+  <div class="modal-box">
+    <h3>Formel bearbeiten</h3>
+    <div class="field"><label>Name</label><input id="eName" type="text"></div>
+    <div class="field">
+      <label>Formel</label>
+      <input id="eExpr" type="text">
+      <label class="latex-toggle"><input type="checkbox" id="eLatex" checked> LaTeX-Modus</label>
+    </div>
+    <div class="latex-preview" id="ePreview">Vorschau</div>
+    <div class="field"><label>Thema</label><input id="eTopic" type="text"></div>
+    <div class="field"><label>Variablen</label><textarea id="eVars"></textarea></div>
+    <div class="field"><label>Hinweise</label><textarea id="eNotes"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-sm cancel" id="eCancelBtn">Abbrechen</button>
+      <button class="btn-sm save" id="eSaveBtn">Speichern ✓</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Storage ────────────────────────────────────────────────
+const STORAGE_KEY = "uniHyperNotes_v3";
+
+function loadData() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+function getFormulas() {
+  const d = loadData();
+  if (!d.formulas) d.formulas = [];
+  return d;
+}
+
+// ── KaTeX render helper ────────────────────────────────────
+function renderLatex(expr, el) {
+  try {
+    katex.render(expr, el, { throwOnError: false, displayMode: false });
+    el.classList.add("has-content");
+  } catch(e) {
+    el.innerHTML = `<span class="katex-error">Fehler: ${e.message}</span>`;
+  }
+}
+
+// Versucht LaTeX zu rendern; fällt auf plain zurück wenn kein \ vorhanden
+function isLatex(expr) {
+  return expr && (expr.includes("\\") || expr.includes("^") || expr.includes("_") || expr.includes("{"));
+}
+
+// ── State ──────────────────────────────────────────────────
+let filterQuery  = "";
+let filterTopic  = "";
+let editId       = null;
+
+// ── Live-Vorschau ──────────────────────────────────────────
+function updatePreview(exprInput, latexCb, previewEl) {
+  const expr = exprInput.value.trim();
+  if (!expr) { previewEl.textContent = "Vorschau erscheint hier…"; previewEl.classList.remove("has-content"); return; }
+  if (latexCb.checked) {
+    renderLatex(expr, previewEl);
+  } else {
+    previewEl.textContent = expr;
+    previewEl.classList.add("has-content");
+  }
+}
+
+// ── Render list ────────────────────────────────────────────
+function renderList() {
+  const data = getFormulas();
+  const list = document.getElementById("formulaList");
+  const q    = filterQuery.toLowerCase();
+
+  const filtered = data.formulas.filter(f => {
+    const matchQ = !q || f.name.toLowerCase().includes(q) || (f.topic || "").toLowerCase().includes(q)
+                      || (f.expression || "").toLowerCase().includes(q);
+    const matchT = !filterTopic || (f.topic || "").toLowerCase().includes(filterTopic.toLowerCase());
+    return matchQ && matchT;
+  });
+
+  list.innerHTML = "";
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">∑</div><p>${
+      data.formulas.length === 0
+        ? 'Noch keine Formeln gespeichert.<br>Füge deine erste Formel links hinzu.'
+        : 'Keine Treffer für diese Suche.'
+    }</p></div>`;
+    return;
+  }
+
+  filtered.forEach(f => {
+    const card = document.createElement("div");
+    card.className = "formula-card";
+
+    // Ausdruck: LaTeX oder plain
+    let exprHTML;
+    if (isLatex(f.expression)) {
+      const exprEl = document.createElement("div");
+      exprEl.className = "fc-expr";
+      renderLatex(f.expression, exprEl);
+      exprHTML = exprEl.outerHTML;
+    } else {
+      exprHTML = `<div class="fc-expr plain">${escapeHtml(f.expression)}</div>`;
+    }
+
+    card.innerHTML = `
+      <div class="fc-name">${escapeHtml(f.name)}</div>
+      ${exprHTML}
+      <div class="fc-meta">
+        ${f.topic ? `<span class="topic-tag">${escapeHtml(f.topic)}</span>` : ""}
+      </div>
+      ${f.variables ? `<div class="fc-vars">📐 ${escapeHtml(f.variables)}</div>` : ""}
+      ${f.notes    ? `<div class="fc-notes">💡 ${escapeHtml(f.notes)}</div>`    : ""}
+      <div class="fc-actions">
+        <button class="fc-btn" data-edit="${f.id}" title="Bearbeiten">✏️</button>
+        <button class="fc-btn del" data-del="${f.id}" title="Löschen">🗑</button>
+      </div>`;
+    list.appendChild(card);
+  });
+
+  // Edit / Delete listeners
+  list.querySelectorAll("[data-edit]").forEach(btn =>
+    btn.addEventListener("click", () => openEditModal(btn.dataset.edit)));
+  list.querySelectorAll("[data-del]").forEach(btn =>
+    btn.addEventListener("click", () => deleteFormula(btn.dataset.del)));
+
+  renderTopicPills();
+}
+
+// ── Topic-Pills ────────────────────────────────────────────
+function renderTopicPills() {
+  const data = getFormulas();
+  const topics = [...new Set(data.formulas.map(f => f.topic).filter(Boolean))].sort();
+  const container = document.getElementById("topicPills");
+  container.innerHTML = "";
+
+  const all = document.createElement("button");
+  all.className = "pill-btn" + (!filterTopic ? " active" : "");
+  all.textContent = "Alle";
+  all.addEventListener("click", () => { filterTopic = ""; renderList(); });
+  container.appendChild(all);
+
+  topics.forEach(t => {
+    const btn = document.createElement("button");
+    btn.className = "pill-btn" + (filterTopic === t ? " active" : "");
+    btn.textContent = t;
+    btn.addEventListener("click", () => { filterTopic = t; renderList(); });
+    container.appendChild(btn);
+  });
+}
+
+// ── Add ────────────────────────────────────────────────────
+function addFormula() {
+  const name  = document.getElementById("fName").value.trim();
+  const expr  = document.getElementById("fExpr").value.trim();
+  const topic = document.getElementById("fTopic").value.trim();
+  const vars  = document.getElementById("fVars").value.trim();
+  const notes = document.getElementById("fNotes").value.trim();
+  if (!name || !expr) { document.getElementById("fName").focus(); return; }
+
+  const data = getFormulas();
+  data.formulas.push({ id: "f-" + Date.now(), name, expression: expr, topic, variables: vars, notes });
+  saveData(data);
+
+  // Clear form
+  ["fName","fExpr","fTopic","fVars","fNotes"].forEach(id => document.getElementById(id).value = "");
+  document.getElementById("fPreview").textContent = "Vorschau erscheint hier…";
+  document.getElementById("fPreview").classList.remove("has-content");
+
+  renderList();
+}
+
+// ── Delete ─────────────────────────────────────────────────
+function deleteFormula(id) {
+  if (!confirm("Formel wirklich löschen?")) return;
+  const data = getFormulas();
+  data.formulas = data.formulas.filter(f => f.id !== id);
+  saveData(data);
+  renderList();
+}
+
+// ── Edit ───────────────────────────────────────────────────
+function openEditModal(id) {
+  const data = getFormulas();
+  const f = data.formulas.find(f => f.id === id);
+  if (!f) return;
+  editId = id;
+
+  document.getElementById("eName").value  = f.name;
+  document.getElementById("eExpr").value  = f.expression;
+  document.getElementById("eTopic").value = f.topic || "";
+  document.getElementById("eVars").value  = f.variables || "";
+  document.getElementById("eNotes").value = f.notes || "";
+
+  const isLtx = isLatex(f.expression);
+  document.getElementById("eLatex").checked = isLtx;
+
+  const ePreview = document.getElementById("ePreview");
+  if (isLtx) { renderLatex(f.expression, ePreview); }
+  else { ePreview.textContent = f.expression; ePreview.classList.add("has-content"); }
+
+  document.getElementById("editModal").style.display = "flex";
+}
+
+function saveEdit() {
+  const data = getFormulas();
+  const f = data.formulas.find(f => f.id === editId);
+  if (!f) return;
+  f.name       = document.getElementById("eName").value.trim()  || f.name;
+  f.expression = document.getElementById("eExpr").value.trim()  || f.expression;
+  f.topic      = document.getElementById("eTopic").value.trim();
+  f.variables  = document.getElementById("eVars").value.trim();
+  f.notes      = document.getElementById("eNotes").value.trim();
+  saveData(data);
+  closeEditModal();
+  renderList();
+}
+
+function closeEditModal() {
+  document.getElementById("editModal").style.display = "none";
+  editId = null;
+}
+
+// ── Presets ────────────────────────────────────────────────
+const PRESETS = [
+  { name: "Ideale Gasgleichung",      expression: "p \\cdot V = n \\cdot R \\cdot T",              topic: "Allg. Chemie / Gase",        variables: "p = Druck [Pa], V = Volumen [m³], n = Stoffmenge [mol], R = 8{,}314\\,\\text{J·mol}^{-1}\\text{K}^{-1}, T = Temperatur [K]", notes: "Grundformel für ideale Gase. Oft nach p, V, n oder T umstellen." },
+  { name: "Arrhenius-Gleichung",       expression: "k = A \\cdot e^{-E_a / (R \\cdot T)}",          topic: "Allg. Chemie / Kinetik",     variables: "k = Geschwindigkeitskonstante, A = Frequenzfaktor, E_a = Aktivierungsenergie [J·mol⁻¹]", notes: "Beschreibt Temperaturabhängigkeit der Reaktionsgeschwindigkeit." },
+  { name: "Lambert-Beer-Gesetz",       expression: "A = \\varepsilon \\cdot c \\cdot l",             topic: "Analytik / Spektroskopie",   variables: "A = Absorption (dimensionslos), ε = molarer Extinktionskoeffizient [L·mol⁻¹·cm⁻¹], c = Konzentration [mol/L], l = Schichtdicke [cm]", notes: "Standard zur photometrischen Konzentrationsbestimmung." },
+  { name: "Henderson-Hasselbalch",     expression: "\\text{pH} = \\text{pK}_a + \\log_{10}\\!\\left(\\frac{[A^-]}{[HA]}\\right)", topic: "Allg. Chemie / Säure-Base", variables: "[A⁻] = konjugierte Base, [HA] = Säure", notes: "Wichtig zur Berechnung von Pufferlösungen." },
+  { name: "Verdünnungsgleichung",      expression: "c_1 \\cdot V_1 = c_2 \\cdot V_2",              topic: "Allg. Chemie / Lösungen",    variables: "c [mol/L], V [L]", notes: "Basis beim Ansetzen und Verdünnen von Lösungen." },
+  { name: "Stoffmenge",               expression: "n = \\frac{m}{M}",                               topic: "Allg. Chemie / Grundlagen",  variables: "n [mol], m = Masse [g], M = Molare Masse [g/mol]", notes: "Elementare Umrechnung zwischen Masse und Stoffmenge." },
+  { name: "Michaelis-Menten",         expression: "v = \\frac{V_{\\max} \\cdot [S]}{K_M + [S]}",   topic: "Biochemie / Enzymkinetik",   variables: "v = Reaktionsgeschwindigkeit, V_max = Maximalgeschwindigkeit, [S] = Substratkonzentration, K_M = Michaelis-Konstante", notes: "K_M entspricht [S] bei v = V_max/2. Lineweaver-Burk-Plot zur grafischen Auswertung." },
+  { name: "Nernst-Gleichung",         expression: "E = E^0 - \\frac{RT}{zF} \\ln Q",               topic: "Biochemie / Elektrochemie",  variables: "E = Zellpotential [V], E⁰ = Standardpotential, R = 8,314 J·mol⁻¹·K⁻¹, T [K], z = Anzahl Elektronen, F = 96485 C·mol⁻¹", notes: "Beschreibt Gleichgewichtspotential bei gegebener Ionenverteilung." },
+  { name: "ΔG = ΔH − T·ΔS",         expression: "\\Delta G = \\Delta H - T \\cdot \\Delta S",      topic: "Biochemie / Thermodynamik",  variables: "ΔG = freie Enthalpie [kJ/mol], ΔH = Enthalpie [kJ/mol], T [K], ΔS = Entropie [kJ·mol⁻¹·K⁻¹]", notes: "ΔG < 0 → spontan. ΔG > 0 → nicht spontan." },
+  { name: "Konzentration aus OD₆₀₀",  expression: "c = \\frac{\\text{OD}_{600}}{\\varepsilon \\cdot l}", topic: "Mikrobiologie / Analytik", variables: "OD₆₀₀ = optische Dichte bei 600 nm, ε = Extinktionskoeffizient, l = Schichtdicke [cm]", notes: "Zur Bestimmung der Bakterienkonzentration (Näherung)." },
+
+  // ── Säure-Base ────────────────────────────────────────────
+  { name: "pH-Definition",
+    expression: "\\text{pH} = -\\log_{10}[\\text{H}^+]",
+    topic: "Allg. Chemie / Säure-Base",
+    variables: "[H⁺] = Protonenkonzentration [mol/L]",
+    notes: "pOH = -log[OH⁻]; pH + pOH = 14 (bei 25 °C)." },
+
+  { name: "Ionenprodukt des Wassers",
+    expression: "K_w = [\\text{H}^+][\\text{OH}^-] = 10^{-14}",
+    topic: "Allg. Chemie / Säure-Base",
+    variables: "K_w = Ionenprodukt (25 °C)",
+    notes: "Basis für pH/pOH-Berechnungen. Temperaturabhängig." },
+
+  // ── Thermodynamik ─────────────────────────────────────────
+  { name: "ΔG° und Gleichgewichtskonstante",
+    expression: "\\Delta G^\\circ = -R \\cdot T \\cdot \\ln K",
+    topic: "Biochemie / Thermodynamik",
+    variables: "ΔG° [J/mol], R = 8,314 J·mol⁻¹·K⁻¹, T [K], K = Gleichgewichtskonstante",
+    notes: "K > 1 → ΔG° < 0 → Reaktion läuft spontan ab." },
+
+  { name: "ΔG unter Nicht-Standardbedingungen",
+    expression: "\\Delta G = \\Delta G^\\circ + R \\cdot T \\cdot \\ln Q",
+    topic: "Biochemie / Thermodynamik",
+    variables: "Q = Reaktionsquotient (aktueller Zustand), K = Gleichgewichtskonstante",
+    notes: "Im Gleichgewicht: Q = K → ΔG = 0." },
+
+  // ── Osmose ────────────────────────────────────────────────
+  { name: "Osmotischer Druck (van't Hoff)",
+    expression: "\\pi = i \\cdot c \\cdot R \\cdot T",
+    topic: "Allg. Chemie / Lösungen",
+    variables: "π = osmotischer Druck [Pa], i = van't-Hoff-Faktor, c [mol/L], R, T [K]",
+    notes: "i = 1 für Nicht-Elektrolyte; i = 2 für vollständig dissoziierte 1:1-Salze (z.B. NaCl)." },
+
+  // ── Enzymkinetik ──────────────────────────────────────────
+  { name: "Lineweaver-Burk (Doppelreziproke)",
+    expression: "\\frac{1}{v} = \\frac{K_M}{V_{\\max}} \\cdot \\frac{1}{[S]} + \\frac{1}{V_{\\max}}",
+    topic: "Biochemie / Enzymkinetik",
+    variables: "y-Achsenabschnitt = 1/V_max, Steigung = K_M/V_max, x-Achsenabschnitt = -1/K_M",
+    notes: "Linearisierung der Michaelis-Menten-Kurve. Anfällig für Messfehler bei kleinen [S]." },
+
+  { name: "Hill-Gleichung (kooperative Bindung)",
+    expression: "\\theta = \\frac{[L]^n}{K_d^n + [L]^n}",
+    topic: "Biochemie / Enzymkinetik",
+    variables: "θ = Sättigungsgrad (0–1), [L] = Ligandenkonzentration, K_d = Dissoziationskonstante, n = Hill-Koeffizient",
+    notes: "n > 1: positiv kooperativ (z.B. Hämoglobin). n = 1: entspricht Michaelis-Menten." },
+
+  // ── Mikrobiologie / Wachstum ──────────────────────────────
+  { name: "Exponentielles Bakterienwachstum",
+    expression: "N(t) = N_0 \\cdot e^{\\mu \\cdot t}",
+    topic: "Mikrobiologie / Wachstum",
+    variables: "N(t) = Zellzahl zum Zeitpunkt t, N₀ = Startzellzahl, μ = spezifische Wachstumsrate [h⁻¹]",
+    notes: "Gilt nur in der exponentiellen Phase. μ = ln(2) / t_d." },
+
+  { name: "Verdopplungszeit",
+    expression: "t_d = \\frac{\\ln 2}{\\mu} = \\frac{0{,}693}{\\mu}",
+    topic: "Mikrobiologie / Wachstum",
+    variables: "t_d = Verdopplungszeit [h], μ = spezifische Wachstumsrate [h⁻¹]",
+    notes: "Aus OD-Messungen: μ = (ln OD₂ − ln OD₁) / (t₂ − t₁)." },
+
+  // ── Analytik / Nukleinsäuren ──────────────────────────────
+  { name: "DNA-Konzentration aus A₂₆₀",
+    expression: "c_{\\text{dsDNA}} = A_{260} \\times 50\\;\\mu\\text{g/mL}",
+    topic: "Analytik / Nukleinsäuren",
+    variables: "A₂₆₀ = Absorption bei 260 nm (Schichtdicke 1 cm), Faktor: 50 μg/mL für dsDNA, 33 für ssDNA, 40 für RNA",
+    notes: "A₂₆₀/A₂₈₀ ≈ 1,8 für reine DNA; ≈ 2,0 für reine RNA. Niedrigere Werte → Proteinkontamination." },
+
+  { name: "DNA-Schmelztemperatur (Näherung)",
+    expression: "T_m \\approx 81{,}5 + 16{,}6\\,\\log[\\text{Na}^+] + 0{,}41\\cdot(\\%GC) - \\frac{675}{n}",
+    topic: "Analytik / Nukleinsäuren",
+    variables: "[Na⁺] = Salzkonzentration [mol/L], %GC = GC-Gehalt, n = Länge des Oligonukleotids [bp]",
+    notes: "Einfache Näherung für kurze Oligos: Tm ≈ 4·(G+C) + 2·(A+T) °C." },
+
+  // ── Statistik ─────────────────────────────────────────────
+  { name: "Standardabweichung (Stichprobe)",
+    expression: "s = \\sqrt{\\frac{\\sum_{i=1}^{n}(x_i - \\bar{x})^2}{n-1}}",
+    topic: "Statistik / Fehlerrechnung",
+    variables: "xᵢ = Einzelmesswert, x̄ = Mittelwert, n = Anzahl Messungen",
+    notes: "Nenner (n−1): Bessel-Korrektur für Stichproben. Für Grundgesamtheit: n im Nenner." },
+
+  { name: "Standardfehler des Mittelwerts",
+    expression: "\\text{SE} = \\frac{s}{\\sqrt{n}}",
+    topic: "Statistik / Fehlerrechnung",
+    variables: "s = Standardabweichung, n = Stichprobengröße",
+    notes: "Gibt an, wie genau der Stichprobenmittelwert den wahren Mittelwert schätzt." },
+
+  { name: "Variationskoeffizient (CV)",
+    expression: "CV = \\frac{s}{\\bar{x}} \\times 100\\,\\%",
+    topic: "Statistik / Fehlerrechnung",
+    variables: "s = Standardabweichung, x̄ = Mittelwert",
+    notes: "Relative Streuung. CV < 5 % gilt oft als akzeptabel für Assays." },
+
+  // ── Röntgenkristallographie ───────────────────────────────
+  { name: "Bragg'sche Gleichung",
+    expression: "n \\lambda = 2 d \\sin\\theta",
+    topic: "Strukturbiologie / Kristallographie",
+    variables: "n = Beugungsordnung (ganzzahlig), λ = Wellenlänge [m], d = Netzebenenabstand [m], θ = Glanzwinkel",
+    notes: "Grundlage der Röntgenkristallographie zur Strukturaufklärung von Proteinen und DNA." },
+
+  // ── Massenwirkungsgesetz ──────────────────────────────────
+  { name: "Massenwirkungsgesetz",
+    expression: "K_c = \\frac{[C]^c [D]^d}{[A]^a [B]^b}",
+    topic: "Allg. Chemie / Gleichgewicht",
+    variables: "Für die Reaktion: aA + bB ⇌ cC + dD; Konzentrationen in [mol/L]",
+    notes: "Gilt nur im Gleichgewicht. Feststoffe und reine Flüssigkeiten werden nicht berücksichtigt." },
+];
+
+function loadPresets() {
+  const data = getFormulas();
+  let added = 0;
+  PRESETS.forEach(f => {
+    if (!data.formulas.some(ex => ex.name === f.name)) {
+      data.formulas.push({ id: "f-" + Date.now() + "-" + Math.random().toString(36).slice(2), ...f });
+      added++;
+    }
+  });
+  saveData(data);
+  renderList();
+  if (added > 0) alert(`${added} Formel(n) hinzugefügt ✓`);
+  else alert("Alle Basisformeln sind bereits vorhanden.");
+}
+
+// ── Utils ──────────────────────────────────────────────────
+function escapeHtml(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+// ── Theme sync ─────────────────────────────────────────────
+function syncTheme() {
+  try {
+    const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    document.body.classList.toggle("light", d.theme === "light");
+  } catch {}
+}
+
+// ── Init ───────────────────────────────────────────────────
+function initApp() {
+  syncTheme();
+
+  // Suche
+  document.getElementById("searchInput").addEventListener("input", e => {
+    filterQuery = e.target.value;
+    renderList();
+  });
+
+  // Neue Formel: Live-Vorschau
+  const fExpr  = document.getElementById("fExpr");
+  const fLatex = document.getElementById("fLatex");
+  const fPrev  = document.getElementById("fPreview");
+  fExpr.addEventListener("input",  () => updatePreview(fExpr, fLatex, fPrev));
+  fLatex.addEventListener("change",() => updatePreview(fExpr, fLatex, fPrev));
+
+  // Speichern
+  document.getElementById("fSaveBtn").addEventListener("click", addFormula);
+  document.getElementById("fExpr").addEventListener("keydown", e => { if (e.key === "Enter") addFormula(); });
+
+  // Presets
+  document.getElementById("loadPresetsBtn").addEventListener("click", loadPresets);
+
+  // Edit-Modal Live-Vorschau
+  const eExpr  = document.getElementById("eExpr");
+  const eLatex = document.getElementById("eLatex");
+  const ePrev  = document.getElementById("ePreview");
+  eExpr.addEventListener("input",  () => updatePreview(eExpr, eLatex, ePrev));
+  eLatex.addEventListener("change",() => updatePreview(eExpr, eLatex, ePrev));
+  document.getElementById("eSaveBtn").addEventListener("click", saveEdit);
+  document.getElementById("eCancelBtn").addEventListener("click", closeEditModal);
+  document.getElementById("editModal").addEventListener("click", e => {
+    if (e.target === document.getElementById("editModal")) closeEditModal();
+  });
+
+  // Enter im Edit-Modal speichern
+  document.getElementById("editModal").addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey && e.target.tagName !== "TEXTAREA") saveEdit();
+    if (e.key === "Escape") closeEditModal();
+  });
+
+  // Theme-Änderung vom Parent abhören
+  window.addEventListener("storage", e => {
+    if (e.key === STORAGE_KEY) syncTheme();
+  });
+
+  renderList();
+}
+</script>
+</body>
+</html>
