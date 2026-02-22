@@ -308,13 +308,7 @@
       align-items: center;
       gap: 4px;
     }
-    #notebookRow select {
-      flex: 1;
-      font-size: 11px;
-      min-width: 0;
-      border-radius: 8px;
-      padding: 5px 7px;
-    }
+    #notebookRow select { display: none; } /* jetzt nur intern genutzt */
     #notebookRow button {
       padding: 5px 7px;
       font-size: 12px;
@@ -323,6 +317,258 @@
       min-width: 28px;
       min-height: 28px;
     }
+    #notebookNameDisplay {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+      min-width: 0;
+    }
+    #backToLibraryBtn { font-size: 15px; }
+
+    /* ══════════════════════════════════════
+       Notizbuch-Bibliothek
+    ══════════════════════════════════════ */
+    #notebookLibrary {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      background: var(--bg);
+      border-radius: var(--radius-card);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 28px 20px;
+      overflow-y: auto;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    #notebookLibrary.lib-hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.975);
+    }
+    .nb-lib-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      flex-shrink: 0;
+    }
+    .nb-lib-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .nb-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+      gap: 16px;
+      align-content: start;
+    }
+
+    /* Notizbuch-Karte */
+    .nb-card {
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
+      box-shadow: 0 5px 18px rgba(0,0,0,0.38);
+      user-select: none;
+      position: relative;
+    }
+    .nb-card:hover  { transform: translateY(-6px) scale(1.025); box-shadow: 0 14px 36px rgba(0,0,0,0.52); }
+    .nb-card:active { transform: scale(0.97); }
+
+    .nb-card-cover {
+      height: 108px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Buch-Rücken (linker Schatten) */
+    .nb-card-cover::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 14px;
+      background: rgba(0,0,0,0.22);
+    }
+    /* Glanzstreifen oben */
+    .nb-card-cover::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 45%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.14), transparent);
+      pointer-events: none;
+    }
+    .nb-card-info {
+      padding: 10px 12px 11px;
+      background: rgba(0,0,0,0.30);
+    }
+    .nb-card-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.95);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nb-card-meta {
+      font-size: 11px;
+      color: rgba(255,255,255,0.48);
+      margin-top: 3px;
+    }
+
+    /* "+" Neue Karte */
+    .nb-add-card {
+      border-radius: 14px;
+      border: 2px dashed rgba(255,255,255,0.13);
+      cursor: pointer;
+      min-height: 152px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.32);
+      font-size: 13px;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      user-select: none;
+    }
+    .nb-add-card:hover {
+      border-color: rgba(123,140,255,0.55);
+      color: rgba(123,140,255,0.9);
+      background: rgba(123,140,255,0.07);
+    }
+    .nb-add-card-icon { font-size: 30px; line-height: 1; }
+
+    /* Erstellen-Modal */
+    #nbCreateModal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.68);
+      backdrop-filter: blur(10px);
+    }
+    .nb-create-box {
+      background: rgba(14,17,36,0.99);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 22px;
+      padding: 28px 28px 24px;
+      width: 340px;
+      box-shadow: 0 28px 70px rgba(0,0,0,0.75);
+    }
+    .nb-create-box h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+    .nb-create-preview {
+      width: 76px; height: 76px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      margin: 0 auto 18px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+    }
+    .nb-section-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .nb-color-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .nb-color-swatch {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2.5px solid transparent;
+      transition: transform 0.14s, border-color 0.14s;
+    }
+    .nb-color-swatch:hover   { transform: scale(1.2); }
+    .nb-color-swatch.active  { border-color: #fff; transform: scale(1.15); }
+
+    .nb-emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      margin-bottom: 20px;
+      max-height: 110px;
+      overflow-y: auto;
+    }
+    .nb-emoji-btn {
+      font-size: 20px;
+      padding: 6px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      border: 2px solid transparent;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .nb-emoji-btn:hover  { background: rgba(255,255,255,0.09); }
+    .nb-emoji-btn.active { border-color: var(--accent); background: rgba(123,140,255,0.18); }
+
+    .nb-create-name {
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      font-size: 14px;
+      padding: 10px 13px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+    }
+    .nb-create-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .nb-btn-cancel {
+      padding: 9px 18px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .nb-btn-create {
+      padding: 9px 20px;
+      border-radius: 10px;
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .nb-btn-create:hover { opacity: 0.88; }
+
+    /* Light-Mode-Overrides */
+    body.light #notebookLibrary    { background: #eef0fa; }
+    body.light .nb-add-card        { border-color: rgba(0,0,0,0.13); color: rgba(0,0,0,0.38); }
+    body.light .nb-add-card:hover  { border-color: var(--accent); color: var(--accent); background: rgba(123,140,255,0.06); }
+    body.light .nb-create-box      { background: #f8f9ff; border-color: rgba(0,0,0,0.1); }
+    body.light .nb-create-name     { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); color: #222; }
 
     /* Pages header */
     #sidebar-header {
@@ -1161,14 +1407,43 @@
     <!-- NOTIZEN-TAB -->
     <div id="notesLayout" class="section active">
 
+      <!-- ══ Notizbuch-Bibliothek (Overlay) ══ -->
+      <div id="notebookLibrary" class="lib-hidden">
+        <div class="nb-lib-header">
+          <span class="nb-lib-title">📚 Meine Notizbücher</span>
+        </div>
+        <div id="nbGrid" class="nb-grid">
+          <!-- wird per JS befüllt -->
+        </div>
+      </div>
+
+      <!-- Erstellen-Modal (außerhalb des Overlays, fixed) -->
+      <div id="nbCreateModal" style="display:none">
+        <div class="nb-create-box">
+          <h3>Neues Notizbuch</h3>
+          <div class="nb-create-preview" id="nbCreatePreview">📚</div>
+          <div class="nb-section-label">Farbe</div>
+          <div class="nb-color-row" id="nbColorRow"></div>
+          <div class="nb-section-label">Emoji</div>
+          <div class="nb-emoji-grid" id="nbEmojiGrid"></div>
+          <input class="nb-create-name" id="nbCreateName" type="text" placeholder="Name des Notizbuchs …" maxlength="40">
+          <div class="nb-create-actions">
+            <button class="nb-btn-cancel" id="nbCancelBtn">Abbrechen</button>
+            <button class="nb-btn-create" id="nbConfirmBtn">Erstellen ✓</button>
+          </div>
+        </div>
+      </div>
+
       <!-- ── Sidebar ── -->
       <div id="sidebarNotes">
 
-        <!-- Notizbuch-Auswahl -->
+        <!-- Notizbuch-Zeile (select bleibt für JS, aber versteckt) -->
         <div id="notebookRow">
-          <select id="notebookSelect" title="Notizbuch wählen"></select>
-          <button id="addNotebookBtn" title="Neues Notizbuch">＋</button>
+          <button id="backToLibraryBtn" title="Alle Notizbücher anzeigen">📚</button>
+          <span id="notebookNameDisplay">–</span>
           <button id="deleteNotebookBtn" title="Notizbuch löschen" style="color:var(--danger)">🗑</button>
+          <select id="notebookSelect" title="Notizbuch wählen"></select>
+          <button id="addNotebookBtn" style="display:none">＋</button>
         </div>
 
         <!-- Seiten-Header -->
@@ -4498,8 +4773,168 @@ async function syncFromCloud() {
           }
         });
         if (tab === "stats") renderStats();
+        if (tab === "notes") { renderNotebookLibrary(); showLibrary(); }
       });
     });
+
+    // ---------- Notizbuch-Bibliothek ----------
+
+    const NB_COLORS = [
+      "#7b8cff", "#ff7b8a", "#7bddb0", "#ffc96b",
+      "#c87bff", "#7bd4ff", "#ff8cc8", "#a0e87b"
+    ];
+    const NB_EMOJIS = [
+      "📚","📖","📝","📐","🔬","🧬","⚗️","🧪",
+      "📊","📈","💡","🎨","🎯","🧮","🔭","🌿",
+      "⚡","🦋","🌸","🏆","🧠","🔥","🎵","🌍"
+    ];
+
+    // Stellt sicher dass alte Notizbücher color+emoji haben
+    function ensureNotebookMeta() {
+      data.notebooks.forEach((nb, i) => {
+        if (!nb.color) nb.color = NB_COLORS[i % NB_COLORS.length];
+        if (!nb.emoji) nb.emoji = "📚";
+      });
+    }
+
+    function showLibrary() {
+      document.getElementById("notebookLibrary").classList.remove("lib-hidden");
+    }
+
+    function hideLibrary() {
+      document.getElementById("notebookLibrary").classList.add("lib-hidden");
+    }
+
+    function renderNotebookLibrary() {
+      ensureNotebookMeta();
+      const grid = document.getElementById("nbGrid");
+      if (!grid) return;
+      grid.innerHTML = "";
+
+      data.notebooks.forEach(nb => {
+        const pageCount = nb.pages ? nb.pages.length : 0;
+        const card = document.createElement("div");
+        card.className = "nb-card";
+        card.innerHTML = `
+          <div class="nb-card-cover" style="background:${nb.color}">
+            <span style="position:relative;z-index:1">${nb.emoji}</span>
+          </div>
+          <div class="nb-card-info">
+            <div class="nb-card-name">${nb.name}</div>
+            <div class="nb-card-meta">${pageCount} Seite${pageCount !== 1 ? "n" : ""}</div>
+          </div>`;
+        card.addEventListener("click", () => {
+          switchNotebook(nb.id);
+          hideLibrary();
+        });
+        // Rechtsklick: Umbenennen
+        card.addEventListener("contextmenu", e => {
+          e.preventDefault();
+          const name = prompt("Notizbuch umbenennen:", nb.name);
+          if (name && name.trim()) {
+            nb.name = name.trim();
+            saveData();
+            renderNotebookLibrary();
+            renderNotebookSelect();
+            updateNotebookNameDisplay();
+          }
+        });
+        grid.appendChild(card);
+      });
+
+      // "+ Neues Notizbuch"-Karte
+      const addCard = document.createElement("div");
+      addCard.className = "nb-add-card";
+      addCard.innerHTML = `<span class="nb-add-card-icon">＋</span><span>Neues Notizbuch</span>`;
+      addCard.addEventListener("click", showNbCreateModal);
+      grid.appendChild(addCard);
+    }
+
+    function updateNotebookNameDisplay() {
+      const nb = getActiveNotebook();
+      const el = document.getElementById("notebookNameDisplay");
+      if (el && nb) el.textContent = nb.name;
+    }
+
+    // ── Create-Modal ──────────────────────────────────────────
+    let _nbPickColor = NB_COLORS[0];
+    let _nbPickEmoji = "📚";
+
+    function showNbCreateModal() {
+      ensureNotebookMeta();
+      _nbPickColor = NB_COLORS[data.notebooks.length % NB_COLORS.length];
+      _nbPickEmoji = NB_EMOJIS[data.notebooks.length % NB_EMOJIS.length];
+
+      // Vorschau
+      const preview = document.getElementById("nbCreatePreview");
+      preview.style.background = _nbPickColor;
+      preview.textContent = _nbPickEmoji;
+
+      // Farbfelder aufbauen
+      const colorRow = document.getElementById("nbColorRow");
+      colorRow.innerHTML = "";
+      NB_COLORS.forEach(c => {
+        const sw = document.createElement("span");
+        sw.className = "nb-color-swatch" + (c === _nbPickColor ? " active" : "");
+        sw.style.background = c;
+        sw.addEventListener("click", () => {
+          _nbPickColor = c;
+          colorRow.querySelectorAll(".nb-color-swatch").forEach(s => s.classList.remove("active"));
+          sw.classList.add("active");
+          preview.style.background = _nbPickColor;
+        });
+        colorRow.appendChild(sw);
+      });
+
+      // Emoji-Grid aufbauen
+      const emojiGrid = document.getElementById("nbEmojiGrid");
+      emojiGrid.innerHTML = "";
+      NB_EMOJIS.forEach(em => {
+        const btn = document.createElement("span");
+        btn.className = "nb-emoji-btn" + (em === _nbPickEmoji ? " active" : "");
+        btn.textContent = em;
+        btn.addEventListener("click", () => {
+          _nbPickEmoji = em;
+          emojiGrid.querySelectorAll(".nb-emoji-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          preview.textContent = _nbPickEmoji;
+        });
+        emojiGrid.appendChild(btn);
+      });
+
+      // Name-Feld leeren + Fokus
+      const nameInput = document.getElementById("nbCreateName");
+      nameInput.value = "";
+      document.getElementById("nbCreateModal").style.display = "flex";
+      setTimeout(() => nameInput.focus(), 80);
+    }
+
+    function hideNbCreateModal() {
+      document.getElementById("nbCreateModal").style.display = "none";
+    }
+
+    function confirmCreateNotebook() {
+      const nameInput = document.getElementById("nbCreateName");
+      const name = nameInput.value.trim() || "Neues Notizbuch";
+      const nb = {
+        id:    "nb-" + Date.now(),
+        name,
+        color: _nbPickColor,
+        emoji: _nbPickEmoji,
+        pages: [{ id: "p-" + Date.now(), name: "Seite 1", template: "blank", strokes: [] }]
+      };
+      data.notebooks.push(nb);
+      data.activeNotebookId = nb.id;
+      data.activePageId = nb.pages[0].id;
+      undoStack = []; redoStack = [];
+      renderNotebookSelect();
+      renderPageList();
+      redrawActivePage();
+      updateNotebookNameDisplay();
+      hideNbCreateModal();
+      hideLibrary();
+      saveData();
+    }
 
     // ---------- Notebooks & Seiten ----------
     function renderNotebookSelect() {
@@ -4524,6 +4959,7 @@ async function syncFromCloud() {
       renderNotebookSelect();
       renderPageList();
       redrawActivePage();
+      updateNotebookNameDisplay();
       saveData();
     }
 
@@ -4805,6 +5241,9 @@ async function syncFromCloud() {
       renderNotebookSelect();
       renderPageList();
       redrawActivePage();
+      updateNotebookNameDisplay();
+      renderNotebookLibrary();
+      showLibrary();
       saveData();
     }
 
@@ -5448,6 +5887,19 @@ canvas.addEventListener("touchcancel",handleTouchEnd,   { passive: false });
     const deleteNotebookBtn = document.getElementById("deleteNotebookBtn");
     if (deleteNotebookBtn) deleteNotebookBtn.addEventListener("click", deleteNotebook);
 
+    // Bibliothek: Zurück-Button
+    const backToLibraryBtn = document.getElementById("backToLibraryBtn");
+    if (backToLibraryBtn) backToLibraryBtn.addEventListener("click", () => {
+      renderNotebookLibrary();
+      showLibrary();
+    });
+
+    // Create-Modal: Abbrechen / Erstellen
+    const nbCancelBtn = document.getElementById("nbCancelBtn");
+    if (nbCancelBtn) nbCancelBtn.addEventListener("click", hideNbCreateModal);
+    const nbConfirmBtn = document.getElementById("nbConfirmBtn");
+    if (nbConfirmBtn) nbConfirmBtn.addEventListener("click", confirmCreateNotebook);
+
     // Sidebar Toggle
     const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
     if (sidebarToggleBtn) {
@@ -5577,6 +6029,9 @@ importJsonInput.addEventListener("change", () => {
       resizeCanvas();
       renderPageList();
       redrawActivePage();
+      ensureNotebookMeta();
+      renderNotebookLibrary();
+      updateNotebookNameDisplay();
       // renderDecks() - handled by Karteikarten2 separately
       // renderExams() – moved to Planner.html iframe
       renderFormulas();
@@ -6076,6 +6531,10 @@ importJsonInput.addEventListener("change", () => {
       resizeCanvas();
       renderPageList();
       redrawActivePage();
+      ensureNotebookMeta();
+      renderNotebookLibrary();
+      showLibrary();
+      updateNotebookNameDisplay();
       // renderDecks() - handled by Karteikarten2
       // renderExams() – moved to Planner.html iframe
       renderFormulas();
