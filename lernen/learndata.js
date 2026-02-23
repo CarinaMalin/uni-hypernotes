@@ -2295,7 +2295,7 @@ Einheiten:
       `
     }
   ]
-}
+},
 
 
 
@@ -2303,6 +2303,287 @@ Einheiten:
 
 
 
+
+
+
+// ── NEU: Hybridisierung ──────────────────────────────────────────────────────
+{
+  id: "hybridisierung",
+  title: "Hybridisierung: sp, sp², sp³",
+  tags: ["Hybridisierung", "sp³", "sp²", "sp", "Bindungswinkel", "σ-Bindung", "π-Bindung"],
+  goals: [
+    "Das Konzept der Hybridisierung erklären und von reinen Atomorbitalen abgrenzen.",
+    "sp³-, sp²- und sp-Hybridisierung sicher bestimmen und Bindungswinkel angeben.",
+    "σ- und π-Bindungen unterscheiden und zuordnen.",
+    "Beispiele zuordnen: sp³ → CH₄/NH₃/H₂O, sp² → C₂H₄/Carbonyl, sp → C₂H₂/CO₂."
+  ],
+  summary:
+    "Hybridisierung beschreibt die Umkombination von Atomorbitalen zu neuen, gleichwertigen Hybridorbitalen, bevor Bindungen eingegangen werden. sp³ → 4 Hybridorbitale (Tetraeder, ~109,5°); sp² → 3 Hybridorbitale + 1 reines p-Orbital (trigonal-planar, ~120°); sp → 2 Hybridorbitale + 2 reine p-Orbitale (linear, 180°). Nicht hybridisierte p-Orbitale bilden π-Bindungen.",
+  keyPoints: [
+    "Hybridisierung: AOs desselben Atoms mischen sich zu gleichwertigen Hybridorbitalen mit günstigerer Energieverteilung.",
+    "sp³: 1s + 3p → 4 sp³-Orbitale; Tetraeder; Winkel ~109,5°; Beispiele: CH₄, NH₃ (mit 1 freiem Paar, ~107°), H₂O (2 freie Paare, ~104,5°).",
+    "sp²: 1s + 2p → 3 sp²-Orbitale + 1 reines p-Orbital (⊥ zur Ebene); trigonal-planar; ~120°; Doppelbindung = σ + π; Beispiele: C₂H₄, Carbonyl (C=O).",
+    "sp: 1s + 1p → 2 sp-Orbitale + 2 reine p-Orbitale; linear; 180°; Dreifachbindung = σ + 2π; Beispiele: C₂H₂, CO₂.",
+    "σ-Bindung: Orbitale überlappen entlang der Bindungsachse – aus Hybridorbitalen.",
+    "π-Bindung: laterale Überlappung der p-Orbitale senkrecht zur Bindungsachse; nur nach σ-Bindung möglich.",
+    "Freie Elektronenpaare nehmen mehr Platz ein als Bindungspaare → verengen den Bindungswinkel."
+  ],
+  formulas: [
+    "sp³: 1s + 3p → 4 gleichwertige sp³-Orbitale (Tetraeder, 109,5°)",
+    "sp²: 1s + 2p → 3 sp²-Orbitale + 1 p-Orbital (trigonal-planar, 120°)",
+    "sp:  1s + 1p → 2 sp-Orbitale + 2 p-Orbitale (linear, 180°)"
+  ],
+  visual: `
+    <div style="font-size:11px; margin-bottom:4px;">Hybridisierung im Überblick:</div>
+    <pre style="font-size:10px; line-height:1.4;">
+Hybridisierung | Geometrie         | Winkel  | Beispiel
+─────────────────────────────────────────────────────────
+sp³            | Tetraeder         | ~109,5° | CH₄, NH₃, H₂O
+sp²            | trigonal-planar   | ~120°   | C₂H₄, BF₃, C=O
+sp             | linear            |  180°   | C₂H₂, CO₂, BeCl₂
+    </pre>
+    <div style="font-size:11px; opacity:0.8;">
+      Merkhilfe: Anzahl σ-Bindungen + freie Elektronenpaare am Zentralatom → Hybridisierungstyp.
+    </div>
+  `,
+  detailBlocks: [
+    {
+      title: "sp³-Hybridisierung (Beispiel CH₄, NH₃, H₂O)",
+      content: `
+        <div style="font-size:13px; line-height:1.5;">
+          <p>Beim Kohlenstoff in CH₄ mischt sich das 2s-Orbital mit allen drei 2p-Orbitalen:</p>
+          <p style="text-align:center;"><b>1s + 3p → 4 sp³-Hybridorbitale (gleichwertig, tetraederförmig)</b></p>
+          <ul>
+            <li>Jedes sp³-Orbital bildet eine <b>σ-Bindung</b> mit einem H-Atom. Winkel ~109,5°.</li>
+            <li><b>NH₃:</b> 3 sp³-Bindungspaare + 1 freies Paar → trigonal-pyramidal (Winkel ~107°).</li>
+            <li><b>H₂O:</b> 2 sp³-Bindungspaare + 2 freie Paare → gewinkelt (Winkel ~104,5°).</li>
+          </ul>
+          <p style="font-size:11px; opacity:0.8;">Freie Paare nehmen mehr Platz ein → Winkel sinkt unter 109,5°.</p>
+        </div>
+      `
+    },
+    {
+      title: "sp²-Hybridisierung & π-Bindung (Beispiel C₂H₄)",
+      content: `
+        <div style="font-size:13px; line-height:1.5;">
+          <p>In Ethen (C₂H₄) hat Kohlenstoff 3 sp²-Orbitale (trigonal-planar, 120°) und ein reines p-Orbital senkrecht zur Ebene.</p>
+          <ul>
+            <li>Die sp²-Orbitale bilden alle <b>σ-Bindungen</b> (1 C–C + 2 C–H pro C-Atom).</li>
+            <li>Die zwei reinen p-Orbitale der C-Atome überlappen lateral → <b>π-Bindung</b>.</li>
+            <li>Doppelbindung = 1 σ + 1 π. Rotation um C=C ist blockiert (π-Bindung würde brechen).</li>
+          </ul>
+          <p>Weitere sp²-Beispiele: Benzol, Aldehyde/Ketone (C=O), Carbonsäuren (Carboxylgruppe).</p>
+        </div>
+      `
+    },
+    {
+      title: "sp-Hybridisierung (Beispiel C₂H₂ & CO₂)",
+      content: `
+        <div style="font-size:13px; line-height:1.5;">
+          <p>Ethin (Acetylen, C₂H₂): 2 sp-Hybridorbitale (linear, 180°) + 2 reine p-Orbitale (⊥ zueinander).</p>
+          <ul>
+            <li>1 σ-Bindung (sp–sp) + 2 π-Bindungen (aus den zwei p-Orbital-Paaren) = <b>Dreifachbindung</b>.</li>
+            <li>Lineares Molekül, Bindungswinkel 180°.</li>
+            <li><b>CO₂:</b> O=C=O; C ist sp-hybridisiert; zwei Doppelbindungen; linear → kein Gesamtdipol.</li>
+          </ul>
+        </div>
+      `
+    },
+    {
+      title: "Klausur-Rezept: Hybridisierung bestimmen",
+      content: `
+        <div style="font-size:13px; line-height:1.5;">
+          <ol>
+            <li>Lewis-Formel des Moleküls zeichnen.</li>
+            <li>Am Zentralatom: σ-Bindungen + freie Elektronenpaare zählen → Summe = <b>σ-Domänen</b>.</li>
+            <li>2 Domänen → sp (linear); 3 Domänen → sp² (trigonal-planar); 4 Domänen → sp³ (Tetraeder).</li>
+            <li>π-Bindungen entstehen aus den nicht hybridisierten p-Orbitalen (Doppel-/Dreifachbindungen).</li>
+          </ol>
+          <p style="font-size:11px; opacity:0.8;">Merke: Doppelbindungen zählen für die Geometrie als <i>eine</i> σ-Domäne, liefern aber zusätzlich eine π-Bindung.</p>
+        </div>
+      `
+    }
+  ]
+},
+
+// ── NEU: VSEPR & Molekülgeometrie ───────────────────────────────────────────
+{
+  id: "vsepr",
+  title: "VSEPR & Molekülgeometrie",
+  tags: ["VSEPR", "Molekülgeometrie", "Lewis-Struktur", "Bindungswinkel", "freie Paare"],
+  goals: [
+    "Das VSEPR-Modell erklären und zur Vorhersage von Molekülgeometrien anwenden.",
+    "Lewis-Strukturen einfacher Moleküle zeichnen (Valenzelektronen, Oktettregel).",
+    "Geometrien (linear, trigonal-planar, tetraedrisch, pyramidal, gewinkelt) und typische Winkel sicher benennen."
+  ],
+  summary:
+    "Das VSEPR-Modell (Valence Shell Electron Pair Repulsion) sagt die Geometrie von Molekülen anhand der Abstoßung der Elektronendomänen um das Zentralatom voraus. Freie Elektronenpaare stoßen stärker ab als Bindungspaare und verengen die Bindungswinkel. Lewis-Strukturen visualisieren Bindungen und freie Paare und sind die Grundlage für VSEPR.",
+  keyPoints: [
+    "VSEPR: Alle Elektronendomänen (bindend + frei) stoßen sich ab und ordnen sich maximal voneinander entfernt an.",
+    "Lewis-Struktur: Strich = bindendes Elektronenpaar; Punkte = freies Paar; Oktettregel für Hauptgruppenelemente.",
+    "2 Domänen → linear (180°); 3 → trigonal-planar (120°); 4 → Tetraeder (109,5°).",
+    "Freie Paare verengen Winkel: NH₃ → trigonal-pyramidal (~107°); H₂O → gewinkelt (~104,5°).",
+    "Doppel-/Dreifachbindungen zählen als eine Domäne (üben aber mehr Abstoßung aus als Einfachbindungen).",
+    "Klausurrezept: Lewis-Formel → Domänen am Zentralatom zählen → Grundgeometrie bestimmen → freie Paare abziehen → Molekülgeometrie angeben."
+  ],
+  formulas: [],
+  visual: `
+    <pre style="font-size:10px; line-height:1.4;">
+Domänen | Geom. (Domänen)   | Mol.-Geom.         | Winkel   | Bsp.
+────────────────────────────────────────────────────────────────────
+2 B     | linear            | linear             | 180°     | BeCl₂, CO₂
+3 B     | trigonal-planar   | trigonal-planar    | 120°     | BF₃, SO₃
+2B+1F   | trigonal-planar   | gewinkelt          | <120°    | SO₂, O₃
+4 B     | Tetraeder         | Tetraeder          | 109,5°   | CH₄
+3B+1F   | Tetraeder         | trig.-pyramidal    | ~107°    | NH₃
+2B+2F   | Tetraeder         | gewinkelt          | ~104,5°  | H₂O
+    </pre>
+    <div style="font-size:11px; opacity:0.8;">B = Bindungsdomäne, F = freies Elektronenpaar</div>
+  `,
+  detailBlocks: [
+    {
+      title: "Lewis-Strukturen zeichnen – Kurzanleitung",
+      content: `
+        <div style="font-size:13px; line-height:1.5;">
+          <ol>
+            <li>Valenzelektronen aller Atome summieren (bei Ionen: Ladung berücksichtigen: Anion + e⁻, Kation − e⁻).</li>
+            <li>Skelett aufstellen: weniger elektronegatives Atom ins Zentrum; Einfachbindungen einzeichnen (je 2 e⁻).</li>
+            <li>Oktettregel: zunächst äußere Atome mit freien Paaren auffüllen, dann Zentralatom.</li>
+            <li>Nicht genug Elektronen für Oktett am Zentrum? → Mehrfachbindung einführen (ein freies Paar von außen → Bindung).</li>
+            <li>Formale Ladungen prüfen: Formal-Ladung = VE<sub>Atom</sub> − freie e⁻ − (Bindungs-e⁻)/2.</li>
+          </ol>
+          <p style="font-size:11px; opacity:0.8;">Ausnahmen: BF₃ (Sextett), PCl₅ (10 e⁻), SF₆ (12 e⁻) – expanded octet nur ab 3. Periode möglich.</p>
+        </div>
+      `
+    },
+    {
+      title: "Beispiel: H₂O & NH₃ mit VSEPR",
+      content: `
+        <div style="font-size:13px; line-height:1.5;">
+          <p><b>Wasser (H₂O):</b></p>
+          <ul>
+            <li>O: 6 Valenzelektronen; 2 Bindungen zu H → 2 freie Paare am O.</li>
+            <li>4 Domänen → Tetraeder-Grundgeometrie; aber Geometrie nach Atomposition: <b>gewinkelt</b>.</li>
+            <li>Winkel ~104,5° (2 freie Paare stoßen stark ab).</li>
+          </ul>
+          <p><b>Ammoniak (NH₃):</b></p>
+          <ul>
+            <li>N: 5 VE; 3 N–H-Bindungen; 1 freies Paar.</li>
+            <li>4 Domänen → Tetraeder → nach Atomen: <b>trigonal-pyramidal</b>, Winkel ~107°.</li>
+          </ul>
+        </div>
+      `
+    },
+    {
+      title: "Klausur-Klassiker: SO₂ & BF₃",
+      content: `
+        <div style="font-size:13px; line-height:1.5;">
+          <p><b>SO₂ (Schwefeldioxid):</b></p>
+          <ul>
+            <li>S: 6 VE; je eine Bindung zu beiden O-Atomen + 1 freies Paar am S. (Mit Resonanzstrukturen: eine Einfach- und eine Doppelbindung oder zwei 1,5-Bindungen.)</li>
+            <li>3 Domänen → trigonal-planar → 1 Domäne ist freies Paar → <b>gewinkelt</b>, Winkel ~119°.</li>
+          </ul>
+          <p><b>BF₃ (Bortrifluorid):</b></p>
+          <ul>
+            <li>B: 3 VE; 3 B–F-Bindungen; kein freies Paar am B → Elektron-Sextett (Ausnahme!).</li>
+            <li>3 Domänen → <b>trigonal-planar</b>, Winkel 120°.</li>
+            <li>BF₃ ist Lewis-Säure (akzeptiert freie Paare).</li>
+          </ul>
+        </div>
+      `
+    }
+  ]
+},
+
+// ── NEU: Bindungstypen & Intermolekulare Kräfte ─────────────────────────────
+{
+  id: "bindungstypen-krafte",
+  title: "Chemische Bindungen & Intermolekulare Kräfte",
+  tags: ["Ionenbindung", "Kovalenz", "Wasserstoffbrücke", "van-der-Waals", "Elektronegativität", "Siedepunkt"],
+  goals: [
+    "Ionenbindung, kovalente Bindung (polar/unpolar) und Metallbindung unterscheiden.",
+    "Wasserstoffbrückenbindungen, Dipol-Dipol-Kräfte und London-Dispersion erklären.",
+    "Den Einfluss intermolekularer Kräfte auf Siedepunkt und Löslichkeit begründen.",
+    "ΔEN-Grenzen für Bindungstypen anwenden."
+  ],
+  summary:
+    "Chemische Bindungen entstehen durch Wechselwirkung von Valenzelektronen: Ionenbindung (ΔEN > 1,7; Elektronenübertragung), kovalente Bindung (ΔEN < 1,7; Elektronenpaarteilung, polar oder unpolar), Metallbindung (delokalisiertes Elektronengas). Zwischen Molekülen wirken schwächere intermolekulare Kräfte: London-Dispersion (immer), Dipol-Dipol (polare Moleküle) und Wasserstoffbrücken (N/O/F–H).",
+  keyPoints: [
+    "Ionenbindung: ΔEN > 1,7 → Elektronenübertragung → Kation + Anion; Ionengitter; hohe Schmelzpunkte; Beispiele: NaCl, MgO.",
+    "Kovalente Bindung: ΔEN < 1,7 → gemeinsames Elektronenpaar; polar (ΔEN 0,4–1,7, z. B. HCl, H₂O) oder unpolar (ΔEN < 0,4, z. B. H₂, CH₄).",
+    "Metallbindung: delokalisierte Elektronen ('Elektronengas') zwischen Metallkationen; elektrische und Wärmeleitfähigkeit.",
+    "London-Dispersion: temporäre Dipolmomente → schwächste Kraft; steigt mit Molekülmasse; wirkt zwischen ALLEN Teilchen.",
+    "Dipol-Dipol: zwischen Molekülen mit permanentem Dipol; stärker als London.",
+    "Wasserstoffbrücken (H-Brücken): X–H···Y (X, Y = N, O, F); stärkste intermolekulare Kraft (~20–40 kJ/mol); erklärt hohen Siedepunkt von H₂O, HF, NH₃.",
+    "Siedepunkt-Trend: H-Brücken >> Dipol-Dipol > London; mehr/stärkere Kräfte → höherer Siedepunkt."
+  ],
+  formulas: [
+    "ΔEN > 1,7 → Ionenbindung; 0,4–1,7 → polare kovalente Bindung; < 0,4 → unpolare kovalente Bindung",
+    "EN (Pauling): F = 4,0 > O = 3,5 > N = 3,0 > Cl = 3,2 > C = 2,5 > H = 2,2 > Na = 0,9"
+  ],
+  visual: `
+    <pre style="font-size:10px; line-height:1.4;">
+Bindungstyp        | ΔEN      | Beispiel         | Besonderheit
+────────────────────────────────────────────────────────────────
+Unpolare Kovalen.  | ~0       | H₂, Cl₂, CH₄    | symmetrisch, kein Dipol
+Polare Kovalen.    | 0,4–1,7  | HCl, H₂O, NH₃   | Dipol, δ+/δ−
+Ionenbindung       | >1,7     | NaCl, MgO, KBr   | Ionengitter
+Metallbindung      | –        | Na, Fe, Cu        | Elektronengas
+
+Intermolekulare Kräfte (schwächste → stärkste):
+  London < Dipol-Dipol < Wasserstoffbrücken
+    </pre>
+  `,
+  detailBlocks: [
+    {
+      title: "Elektronegativität & Bindungspolarität",
+      content: `
+        <div style="font-size:13px; line-height:1.5;">
+          <p>Die <b>Elektronegativität</b> (EN) misst, wie stark ein Atom Bindungselektronen anzieht (Pauling-Skala: F = 4,0 am höchsten).</p>
+          <ul>
+            <li>Je größer ΔEN, desto stärker zieht das elektronegativere Atom die Elektronen an → partiell negative Ladung (δ−), das andere wird δ+.</li>
+            <li>Polare Bindungen können sich aufheben: CO₂ (linear) → kein Gesamtdipol. H₂O (gewinkelt) → hat Gesamtdipol.</li>
+          </ul>
+          <p><b>Merke:</b> Für das Gesamtdipolmoment des Moleküls zählt die <i>Geometrie</i>, nicht nur die einzelnen Bindungen!</p>
+        </div>
+      `
+    },
+    {
+      title: "Wasserstoffbrücken – Warum Wasser so besonders ist",
+      content: `
+        <div style="font-size:13px; line-height:1.5;">
+          <p>H-Brücke: H kovalent an F, O oder N gebunden → H trägt δ+-Ladung → wechselwirkt mit freiem Elektronenpaar eines Nachbarmoleküls:</p>
+          <p style="text-align:center;"><b>O–H ····· O</b></p>
+          <ul>
+            <li>Stärker als London und Dipol-Dipol (~20–40 kJ/mol vs. ~1–5 kJ/mol).</li>
+            <li>Erklärt den hohen Siedepunkt von Wasser (100 °C statt ca. −80 °C ohne H-Brücken).</li>
+            <li>Wichtig in Biochemie: DNA-Basenpaarung (A–T: 2 H-Brücken, G–C: 3 H-Brücken).</li>
+            <li>Proteinsekundärstruktur (α-Helix, β-Faltblatt) durch intramolekulare H-Brücken stabilisiert.</li>
+          </ul>
+        </div>
+      `
+    },
+    {
+      title: "Löslichkeit & Siedepunkt – Klausurrelevanz",
+      content: `
+        <div style="font-size:13px; line-height:1.5;">
+          <p><b>„Gleiches löst Gleiches" (similia similibus solvuntur):</b></p>
+          <ul>
+            <li>Polares Lösungsmittel (H₂O) löst polare und ionische Verbindungen gut.</li>
+            <li>Unpolares LM (Hexan, Chloroform) löst unpolare Verbindungen.</li>
+            <li>NaCl löst sich in H₂O: Hydratationsenergie kompensiert Gitterenergie.</li>
+            <li>Benzol löst sich nicht in H₂O: keine polaren Wechselwirkungen möglich.</li>
+          </ul>
+          <p><b>Siedepunkt:</b></p>
+          <ul>
+            <li>Alkane (nur London): Siedepunkt steigt mit Kettenlänge/Molekülmasse.</li>
+            <li>Alkohole (H-Brücken): deutlich höhere Siedepunkte als Alkane gleicher Molmasse.</li>
+          </ul>
+        </div>
+      `
+    }
+  ]
+},
 
   ] // schließt topics-Array
 },    // schließt Subject "Allgemeine Chemie"
@@ -3416,7 +3697,431 @@ FADH₂←Succinat  Succinyl-CoA → GTP
           `
         }
       ]
+    },
+
+// ── NEU: β-Oxidation ────────────────────────────────────────────────────────
+    {
+      id: "bio-beta-oxidation",
+      title: "β-Oxidation: Fettsäureabbau",
+      tags: ["β-Oxidation", "Fettsäuren", "Acyl-CoA", "NADH", "FADH₂", "Mitochondrien", "Carnitin"],
+      goals: [
+        "Ort, Prinzip und Gesamtbilanz der β-Oxidation benennen.",
+        "Die vier Reaktionsschritte eines β-Oxidationszyklus beschreiben.",
+        "ATP-Bilanz für Palmitinsäure (C16) überschlagen.",
+        "Unterschied zwischen gesättigten und ungesättigten Fettsäuren im Abbau benennen."
+      ],
+      summary:
+        "Die β-Oxidation ist der schrittweise Abbau aktivierter Fettsäuren (Acyl-CoA) in der Mitochondrienmatrix. Jeder Zyklus verkürzt die Kette um 2C und liefert 1 NADH, 1 FADH₂ und 1 Acetyl-CoA. Acetyl-CoA geht in den TCA-Zyklus. Palmitinsäure (C16) liefert nach 7 Zyklen netto ~106 ATP – deutlich mehr als Glucose.",
+      keyPoints: [
+        "Ort: Mitochondrienmatrix; Fettsäuren müssen als Acyl-CoA aktiviert werden; Transport über Carnitin-Shuttle.",
+        "Aktivierung: Fettsäure + CoA + ATP → Acyl-CoA + AMP + PPi (kostet 2 ATP-Äquivalente).",
+        "4 Schritte pro Zyklus: ① Oxidation (FADH₂), ② Hydratation, ③ Oxidation (NADH), ④ Thiolyse → Acetyl-CoA + verkürztes Acyl-CoA.",
+        "Palmitinsäure (C16): 7 Zyklen → 8 Acetyl-CoA + 7 NADH + 7 FADH₂.",
+        "Netto-ATP: 7 FADH₂×1,5 + 7 NADH×2,5 + 8 Acetyl-CoA×10 − 2 (Aktivierung) ≈ 106 ATP.",
+        "Ungesättigte Fettsäuren: Isomerase/Reduktase nötig → weniger FADH₂ pro Doppelbindung.",
+        "Ungerade Fettsäuren: letzter Zyklus → Propionyl-CoA → Methylmalonyl-CoA → Succinyl-CoA (→ TCA).",
+        "Regulation: Malonyl-CoA (Fettsäuresynthese-Intermediat) hemmt Carnitinacyltransferase I → verhindert sinnlosen Kreislauf."
+      ],
+      formulas: [
+        "Acyl-CoA (Cn) → Acetyl-CoA (2C) + Acyl-CoA (Cn−2) + FADH₂ + NADH",
+        "C16-Palmitinsäure: 7 Zyklen; Netto ~106 ATP"
+      ],
+      visual: `
+        <pre style="font-size:10px; line-height:1.35; background:rgba(0,0,0,0.15); padding:8px; border-radius:6px;">
+β-Oxidation (ein Zyklus):
+
+Acyl-CoA (Cn)
+  │ ① Oxidation (Acyl-CoA-Dehydrogenase)        → FADH₂
+  ↓
+trans-Δ²-Enoyl-CoA
+  │ ② Hydratation (Enoyl-CoA-Hydratase)
+  ↓
+L-3-Hydroxyacyl-CoA
+  │ ③ Oxidation (L-3-Hydroxyacyl-CoA-DH)        → NADH
+  ↓
+3-Ketoacyl-CoA
+  │ ④ Thiolyse (β-Ketothiolase) + CoA
+  ↓
+Acetyl-CoA  +  Acyl-CoA (Cn−2)
+        </pre>
+      `,
+      detailBlocks: [
+        {
+          title: "Aktivierung & Carnitin-Shuttle",
+          content: `
+            <div style="font-size:13px; line-height:1.5;">
+              <ul>
+                <li><b>Aktivierung:</b> Fettsäure + CoA + ATP → Acyl-CoA + AMP + PPi (Acyl-CoA-Synthetase, Außenmembran).</li>
+                <li>ATP → AMP entspricht 2 verbrauchten Phosphatanhydridbindungen ≙ 2 ATP-Äquivalente.</li>
+                <li><b>Carnitin-Shuttle:</b> Acyl-CoA kann die innere Mitochondrienmembran nicht direkt passieren → Übertragung auf Carnitin (CAT I) → Acylcarnitin ins Mitochondrium → dort zurück auf CoA (CAT II).</li>
+                <li>Regulation: Malonyl-CoA hemmt CAT I → Fettsäuresynthese und -abbau laufen nicht gleichzeitig.</li>
+              </ul>
+            </div>
+          `
+        },
+        {
+          title: "ATP-Bilanz Palmitinsäure (C16)",
+          content: `
+            <div style="font-size:13px; line-height:1.5;">
+              <table style="border-collapse:collapse; width:100%; font-size:12px;">
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.2);">
+                  <th style="text-align:left; padding:4px;">Quelle</th>
+                  <th style="padding:4px; text-align:center;">Menge</th>
+                  <th style="padding:4px; text-align:center;">ATP/Einheit</th>
+                  <th style="padding:4px; text-align:center;">ATP</th>
+                </tr>
+                <tr><td style="padding:4px;">7 FADH₂</td><td style="padding:4px; text-align:center;">7</td><td style="padding:4px; text-align:center;">1,5</td><td style="padding:4px; text-align:center;">10,5</td></tr>
+                <tr><td style="padding:4px;">7 NADH</td><td style="padding:4px; text-align:center;">7</td><td style="padding:4px; text-align:center;">2,5</td><td style="padding:4px; text-align:center;">17,5</td></tr>
+                <tr><td style="padding:4px;">8 Acetyl-CoA (via TCA)</td><td style="padding:4px; text-align:center;">8</td><td style="padding:4px; text-align:center;">10</td><td style="padding:4px; text-align:center;">80</td></tr>
+                <tr><td style="padding:4px;">Aktivierung (Abzug)</td><td style="padding:4px; text-align:center;">–</td><td style="padding:4px; text-align:center;">–</td><td style="padding:4px; text-align:center;">−2</td></tr>
+                <tr style="font-weight:bold; border-top:1px solid rgba(255,255,255,0.2);">
+                  <td style="padding:4px;">Gesamt</td><td></td><td></td><td style="padding:4px; text-align:center;">≈ 106</td>
+                </tr>
+              </table>
+              <p style="font-size:11px; opacity:0.8; margin-top:4px;">Zum Vergleich: 1 Glucose → ~30–32 ATP. Fett ist energiereicher pro Gramm (~37 kJ/g vs. ~17 kJ/g KH).</p>
+            </div>
+          `
+        },
+        {
+          title: "β-Oxidation vs. Fettsäuresynthese",
+          content: `
+            <div style="font-size:13px; line-height:1.5;">
+              <table style="border-collapse:collapse; width:100%; font-size:12px;">
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.2);">
+                  <th style="text-align:left; padding:4px;"></th>
+                  <th style="padding:4px;">β-Oxidation</th>
+                  <th style="padding:4px;">Fettsäuresynthese</th>
+                </tr>
+                <tr><td style="padding:4px;">Ort</td><td style="padding:4px;">Mitochondrienmatrix</td><td style="padding:4px;">Cytosol</td></tr>
+                <tr><td style="padding:4px;">Carrier</td><td style="padding:4px;">CoA</td><td style="padding:4px;">ACP</td></tr>
+                <tr><td style="padding:4px;">Redoxmittel</td><td style="padding:4px;">FAD/NAD⁺ (Oxidation)</td><td style="padding:4px;">NADPH (Reduktion)</td></tr>
+                <tr><td style="padding:4px;">Richtung</td><td style="padding:4px;">Abbau (−2C/Zyklus)</td><td style="padding:4px;">Aufbau (+2C/Zyklus)</td></tr>
+              </table>
+            </div>
+          `
+        }
+      ]
+    },
+
+// ── NEU: Oxidative Phosphorylierung ─────────────────────────────────────────
+    {
+      id: "bio-ox-phospho",
+      title: "Oxidative Phosphorylierung & Atmungskette",
+      tags: ["Atmungskette", "Komplex I–IV", "ATP-Synthase", "Protonengradient", "Chemiosmose", "NADH", "FADH₂", "Inhibitoren"],
+      goals: [
+        "Ort und Funktion der Atmungskette im Überblick erklären.",
+        "Die vier Komplexe und ihre Funktion benennen; Unterschied NADH vs. FADH₂ begründen.",
+        "Das chemiosmotische Prinzip (Protonengradient → ATP-Synthase) erläutern.",
+        "ATP-Ausbeute aus NADH und FADH₂ angeben; wichtige Inhibitoren benennen."
+      ],
+      summary:
+        "Die Atmungskette sitzt in der inneren Mitochondrienmembran. NADH und FADH₂ geben Elektronen ab; diese werden schrittweise auf O₂ übertragen (→ H₂O). Dabei pumpen Komplexe I, III und IV Protonen in den Intermembranraum. Der so erzeugte elektrochemische Gradient (proton motive force) treibt die ATP-Synthase (Komplex V) an (Chemiosmose nach Mitchell).",
+      keyPoints: [
+        "Ort: innere Mitochondrienmembran.",
+        "Komplex I (NADH-Ubichinon-Oxidoreduktase): NADH → NAD⁺; pumpt 4 H⁺.",
+        "Komplex II (Succinat-Dehydrogenase): FADH₂ → FAD; pumpt KEINE H⁺ → weniger ATP pro FADH₂.",
+        "Komplex III (Cytochrom-bc₁): Q-Zyklus; pumpt 4 H⁺.",
+        "Komplex IV (Cytochrom-c-Oxidase): 4 Cyt c + O₂ + 4 H⁺ → 2 H₂O; pumpt 2 H⁺.",
+        "ATP-Synthase (Komplex V): Rückfluss von ~3 H⁺ → 1 ATP (Rotationsmechanismus).",
+        "P/O-Verhältnisse: NADH → ~2,5 ATP; FADH₂ → ~1,5 ATP.",
+        "Entkoppler (z. B. DNP, UCP1): machen Membran H⁺-permeabel → Gradient kollabiert → keine ATP-Synthese, nur Wärme."
+      ],
+      formulas: [
+        "Gesamtreaktion: NADH + ½ O₂ + H⁺ → NAD⁺ + H₂O  (ΔG° ≈ −220 kJ/mol)",
+        "P/O: NADH ≈ 2,5 ATP; FADH₂ ≈ 1,5 ATP"
+      ],
+      visual: `
+        <pre style="font-size:10px; line-height:1.4; background:rgba(0,0,0,0.15); padding:8px; border-radius:6px;">
+Intermembranraum  [H⁺ ↑↑ konzentriert]
+──────────────────────────────────────────────────────────────
+ Komplex I → CoQ → Komplex III → Cyt c → Komplex IV → O₂→H₂O
+  (NADH)          ↑
+             Komplex II
+             (FADH₂)
+──────────────────────────────────────────────────────────────
+Matrix            [H⁺ niedrig]
+
+H⁺ fließt durch ATP-Synthase (Komplex V) zurück → ATP
+        </pre>
+      `,
+      detailBlocks: [
+        {
+          title: "Chemiosmose: Mitchell-Hypothese",
+          content: `
+            <div style="font-size:13px; line-height:1.5;">
+              <p><b>Proton motive force (pmf) = ΔΨ + ΔpH</b></p>
+              <ol>
+                <li>Komplexe I, III, IV pumpen H⁺ → Intermembranraum (höhere Konzentration + positiver geladen als Matrix).</li>
+                <li>Elektrochemischer Gradient treibt H⁺ durch die ATP-Synthase zurück in die Matrix.</li>
+                <li><b>ATP-Synthase (F₀F₁):</b> H⁺-Fluss durch F₀ dreht den c-Ring → mechanische Energie → F₁ katalysiert ADP + Pᵢ → ATP.</li>
+                <li>~3 H⁺ pro ATP; ca. 10–13 H⁺ pro vollständige Umdrehung (→ 3–4 ATP pro Umdrehung).</li>
+              </ol>
+            </div>
+          `
+        },
+        {
+          title: "Inhibitoren der Atmungskette (Klausurwissen)",
+          content: `
+            <div style="font-size:13px; line-height:1.5;">
+              <ul>
+                <li><b>Rotenon:</b> hemmt Komplex I → kein NADH-Umsatz.</li>
+                <li><b>Antimycin A:</b> hemmt Komplex III.</li>
+                <li><b>CO & CN⁻ (Cyanid):</b> hemmen Komplex IV (binden Fe im Hämzentrum) → kein O₂-Verbrauch → rasch tödlich.</li>
+                <li><b>Oligomycin:</b> hemmt ATP-Synthase (F₀) direkt → Gradient baut sich auf, aber kein ATP.</li>
+                <li><b>FCCP/DNP (Entkoppler):</b> H⁺-Ionophore → Gradient kollabiert → Atmungskette läuft unkontrolliert, aber kein ATP → Wärme.</li>
+                <li><b>UCP1 (Thermogenin):</b> physiologischer Entkoppler im braunen Fettgewebe (Kälteadaptation).</li>
+              </ul>
+            </div>
+          `
+        },
+        {
+          title: "Gesamtbilanz aerobe Glucoseoxidation",
+          content: `
+            <div style="font-size:13px; line-height:1.5;">
+              <table style="border-collapse:collapse; width:100%; font-size:12px;">
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.2);">
+                  <th style="text-align:left; padding:4px;">Schritt</th>
+                  <th style="padding:4px; text-align:center;">NADH</th>
+                  <th style="padding:4px; text-align:center;">FADH₂</th>
+                  <th style="padding:4px; text-align:center;">Direkt-ATP</th>
+                </tr>
+                <tr><td style="padding:4px;">Glykolyse</td><td style="padding:4px; text-align:center;">2</td><td style="padding:4px; text-align:center;">0</td><td style="padding:4px; text-align:center;">2</td></tr>
+                <tr><td style="padding:4px;">PDH (×2)</td><td style="padding:4px; text-align:center;">2</td><td style="padding:4px; text-align:center;">0</td><td style="padding:4px; text-align:center;">0</td></tr>
+                <tr><td style="padding:4px;">TCA (×2)</td><td style="padding:4px; text-align:center;">6</td><td style="padding:4px; text-align:center;">2</td><td style="padding:4px; text-align:center;">2 (GTP)</td></tr>
+                <tr><td style="padding:4px;">Atmungskette</td><td style="padding:4px; text-align:center;">–</td><td style="padding:4px; text-align:center;">–</td><td style="padding:4px; text-align:center;">~25</td></tr>
+                <tr style="font-weight:bold; border-top:1px solid rgba(255,255,255,0.2);">
+                  <td style="padding:4px;">Gesamt</td><td></td><td></td><td style="padding:4px; text-align:center;"><b>~30–32 ATP</b></td>
+                </tr>
+              </table>
+              <p style="font-size:11px; opacity:0.8; margin-top:4px;">Ältere Bücher: 36–38 ATP (veraltete P/O-Verhältnisse). Modern: ~30–32 ATP.</p>
+            </div>
+          `
+        }
+      ]
+    },
+
+// ── NEU: Transkription & Translation (Detail) ────────────────────────────────
+    {
+      id: "bio-transkription-translation",
+      title: "Transkription & Translation im Detail",
+      tags: ["Transkription", "Translation", "mRNA", "tRNA", "Ribosom", "Codon", "Spleißen", "5'-Cap", "Poly-A"],
+      goals: [
+        "Schritte der Transkription (Initiation, Elongation, Termination) bei Eukaryoten beschreiben.",
+        "mRNA-Prozessierung (5'-Cap, Poly-A-Schwanz, Spleißen) erklären.",
+        "Schritte der Translation und die Rolle von mRNA, tRNA und Ribosom darstellen.",
+        "Genetischen Code, Degeneriertheit und Wobble-Hypothese einordnen."
+      ],
+      summary:
+        "Transkription: RNA-Polymerase II liest den Templatstrang (3'→5') und synthetisiert prä-mRNA (5'→3'). Nach Prozessierung (5'-Cap, 3'-Poly-A, Spleißen der Introns) verlässt reife mRNA den Kern. Translation: Das 80S-Ribosom liest mRNA 5'→3'; aminoacyl-tRNAs bringen die Aminosäuren (Codon-Anticodon); Peptidyltransferase (Ribozym) knüpft die Peptidbindung. Termination beim Stopp-Codon.",
+      keyPoints: [
+        "Transkription im Zellkern (Eukaryoten); RNA-Polymerase II für mRNA; Templatstrang 3'→5', prä-mRNA 5'→3'.",
+        "Prozessierung: (1) 5'-Cap (m7G-Kappe), (2) Poly-A-Schwanz (~200 A am 3'-Ende), (3) Spleißen (Introns entfernt via Spleißosom; Exons verbunden).",
+        "Alternatives Spleißen: ein Gen → mehrere Proteinvarianten (wichtig für Proteindiversität).",
+        "Translation: mRNA-Codon (3 Basen) ↔ tRNA-Anticodon; Aminoacyl-tRNA-Synthetase lädt tRNA mit richtiger AS.",
+        "A-Stelle: neue aminoacyl-tRNA bindet; P-Stelle: wachsendes Peptid; E-Stelle: freie tRNA verlässt Ribosom.",
+        "Peptidyltransferase = 28S-rRNA (Ribozym!); keine klassische Protein-Enzymaktivität.",
+        "Startcodon: AUG (→ Met/fMet); Stoppcodons: UAA, UAG, UGA (Release-Faktor, keine tRNA).",
+        "Genetischer Code: degeneriert (mehrere Codons/AS), universell (fast), nicht-überlappend.",
+        "Wobble-Hypothese: 3. Codon-Base toleriert Fehlpaarungen → <64 tRNA-Typen für 61 Sense-Codons."
+      ],
+      formulas: [
+        "5'-Cap: 7-Methylguanosin (m7GpppN) am 5'-Ende der mRNA",
+        "Startcodon: AUG (Met); Stoppcodons: UAA, UAG, UGA"
+      ],
+      visual: `
+        <pre style="font-size:10px; line-height:1.4; background:rgba(0,0,0,0.15); padding:8px; border-radius:6px;">
+TRANSKRIPTION (Zellkern):
+DNA-Templatstrang (3'→5')
+  ↓ RNA-Polymerase II
+prä-mRNA
+  ↓ Prozessierung
+reife mRNA: 5'-Cap – [Exon1]–[Exon2]–...–Poly-A-3'
+
+TRANSLATION (Ribosom, Cytoplasma):
+mRNA: 5'... AUG – Codon2 – Codon3 – ... – UAA ...3'
+              ↕        ↕
+       tRNA(Met)   tRNA(AS₂)   ← Anticodon-Paarung
+              ↓ Peptidyltransferase
+       Met – AS₂ – ...  (wachsendes Polypeptid)
+        </pre>
+      `,
+      detailBlocks: [
+        {
+          title: "Transkription – Schritte im Detail",
+          content: `
+            <div style="font-size:13px; line-height:1.5;">
+              <p><b>Initiation:</b></p>
+              <ul>
+                <li>Allgemeine Transkriptionsfaktoren (TFIID, TFIIB …) binden an den Promotor (TATA-Box, ~−30 vom Startpunkt).</li>
+                <li>RNA-Polymerase II wird rekrutiert → Präinitiationskomplex → DNA wird entwunden (offener Komplex).</li>
+              </ul>
+              <p><b>Elongation:</b></p>
+              <ul>
+                <li>RNA-Pol II liest Templatstrang 3'→5' und synthetisiert RNA 5'→3' (RNA-Polymerase kann keinen Primer starten ohne ihn).</li>
+                <li>5'-Capping: bereits bei ~25 nt Länge wird m7G-Cap angehängt.</li>
+              </ul>
+              <p><b>Termination & Prozessierung:</b></p>
+              <ul>
+                <li>Polyadenylierungssignal (AAUAAA): prä-mRNA wird stromabwärts gespalten → Poly-A-Polymerase hängt ~200 A an.</li>
+                <li>Spleißen: Spleißosom (5 snRNPs) entfernt Introns; Exons werden in der richtigen Reihenfolge verbunden.</li>
+              </ul>
+            </div>
+          `
+        },
+        {
+          title: "Translation – Schritte im Detail",
+          content: `
+            <div style="font-size:13px; line-height:1.5;">
+              <p><b>Initiation:</b></p>
+              <ul>
+                <li>Kleine Untereinheit (40S) + eIF-Faktoren + Initiator-Met-tRNA scannen 5'-Cap → finden erstes AUG.</li>
+                <li>Große Untereinheit (60S) assoziiert → funktionelles 80S-Ribosom.</li>
+              </ul>
+              <p><b>Elongation (zyklisch):</b></p>
+              <ol>
+                <li><b>Codon-Erkennung:</b> Aminoacyl-tRNA (EF-1α/GTP) bindet A-Stelle; Codon–Anticodon-Paarung.</li>
+                <li><b>Peptidyltransfer:</b> 28S-rRNA (Ribozym) überträgt wachsendes Peptid von P- auf A-Stelle → neue Peptidbindung.</li>
+                <li><b>Translokation:</b> EF-2/GTP schiebt Ribosom um 1 Codon; P→E-Stelle (leere tRNA weg); A-Stelle frei.</li>
+              </ol>
+              <p><b>Termination:</b></p>
+              <ul>
+                <li>Stopp-Codon in A-Stelle → Release-Faktor (eRF1) bindet → Peptid wird hydrolysiert und freigesetzt.</li>
+                <li>Ribosom dissoziiert in Untereinheiten.</li>
+              </ul>
+            </div>
+          `
+        },
+        {
+          title: "Genetischer Code & Wobble",
+          content: `
+            <div style="font-size:13px; line-height:1.5;">
+              <ul>
+                <li><b>Degeneriert:</b> 61 Sense-Codons für 20 Aminosäuren → mehrere Codons pro AS möglich (z. B. Leu: 6 Codons).</li>
+                <li><b>3 Stoppcodons:</b> UAA ("Ocher"), UAG ("Amber"), UGA ("Opal") – keine tRNA, nur Release-Faktor.</li>
+                <li><b>Universell:</b> fast identisch in Bakterien, Pflanzen, Tieren (Ausnahme: Mitochondrien, z. B. UGA = Trp).</li>
+                <li><b>Wobble:</b> Die 3. Codon-Base (5'-Ende des Anticodons) wird weniger strikt gelesen → eine tRNA kann mehrere Codons erkennen → weniger als 61 tRNA-Typen nötig.</li>
+                <li><b>Klausur-Merksatz:</b> AUG = Start (Met). UAA, UAG, UGA = Stopp (keine AS eingebaut).</li>
+              </ul>
+            </div>
+          `
+        }
+      ]
+    },
+
+// ── NEU: Gluconeogenese ──────────────────────────────────────────────────────
+    {
+      id: "bio-gluconeogenese",
+      title: "Gluconeogenese: Glucosesynthese aus Nicht-KH",
+      tags: ["Gluconeogenese", "Pyruvat", "OAA", "PEPCK", "FBPase-1", "Leber", "Cori-Zyklus", "Regulation"],
+      goals: [
+        "Ort, Substrate und Zweck der Gluconeogenese benennen.",
+        "Die drei irreversiblen Bypässe der Glykolyse und die jeweiligen GNG-Enzyme nennen.",
+        "Energiebilanz und reziproke Regulation mit der Glykolyse erklären.",
+        "Cori-Zyklus und seine physiologische Bedeutung beschreiben."
+      ],
+      summary:
+        "Die Gluconeogenese (GNG) synthetisiert Glucose aus Nicht-Kohlenhydrat-Vorstufen (Pyruvat, Laktat, Oxalacetat, Glycerol, glucogene Aminosäuren). Sie läuft hauptsächlich in der Leber ab und sichert den Blutzucker bei Fasten/Hunger. 7 der 10 Glykolyse-Schritte laufen reversibel; drei irreversible Schritte werden durch spezifische Enzyme umgangen.",
+      keyPoints: [
+        "Ort: Leber (hauptsächlich), Nierenrinde. Kein Muskel (fehlt Glucose-6-Phosphatase → kein Export).",
+        "Substrate: Pyruvat, Laktat (→ Pyruvat via LDH), Oxalacetat, Glycerol (aus Triglyceriden), glucogene Aminosäuren (alle außer Leucin und Lysin).",
+        "Bypass 1: Pyruvat → PEP (Pyruvatcarboxylase: Pyruvat + CO₂ + ATP → OAA; dann PEPCK: OAA + GTP → PEP + CO₂).",
+        "Bypass 2: Fructose-1,6-bisphosphat → Fructose-6-phosphat (FBPase-1, hydrolysiert Pi).",
+        "Bypass 3: Glucose-6-phosphat → Glucose (Glucose-6-Phosphatase, ER-Lumen, nur Leber/Niere).",
+        "Energiebilanz: Synthese von 1 Glucose kostet 6 ATP + 2 GTP + 2 NADH (deutlich teurer als Glykolyse liefert).",
+        "Regulation: Glucagon (Hunger) → cAMP ↑ → PFK-2-Hemmung → F-2,6-BP ↓ → Glykolyse ↓, GNG ↑. Insulin: umgekehrt.",
+        "Cori-Zyklus: Laktat (Muskel, Erythrozyten) → Blut → Leber → GNG → Glucose → Blut → Muskel."
+      ],
+      formulas: [
+        "Pyruvat + CO₂ + ATP → OAA  (Pyruvatcarboxylase, Mitochondrien)",
+        "OAA + GTP → PEP + CO₂  (PEPCK, Cytosol)",
+        "F-1,6-BP → F-6-P + Pi  (FBPase-1)",
+        "G-6-P → Glucose + Pi  (Glucose-6-Phosphatase, ER-Lumen)"
+      ],
+      visual: `
+        <pre style="font-size:10px; line-height:1.4; background:rgba(0,0,0,0.15); padding:8px; border-radius:6px;">
+Gluconeogenese (vereinfacht):
+
+Pyruvat (Mitochondrien)
+  ↓ Pyruvatcarboxylase (+ATP, +CO₂)
+Oxalacetat (OAA)
+  ↓ PEPCK (+GTP, −CO₂)
+Phosphoenolpyruvat (PEP)      ← Bypass 1
+  ↓ (7 reversible Schritte der Glykolyse, rückwärts)
+Fructose-1,6-bisphosphat
+  ↓ FBPase-1 (−Pi)            ← Bypass 2
+Fructose-6-phosphat
+  ↓ Phosphoglucoisomerase
+Glucose-6-phosphat
+  ↓ Glucose-6-Phosphatase     ← Bypass 3
+Glucose → Export ins Blut
+        </pre>
+      `,
+      detailBlocks: [
+        {
+          title: "Die 3 Bypässe im Detail",
+          content: `
+            <div style="font-size:13px; line-height:1.5;">
+              <p><b>Bypass 1: Pyruvat → PEP</b></p>
+              <ul>
+                <li>Pyruvatkinase (Glykolyse) ist irreversibel → muss umgangen werden.</li>
+                <li><b>Pyruvatcarboxylase</b> (Mitochondrium): Pyruvat + HCO₃⁻ + ATP → OAA. Cofaktor: Biotin (Vitamin B7).</li>
+                <li><b>PEPCK</b> (Cytosol oder Mitochondrium): OAA + GTP → PEP + CO₂.</li>
+              </ul>
+              <p><b>Bypass 2: F-1,6-BP → F-6-P</b></p>
+              <ul>
+                <li>PFK-1 (Glykolyse) irreversibel; stattdessen: <b>FBPase-1</b> hydrolysiert das 1-Phosphat.</li>
+                <li>FBPase-1 wird durch F-2,6-BP gehemmt; PFK-1 durch F-2,6-BP aktiviert → reziproke Regulation.</li>
+              </ul>
+              <p><b>Bypass 3: G-6-P → Glucose</b></p>
+              <ul>
+                <li>Hexokinase irreversibel; stattdessen: <b>Glucose-6-Phosphatase</b> im ER-Lumen.</li>
+                <li>Nur Leber + Nierenrinde → nur diese Organe können Glucose ins Blut exportieren.</li>
+              </ul>
+            </div>
+          `
+        },
+        {
+          title: "Cori-Zyklus & physiologische Bedeutung",
+          content: `
+            <div style="font-size:13px; line-height:1.5;">
+              <p>Der <b>Cori-Zyklus</b> verbindet Muskel und Leber:</p>
+              <ol>
+                <li>Muskel (Anaerob): Glucose → Pyruvat → Laktat (Glykolyse + LDH).</li>
+                <li>Laktat → Blut → Leber.</li>
+                <li>Leber: Laktat → Pyruvat (LDH) → Glucose (GNG, kostet ATP).</li>
+                <li>Glucose → Blut → zurück zum Muskel.</li>
+              </ol>
+              <p><b>Bedeutung:</b></p>
+              <ul>
+                <li>Recycling von Laktat (verhindert Laktatazidose).</li>
+                <li>Erhält Blutzucker bei starker körperlicher Belastung.</li>
+                <li>Die Leber „zahlt" die energetischen Kosten für den Muskel.</li>
+              </ul>
+            </div>
+          `
+        },
+        {
+          title: "Reziproke Regulation GNG vs. Glykolyse",
+          content: `
+            <div style="font-size:13px; line-height:1.5;">
+              <table style="border-collapse:collapse; width:100%; font-size:12px;">
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.2);">
+                  <th style="text-align:left; padding:4px;">Signal</th>
+                  <th style="padding:4px;">Glykolyse</th>
+                  <th style="padding:4px;">GNG</th>
+                </tr>
+                <tr><td style="padding:4px;">Glucagon (Fasten)</td><td style="padding:4px; text-align:center;">↓ gehemmt</td><td style="padding:4px; text-align:center;">↑ aktiviert</td></tr>
+                <tr><td style="padding:4px;">Insulin (nach Essen)</td><td style="padding:4px; text-align:center;">↑ aktiviert</td><td style="padding:4px; text-align:center;">↓ gehemmt</td></tr>
+                <tr><td style="padding:4px;">F-2,6-BP hoch</td><td style="padding:4px; text-align:center;">↑ (PFK-1 aktiv)</td><td style="padding:4px; text-align:center;">↓ (FBPase-1 gehemmt)</td></tr>
+                <tr><td style="padding:4px;">AMP/ADP hoch</td><td style="padding:4px; text-align:center;">↑ aktiviert</td><td style="padding:4px; text-align:center;">↓ FBPase-1 gehemmt</td></tr>
+                <tr><td style="padding:4px;">Citrat hoch</td><td style="padding:4px; text-align:center;">↓ PFK-1 gehemmt</td><td style="padding:4px; text-align:center;">↑ FBPase-1 aktiviert</td></tr>
+              </table>
+            </div>
+          `
+        }
+      ]
     }
+
   ]
 }
 
