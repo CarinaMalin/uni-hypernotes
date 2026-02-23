@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lernen – Uni Hyper Notes</title>
+  <style>
+    /* ---- CSS-Variablen (dunkel, wie Hauptapp) ---- */
+    :root {
+      --bg: #161821;
+      --bg-elevated: #1f2230;
+      --bg-sidebar: #181b27;
+      --border: #2f3445;
+      --text: #f7f7ff;
+      --muted: #a4aac5;
+      --accent: #7b8cff;
+      --accent-soft: rgba(123, 140, 255, 0.16);
+      --danger: #ff6b81;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.55);
+      --radius-card: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* ---- Scrollbar ---- */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
+
+    /* ---- Buttons / Inputs (gemeinsame Basis) ---- */
+    button {
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 12px;
+      padding: 5px 10px;
+      transition: background 0.15s;
+    }
+    button:hover { background: rgba(255,255,255,0.12); }
+
+    input[type="text"], textarea, select {
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 7px 11px;
+      background: rgba(7, 9, 20, 0.9);
+      color: var(--text);
+      width: 100%;
+      box-sizing: border-box;
+      font-family: inherit;
+      font-size: 13px;
+    }
+    textarea {
+      min-height: 70px;
+      border-radius: 14px;
+      line-height: 1.4;
+      resize: vertical;
+    }
+
+    /* ---- Card ---- */
+    .card {
+      background: var(--bg-elevated);
+      border-radius: var(--radius-card);
+      padding: 11px 12px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    /* ---- Haupt-Layout ---- */
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #learnLayout {
+      display: flex;
+      gap: 10px;
+      flex: 1;
+      min-height: 0;
+      padding: 10px;
+    }
+
+    /* ---- Sidebar ---- */
+    #learnSidebar {
+      width: 210px;
+      min-width: 210px;
+      background: var(--bg-sidebar);
+      border-radius: var(--radius-card);
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: var(--shadow-soft);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    #learnSubjects,
+    #learnTopics {
+      margin-top: 4px;
+      padding: 0;
+      list-style: none;
+      max-height: 40%;
+      overflow-y: auto;
+    }
+
+    .learn-section-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    /* ---- Items ---- */
+    .learn-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      background: rgba(0,0,0,0.08);
+      color: var(--muted);
+      transition: 0.15s;
+    }
+    .learn-item.active {
+      background: var(--accent-soft);
+      color: var(--text);
+    }
+    .learn-item:hover:not(.active) {
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+    }
+
+    /* ---- Status Dots ---- */
+    .learn-status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-left: auto; }
+    .learn-s-new      { background: rgba(255,255,255,0.22); }
+    .learn-s-learning { background: #f59e0b; }
+    .learn-s-done     { background: #22c55e; }
+
+    /* ---- + Eigenes Thema Btn ---- */
+    .learn-add-topic-btn {
+      width: 100%; font-size: 11px; padding: 5px 8px; border-radius: 8px;
+      border: 1px dashed rgba(255,255,255,0.18); background: transparent;
+      color: var(--muted); cursor: pointer; transition: 0.15s;
+      margin-top: 4px; text-align: left;
+    }
+    .learn-add-topic-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+    /* ---- Content Bereich ---- */
+    #learnContent {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    /* ---- Topic Card Details ---- */
+    .learn-heading {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .learn-subheading {
+      font-size: 13px;
+      opacity: 0.8;
+      margin-bottom: 8px;
+    }
+    .learn-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+    .learn-list {
+      margin-top: 0;
+      padding-left: 18px;
+      font-size: 13px;
+    }
+    .learn-chiprow {
+      margin-top: 4px;
+      margin-bottom: 6px;
+    }
+    .learn-chip {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      margin-right: 4px;
+      margin-bottom: 4px;
+    }
+
+    /* ---- Status Bar ---- */
+    .learn-status-bar {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      padding-bottom: 10px; margin-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .learn-st-btn {
+      font-size: 11px; padding: 3px 10px; border-radius: 20px;
+      border: 1.5px solid rgba(255,255,255,0.18); background: transparent;
+      color: var(--muted); cursor: pointer; transition: 0.15s;
+    }
+    .learn-st-btn.lsb-new.active     { border-color: rgba(255,255,255,0.5); color: var(--text); background: rgba(255,255,255,0.1); }
+    .learn-st-btn.lsb-learning.active { border-color: #f59e0b; color: #f59e0b; background: rgba(245,158,11,0.12); }
+    .learn-st-btn.lsb-done.active     { border-color: #22c55e; color: #22c55e; background: rgba(34,197,94,0.12); }
+
+    /* ---- Quiz Mode ---- */
+    .learn-quiz-toggle { margin-left: auto; font-size: 11px; padding: 4px 12px; border-radius: 20px; }
+    .learn-quiz-toggle.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .learn-reveal-btn {
+      width: 100%; padding: 10px 14px; border-radius: 8px;
+      background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.22);
+      color: var(--muted); font-size: 13px; cursor: pointer; text-align: left;
+      transition: 0.15s; margin-bottom: 6px; display: block;
+    }
+    .learn-reveal-btn:hover { background: rgba(255,255,255,0.09); color: var(--text); }
+    .learn-reveal-content { animation: fadeInDown 0.2s ease; }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- User Topic Modal ---- */
+    #learnUserModal {
+      display: none; position: fixed; inset: 0; z-index: 400;
+      background: rgba(0,0,0,0.65); align-items: center; justify-content: center;
+    }
+    #learnUserModal.open { display: flex; }
+    .learn-modal-box {
+      background: #1e2135; border-radius: 16px; padding: 22px;
+      width: min(480px, 96vw); display: flex; flex-direction: column; gap: 10px;
+      border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    }
+    .learn-modal-box h3    { margin: 0 0 2px; font-size: 15px; }
+    .learn-modal-box label { font-size: 12px; opacity: 0.7; display: block; margin-bottom: 2px; }
+    .learn-modal-box textarea { width: 100%; min-height: 60px; resize: vertical; box-sizing: border-box; font-size: 12px; }
+    .learn-modal-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 2px; }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 860px) {
+      #learnLayout  { flex-direction: column; }
+      #learnSidebar { width: 100%; min-width: unset; flex-direction: row; overflow-x: auto; max-height: 200px; flex-shrink: 0; }
+      #learnSubjects, #learnTopics { max-height: none; overflow-y: visible; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar + Content -->
+  <div id="learnLayout">
+    <div id="learnSidebar">
+      <div>
+        <div class="learn-section-label">Fächer</div>
+        <ul id="learnSubjects"></ul>
+      </div>
+      <div>
+        <div class="learn-section-label" style="margin-top:6px;">Themen</div>
+        <ul id="learnTopics"></ul>
+      </div>
+    </div>
+    <div id="learnContent">
+      <!-- wird per JS gefüllt -->
+    </div>
+  </div>
+
+  <!-- Eigenes Thema Modal -->
+  <div id="learnUserModal">
+    <div class="learn-modal-box">
+      <h3 id="learnModalTitle">📖 Eigenes Thema</h3>
+      <div>
+        <label>Titel</label>
+        <input type="text" id="learnUserTitleInput" placeholder="z.B. Glycolyse – Überblick" style="width:100%;box-sizing:border-box;">
+      </div>
+      <div>
+        <label>Lernziele (je eine pro Zeile)</label>
+        <textarea id="learnUserGoalsInput" placeholder="Den Ablauf der Glycolyse benennen.&#10;ATP-Bilanz berechnen."></textarea>
+      </div>
+      <div>
+        <label>Zusammenfassung</label>
+        <textarea id="learnUserSummaryInput" placeholder="Kurze Zusammenfassung des Themas..."></textarea>
+      </div>
+      <div>
+        <label>Wichtige Punkte (je einer pro Zeile)</label>
+        <textarea id="learnUserKeyInput" placeholder="Wichtiger Punkt 1&#10;Wichtiger Punkt 2"></textarea>
+      </div>
+      <div class="learn-modal-row">
+        <button id="learnModalCancelBtn" style="background:rgba(255,255,255,0.06);">Abbrechen</button>
+        <button id="learnModalSaveBtn">Speichern ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="learndata.js"></script>
+  <script src="learn.js"></script>
+</body>
+</html>
