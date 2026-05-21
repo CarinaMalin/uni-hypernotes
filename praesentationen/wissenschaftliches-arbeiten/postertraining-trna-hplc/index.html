@@ -1,0 +1,1761 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Postertraining tRNA HPLC</title>
+    <style>
+:root {
+  --bg: #f3f0e8;
+  --surface: #fffdf8;
+  --surface-2: #f7fbfa;
+  --ink: #24313b;
+  --muted: #64717a;
+  --line: #d9d2c4;
+  --teal: #168a7a;
+  --teal-soft: #d8f0ed;
+  --coral: #f06449;
+  --coral-soft: #ffe1d8;
+  --gold: #d99b2b;
+  --gold-soft: #fff0c6;
+  --blue: #3b638f;
+  --shadow: 0 18px 44px rgba(47, 50, 45, 0.11);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 286px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 22px 18px;
+  background: #1f2f2c;
+  color: #fffdf8;
+  overflow-y: auto;
+}
+
+.brand {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 26px;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border: 2px solid rgba(255, 253, 248, 0.5);
+  background: #f06449;
+  color: #fffdf8;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--teal);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sidebar .eyebrow {
+  color: #bfe8df;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-size: 1.25rem;
+  line-height: 1.15;
+}
+
+h2 {
+  margin-bottom: 14px;
+  font-size: clamp(1.7rem, 3vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+h3 {
+  margin-bottom: 10px;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.tab-list {
+  display: grid;
+  gap: 8px;
+}
+
+.tab-button {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255, 253, 248, 0.78);
+  text-align: left;
+  border-radius: 8px;
+}
+
+.tab-button:hover,
+.tab-button:focus-visible {
+  border-color: rgba(255, 253, 248, 0.28);
+  outline: none;
+}
+
+.tab-button.active {
+  background: #fffdf8;
+  color: #1f2f2c;
+}
+
+.nav-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: rgba(255, 253, 248, 0.14);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.tab-button.active .nav-icon {
+  background: var(--gold-soft);
+  color: #8a5a00;
+}
+
+.content {
+  min-width: 0;
+  padding: 34px;
+}
+
+.tab-panel {
+  display: none;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.04fr) minmax(320px, 0.96fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.intro,
+.visual-panel,
+.speech-card,
+.zone-info,
+.basic-card,
+.question-intro,
+.qa-card,
+.quiz-card,
+.training-notes,
+.timer-card,
+.timeline-card,
+.final-script,
+.cheat-grid article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.intro {
+  padding: clamp(24px, 4vw, 42px);
+}
+
+.intro p {
+  max-width: 62ch;
+  font-size: 1.05rem;
+}
+
+.callout {
+  display: grid;
+  gap: 8px;
+  margin-top: 26px;
+  padding: 16px;
+  border-left: 5px solid var(--coral);
+  background: var(--coral-soft);
+  color: #5c2b20;
+}
+
+.callout span {
+  line-height: 1.5;
+}
+
+.visual-panel {
+  display: grid;
+  place-items: center;
+  min-height: 360px;
+  padding: 16px;
+  background: #fdfbf4;
+}
+
+.workflow-svg {
+  width: 100%;
+  max-height: 420px;
+}
+
+.svg-label {
+  fill: #24313b;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.svg-small {
+  fill: #64717a;
+  font-size: 15px;
+}
+
+.svg-arrow {
+  stroke: #243b53;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.story-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.story-strip article {
+  min-height: 156px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.story-strip span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 14px;
+  border-radius: 6px;
+  background: var(--teal-soft);
+  color: var(--teal);
+  font-weight: 800;
+}
+
+.section-head {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  min-height: 126px;
+  margin-bottom: 20px;
+}
+
+.speech-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.speech-card {
+  padding: 20px;
+}
+
+.segment-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.segment-head span {
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--gold-soft);
+  color: #7c5408;
+  font-weight: 800;
+  font-size: 0.82rem;
+}
+
+.safe-line,
+.plain-example {
+  margin-bottom: 0;
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: #315b56;
+  font-weight: 700;
+}
+
+.poster-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+  gap: 22px;
+}
+
+.poster-map {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: 130px 130px 130px;
+  gap: 10px;
+  min-height: 420px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fffdf8;
+  box-shadow: var(--shadow);
+}
+
+.poster-zone {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-width: 0;
+  padding: 14px;
+  border: 2px solid #d9d2c4;
+  border-radius: 6px;
+  background: #f8f4ea;
+  color: var(--ink);
+  font-weight: 800;
+  text-align: left;
+}
+
+.poster-zone:nth-child(1) {
+  grid-row: 1 / 2;
+}
+
+.poster-zone:nth-child(2) {
+  grid-row: 2 / 4;
+}
+
+.poster-zone:nth-child(4) {
+  grid-row: 2 / 3;
+}
+
+.poster-zone:nth-child(5) {
+  grid-row: 3 / 4;
+}
+
+.poster-zone.active {
+  border-color: var(--coral);
+  background: var(--coral-soft);
+}
+
+.zone-info {
+  padding: 24px;
+}
+
+.zone-info h3 {
+  font-size: 1.5rem;
+}
+
+.mini-script {
+  display: grid;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 6px;
+  background: var(--teal-soft);
+  color: #24524c;
+  line-height: 1.55;
+}
+
+.basics-grid,
+.cheat-grid,
+.term-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.basic-card,
+.cheat-grid article {
+  padding: 20px;
+}
+
+.basic-icon {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 42px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  background: var(--teal-soft);
+  color: var(--teal);
+  font-weight: 900;
+}
+
+.accordion {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.accordion-button {
+  width: 100%;
+  padding: 18px 20px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  text-align: left;
+  font-weight: 800;
+}
+
+.accordion-button.active {
+  background: var(--gold-soft);
+}
+
+.accordion-panel {
+  display: none;
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.accordion-panel.open {
+  display: block;
+}
+
+.accordion-panel p {
+  margin: 16px 0 0;
+}
+
+.search-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 520px;
+  min-height: 48px;
+  margin-bottom: 18px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.term-card {
+  min-height: 160px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.term-card strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--ink);
+  font-size: 1.05rem;
+}
+
+.term-card span {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--teal-soft);
+  color: #315b56;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.question-intro {
+  padding: 22px;
+  margin-bottom: 16px;
+}
+
+.response-formula {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.response-formula span {
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--gold-soft);
+  color: #6b4a09;
+  font-weight: 800;
+  text-align: center;
+}
+
+.qa-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.qa-card {
+  padding: 20px;
+}
+
+.answer-line {
+  margin-bottom: 0;
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--teal-soft);
+  color: #25544e;
+  font-weight: 800;
+}
+
+.quiz-layout,
+.timer-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 18px;
+}
+
+.quiz-card,
+.training-notes,
+.timer-card,
+.timeline-card {
+  padding: 24px;
+}
+
+.quiz-card h3 {
+  font-size: 1.6rem;
+}
+
+.answer-box {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 6px;
+  background: var(--surface-2);
+}
+
+.answer-box p {
+  margin-bottom: 0;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.primary-button,
+.ghost-button {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 7px;
+  font-weight: 800;
+}
+
+.primary-button {
+  border: 1px solid var(--teal);
+  background: var(--teal);
+  color: #fff;
+}
+
+.ghost-button {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.time-display {
+  font-size: clamp(3.5rem, 10vw, 7rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.timer-progress {
+  width: 100%;
+  height: 12px;
+  margin-top: 22px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e1ddd2;
+}
+
+.timer-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--coral);
+  transform-origin: left;
+  transition: width 0.2s linear;
+}
+
+.time-plan {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.time-plan li {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.time-plan li.active {
+  background: var(--coral-soft);
+  color: #5c2b20;
+  font-weight: 800;
+}
+
+.time-plan span {
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.cheat-grid {
+  margin-bottom: 18px;
+}
+
+.final-script {
+  padding: 24px;
+}
+
+.final-script p {
+  color: var(--ink);
+  font-size: 1.05rem;
+}
+
+@media (max-width: 980px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+  }
+
+  .tab-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .hero-grid,
+  .poster-grid,
+  .quiz-layout,
+  .timer-layout,
+  .speech-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .story-strip,
+  .basics-grid,
+  .cheat-grid,
+  .qa-grid,
+  .term-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: 20px 14px;
+  }
+
+  .sidebar {
+    padding-bottom: 14px;
+  }
+
+  .brand {
+    margin-bottom: 18px;
+  }
+
+  .tab-list,
+  .story-strip,
+  .basics-grid,
+  .cheat-grid,
+  .qa-grid,
+  .term-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .response-formula {
+    grid-template-columns: 1fr;
+  }
+
+  .tab-list {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+  }
+
+  .tab-button {
+    flex: 0 0 150px;
+    min-height: 42px;
+  }
+
+  .poster-map {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, minmax(72px, auto));
+  }
+
+  .poster-zone,
+  .poster-zone:nth-child(1),
+  .poster-zone:nth-child(2),
+  .poster-zone:nth-child(4),
+  .poster-zone:nth-child(5) {
+    grid-row: auto;
+  }
+
+  .segment-head {
+    display: grid;
+  }
+}
+
+</style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Bereiche">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">RNA</div>
+          <div>
+            <p class="eyebrow">Postertraining</p>
+            <h1>tRNA mit HPLC</h1>
+          </div>
+        </div>
+
+        <nav class="tab-list" aria-label="Lernbereiche">
+          <button class="tab-button active" data-tab="start">
+            <span class="nav-icon" aria-hidden="true">01</span>
+            Überblick
+          </button>
+          <button class="tab-button" data-tab="speech">
+            <span class="nav-icon" aria-hidden="true">02</span>
+            5-Minuten-Text
+          </button>
+          <button class="tab-button" data-tab="poster">
+            <span class="nav-icon" aria-hidden="true">03</span>
+            Poster erklären
+          </button>
+          <button class="tab-button" data-tab="basics">
+            <span class="nav-icon" aria-hidden="true">04</span>
+            Basics
+          </button>
+          <button class="tab-button" data-tab="deep">
+            <span class="nav-icon" aria-hidden="true">05</span>
+            Extra Infos
+          </button>
+          <button class="tab-button" data-tab="terms">
+            <span class="nav-icon" aria-hidden="true">06</span>
+            Fachwörter
+          </button>
+          <button class="tab-button" data-tab="questions">
+            <span class="nav-icon" aria-hidden="true">07</span>
+            Nachfragen
+          </button>
+          <button class="tab-button" data-tab="quiz">
+            <span class="nav-icon" aria-hidden="true">08</span>
+            Fragen üben
+          </button>
+          <button class="tab-button" data-tab="timer">
+            <span class="nav-icon" aria-hidden="true">09</span>
+            Probevortrag
+          </button>
+          <button class="tab-button" data-tab="cheat">
+            <span class="nav-icon" aria-hidden="true">10</span>
+            Spickzettel
+          </button>
+        </nav>
+      </aside>
+
+      <main class="content">
+        <section class="tab-panel active" id="start" aria-labelledby="tab-start">
+          <div class="hero-grid">
+            <div class="intro">
+              <p class="eyebrow">Dein roter Faden</p>
+              <h2>Du erklärst nicht jedes Detail. Du führst sicher durch die Geschichte.</h2>
+              <p>
+                Die zentrale Aussage ist: Nach der in-vitro-Transkription liegt tRNA nicht rein vor.
+                HPLC trennt die Mischung, damit die gewünschte tRNA-Fraktion gesammelt und geprüft werden kann.
+              </p>
+              <div class="callout">
+                <strong>Sicherer Kernsatz:</strong>
+                <span>Die Methode ist grundsätzlich geeignet, muss aber noch optimiert werden, damit Reinheit und Ausbeute möglichst gut werden.</span>
+              </div>
+            </div>
+
+            <div class="visual-panel" aria-label="Vereinfachte Darstellung von tRNA-Aufreinigung">
+              <svg class="workflow-svg" viewBox="0 0 620 380" role="img" aria-labelledby="workflow-title">
+                <title id="workflow-title">Ablauf von DNA-Template zu gereinigter tRNA</title>
+                <defs>
+                  <linearGradient id="tubeFill" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#fff7dc" />
+                    <stop offset="100%" stop-color="#ffe0a8" />
+                  </linearGradient>
+                </defs>
+                <rect x="26" y="38" width="154" height="92" rx="8" fill="#f6fbfa" stroke="#9ccfc8" />
+                <text x="103" y="72" text-anchor="middle" class="svg-label">DNA-Template</text>
+                <path d="M62 96 C82 76, 102 116, 122 96 S162 76, 174 96" fill="none" stroke="#168a7a" stroke-width="5" />
+                <path d="M62 108 C82 88, 102 128, 122 108 S162 88, 174 108" fill="none" stroke="#f06449" stroke-width="5" />
+
+                <path d="M190 86 H246" class="svg-arrow" />
+                <polygon points="246,86 235,79 235,93" fill="#243b53" />
+
+                <rect x="258" y="38" width="154" height="92" rx="8" fill="#fffaf1" stroke="#e8b85b" />
+                <text x="335" y="68" text-anchor="middle" class="svg-label">Transkription</text>
+                <text x="335" y="96" text-anchor="middle" class="svg-small">Polymerase + NTPs</text>
+
+                <path d="M422 86 H478" class="svg-arrow" />
+                <polygon points="478,86 467,79 467,93" fill="#243b53" />
+
+                <rect x="490" y="38" width="104" height="92" rx="8" fill="url(#tubeFill)" stroke="#d98c3f" />
+                <text x="542" y="72" text-anchor="middle" class="svg-label">RNA-</text>
+                <text x="542" y="94" text-anchor="middle" class="svg-label">Gemisch</text>
+
+                <rect x="52" y="204" width="120" height="112" rx="8" fill="#f9fbff" stroke="#a8b8d8" />
+                <line x1="82" y1="226" x2="82" y2="296" stroke="#293241" stroke-width="4" />
+                <line x1="108" y1="244" x2="108" y2="296" stroke="#293241" stroke-width="4" opacity=".65" />
+                <line x1="134" y1="266" x2="134" y2="296" stroke="#293241" stroke-width="4" opacity=".45" />
+                <text x="112" y="334" text-anchor="middle" class="svg-label">Gelkontrolle</text>
+
+                <path d="M190 260 H246" class="svg-arrow" />
+                <polygon points="246,260 235,253 235,267" fill="#243b53" />
+
+                <rect x="258" y="204" width="154" height="112" rx="8" fill="#f6fbfa" stroke="#9ccfc8" />
+                <rect x="318" y="222" width="34" height="72" rx="17" fill="#d8f0ed" stroke="#168a7a" stroke-width="3" />
+                <circle cx="335" cy="239" r="6" fill="#168a7a" />
+                <circle cx="335" cy="258" r="6" fill="#f06449" />
+                <circle cx="335" cy="277" r="6" fill="#e8b85b" />
+                <text x="335" y="334" text-anchor="middle" class="svg-label">HPLC-Säule</text>
+
+                <path d="M422 260 H478" class="svg-arrow" />
+                <polygon points="478,260 467,253 467,267" fill="#243b53" />
+
+                <rect x="490" y="204" width="104" height="112" rx="8" fill="#fff9f6" stroke="#e7a08e" />
+                <path d="M506 284 L520 284 C528 284 526 236 536 236 C548 236 542 284 556 284 L580 284" fill="none" stroke="#f06449" stroke-width="4" />
+                <text x="542" y="334" text-anchor="middle" class="svg-label">Fraktion</text>
+              </svg>
+            </div>
+          </div>
+
+          <div class="story-strip">
+            <article>
+              <span>1</span>
+              <h3>Herstellen</h3>
+              <p>tRNA wird im Reagenzglas aus einem DNA-Template hergestellt.</p>
+            </article>
+            <article>
+              <span>2</span>
+              <h3>Problem</h3>
+              <p>Es entstehen neben voller tRNA auch kürzere oder beschädigte Produkte.</p>
+            </article>
+            <article>
+              <span>3</span>
+              <h3>Trennen</h3>
+              <p>HPLC trennt Moleküle, weil sie unterschiedlich durch die Säule laufen.</p>
+            </article>
+            <article>
+              <span>4</span>
+              <h3>Prüfen</h3>
+              <p>Gel und Chromatogramm zeigen, ob die gewünschte Fraktion plausibel ist.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="speech" aria-labelledby="tab-speech">
+          <div class="section-head">
+            <p class="eyebrow">Auswendig lernbarer Ablauf</p>
+            <h2>5-Minuten-Sprechtext</h2>
+          </div>
+
+          <div class="speech-layout">
+            <div class="speech-card">
+              <div class="segment-head">
+                <span>0:00-0:30</span>
+                <h3>Einstieg</h3>
+              </div>
+              <p>
+                Ich stelle ein Poster zur Aufreinigung von in vitro transkribierter tRNA mittels HPLC vor.
+                Im Mittelpunkt steht die Frage, wie man künstlich hergestellte tRNA nach der Herstellung
+                möglichst effizient reinigen kann.
+              </p>
+              <p class="safe-line">Sicherer Satz: RNA ist nach der Herstellung nicht automatisch rein.</p>
+            </div>
+
+            <div class="speech-card">
+              <div class="segment-head">
+                <span>0:30-1:15</span>
+                <h3>tRNA erklären</h3>
+              </div>
+              <p>
+                tRNA steht für transfer-RNA. Sie ist an der Proteinbiosynthese beteiligt und funktioniert
+                vereinfacht als Adapter: Ein Bereich erkennt über das Anticodon die mRNA, am anderen Ende
+                kann eine Aminosäure gebunden werden.
+              </p>
+              <p class="safe-line">Sicherer Satz: tRNA vermittelt zwischen mRNA-Code und Aminosäure.</p>
+            </div>
+
+            <div class="speech-card">
+              <div class="segment-head">
+                <span>1:15-2:15</span>
+                <h3>In-vitro-Transkription</h3>
+              </div>
+              <p>
+                Die tRNA wurde außerhalb einer Zelle im Labor hergestellt. Dafür braucht man ein DNA-Template,
+                Nukleotide und eine RNA-Polymerase, zum Beispiel T7-RNA-Polymerase. Dabei entstehen aber nicht
+                immer nur vollständige Produkte.
+              </p>
+              <p class="safe-line">Sicherer Satz: Nebenprodukte sind der Grund, warum eine Aufreinigung nötig ist.</p>
+            </div>
+
+            <div class="speech-card">
+              <div class="segment-head">
+                <span>2:15-3:45</span>
+                <h3>HPLC-Methode</h3>
+              </div>
+              <p>
+                Bei HPLC wird die Probe auf eine Säule gegeben und mit einer mobilen Phase durch die Säule
+                bewegt. Die Bestandteile wechselwirken unterschiedlich mit der Säule oder werden nach Größe
+                unterschiedlich getrennt. Deshalb kommen sie zu verschiedenen Zeiten heraus.
+              </p>
+              <p class="safe-line">Sicherer Satz: Im Chromatogramm sieht man diese Trennung als Peaks.</p>
+            </div>
+
+            <div class="speech-card">
+              <div class="segment-head">
+                <span>3:45-4:30</span>
+                <h3>Gel und Chromatogramm</h3>
+              </div>
+              <p>
+                Das Gel kontrolliert die RNA-Größe. Eine Bande in der erwarteten Größe spricht für das gewünschte
+                Produkt. Das Chromatogramm zeigt mehrere Peaks und damit mehrere Bestandteile der Probe. Der
+                relevante Peak kann als Fraktion gesammelt werden.
+              </p>
+              <p class="safe-line">Sicherer Satz: Gel und HPLC ergänzen sich als Kontrolle und Aufreinigung.</p>
+            </div>
+
+            <div class="speech-card">
+              <div class="segment-head">
+                <span>4:30-5:00</span>
+                <h3>Fazit</h3>
+              </div>
+              <p>
+                Insgesamt zeigt die Arbeit, dass HPLC eine geeignete Methode sein kann, um in vitro transkribierte
+                tRNA schneller und kontrollierter aufzureinigen. Die Bedingungen müssen aber weiter optimiert
+                werden, zum Beispiel Flussrate, Puffer und Säulenauswahl.
+              </p>
+              <p class="safe-line">Sicherer Satz: Grundsätzlich geeignet, aber noch nicht fertig optimiert.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="poster" aria-labelledby="tab-poster">
+          <div class="section-head">
+            <p class="eyebrow">Wo zeige ich hin?</p>
+            <h2>Poster-Zonen sicher erklären</h2>
+          </div>
+
+          <div class="poster-grid">
+            <div class="poster-map" aria-label="Vereinfachte Posterkarte">
+              <button class="poster-zone active" data-zone="practice">Praxisphase</button>
+              <button class="poster-zone" data-zone="transcription">In-vitro-Transkription</button>
+              <button class="poster-zone" data-zone="structure">tRNA-Struktur</button>
+              <button class="poster-zone" data-zone="hplc">Aufreinigung</button>
+              <button class="poster-zone" data-zone="chrom">Chromatogramm</button>
+              <button class="poster-zone" data-zone="outlook">Ausblick</button>
+            </div>
+
+            <div class="zone-info" id="zoneInfo">
+              <p class="eyebrow">Praxisphase</p>
+              <h3>Was ist die große Frage?</h3>
+              <p>
+                Die Praxisphase beschreibt den fachlichen Rahmen: RNA-Biochemie und die Herstellung beziehungsweise
+                Untersuchung von RNA. Für deinen Vortrag reicht: Die Arbeit beschäftigt sich damit, synthetisch
+                hergestellte tRNA sauberer für weitere Experimente vorzubereiten.
+              </p>
+              <div class="mini-script">
+                <strong>So kannst du es sagen:</strong>
+                <span>Hier wird der Hintergrund der Arbeitsgruppe genannt. Für mein Poster ist wichtig: Es geht um eine Methode zur Aufreinigung von RNA.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="basics" aria-labelledby="tab-basics">
+          <div class="section-head">
+            <p class="eyebrow">Einfach erklärt</p>
+            <h2>Die Grundlagen, die du wirklich brauchst</h2>
+          </div>
+
+          <div class="basics-grid">
+            <article class="basic-card">
+              <div class="basic-icon" aria-hidden="true">tRNA</div>
+              <h3>Was ist tRNA?</h3>
+              <p>
+                tRNA ist eine kleine RNA, die bei der Proteinherstellung hilft. Sie bringt die passende Aminosäure
+                zum Ribosom. Deshalb kann man sie als Adapter zwischen genetischer Information und Aminosäure verstehen.
+              </p>
+              <p class="plain-example">Merksatz: Code lesen, Aminosäure bringen.</p>
+            </article>
+
+            <article class="basic-card">
+              <div class="basic-icon" aria-hidden="true">IVT</div>
+              <h3>Was ist in-vitro-Transkription?</h3>
+              <p>
+                RNA wird außerhalb einer Zelle hergestellt. Man gibt ein DNA-Template, Bausteine der RNA und eine
+                RNA-Polymerase zusammen. Die Polymerase schreibt die RNA anhand der DNA-Vorlage.
+              </p>
+              <p class="plain-example">Merksatz: RNA-Herstellung im Reagenzglas.</p>
+            </article>
+
+            <article class="basic-card">
+              <div class="basic-icon" aria-hidden="true">Mix</div>
+              <h3>Warum ist die Probe nicht rein?</h3>
+              <p>
+                Die Polymerase kann abbrechen, RNA kann beschädigt werden, und in der Reaktion bleiben Salze,
+                Enzyme, Nukleotide oder kurze RNA-Stücke zurück. Deshalb sieht man oft ein Gemisch statt nur ein Produkt.
+              </p>
+              <p class="plain-example">Merksatz: Herstellung bedeutet nicht automatisch Reinheit.</p>
+            </article>
+
+            <article class="basic-card">
+              <div class="basic-icon" aria-hidden="true">Gel</div>
+              <h3>Was zeigt ein Gel?</h3>
+              <p>
+                Ein Gel trennt RNA ungefähr nach Größe. Eine passende Bande zeigt, dass RNA in der erwarteten Länge
+                vorhanden ist. Zusätzliche Banden können kürzere Produkte oder Abbau anzeigen.
+              </p>
+              <p class="plain-example">Merksatz: Das Gel ist die Größenkontrolle.</p>
+            </article>
+
+            <article class="basic-card">
+              <div class="basic-icon" aria-hidden="true">HPLC</div>
+              <h3>Was macht HPLC?</h3>
+              <p>
+                HPLC trennt Stoffe in einer Flüssigkeit über eine Säule. Verschiedene Moleküle kommen zu verschiedenen
+                Zeiten aus der Säule heraus. Diese Signale erscheinen als Peaks.
+              </p>
+              <p class="plain-example">Merksatz: Die Säule macht aus einem Gemisch getrennte Abschnitte.</p>
+            </article>
+
+            <article class="basic-card">
+              <div class="basic-icon" aria-hidden="true">Peak</div>
+              <h3>Was ist ein Peak?</h3>
+              <p>
+                Ein Peak ist ein Signal im Chromatogramm. Er bedeutet: Zu diesem Zeitpunkt kommt etwas aus der Säule.
+                Die zugehörige Fraktion kann gesammelt und danach überprüft werden.
+              </p>
+              <p class="plain-example">Merksatz: Peak gleich austretender Bestandteil.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="deep" aria-labelledby="tab-deep">
+          <div class="section-head">
+            <p class="eyebrow">Näher erklärt</p>
+            <h2>Extra Infos für Nachfragen</h2>
+          </div>
+
+          <div class="accordion">
+            <button class="accordion-button active" aria-expanded="true">Warum muss tRNA besonders sauber sein?</button>
+            <div class="accordion-panel open">
+              <p>
+                Bei weiteren Experimenten soll das Ergebnis von der gewünschten tRNA abhängen, nicht von Verunreinigungen.
+                Kurze RNA-Fragmente, Salze oder überschüssige Nukleotide könnten Messungen stören. Reine tRNA ist deshalb
+                wichtig, wenn man Struktur, Funktion oder Bindungen untersuchen möchte.
+              </p>
+            </div>
+
+            <button class="accordion-button" aria-expanded="false">Was bedeutet Größenausschlusschromatographie?</button>
+            <div class="accordion-panel">
+              <p>
+                Bei der Größenausschlusschromatographie enthält die Säule poröse Teilchen. Kleine Moleküle können stärker
+                in diese Poren hineinwandern und brauchen dadurch oft länger. Größere Moleküle kommen weniger in die Poren
+                hinein und laufen anders durch die Säule. So entsteht eine Trennung nach Größe beziehungsweise hydrodynamischem Volumen.
+              </p>
+            </div>
+
+            <button class="accordion-button" aria-expanded="false">Warum entstehen kurze Transkripte?</button>
+            <div class="accordion-panel">
+              <p>
+                Die RNA-Polymerase startet nicht immer perfekt und kann während der Synthese abbrechen. Außerdem können RNA-Moleküle
+                empfindlich sein und teilweise gespalten werden. Dadurch entstehen kürzere Fragmente, die im Gel zusätzliche Banden
+                bilden können.
+              </p>
+            </div>
+
+            <button class="accordion-button" aria-expanded="false">Was heißt Reinheit und Ausbeute?</button>
+            <div class="accordion-panel">
+              <p>
+                Reinheit beschreibt, wie wenig Fremd- oder Nebenprodukte noch in der Probe sind. Ausbeute beschreibt, wie viel
+                gewünschte tRNA nach der Aufreinigung übrig bleibt. Eine gute Methode soll beides schaffen: sauber trennen und
+                möglichst wenig gewünschte tRNA verlieren.
+              </p>
+            </div>
+
+            <button class="accordion-button" aria-expanded="false">Warum müssen Flussrate, Puffer und Säule optimiert werden?</button>
+            <div class="accordion-panel">
+              <p>
+                Diese Bedingungen beeinflussen, wie gut sich die Bestandteile trennen. Eine zu schnelle Flussrate kann Peaks schlechter
+                auflösen. Der Puffer beeinflusst Stabilität und Wechselwirkungen der RNA. Die Säule entscheidet, welche Größenbereiche
+                oder Eigenschaften besonders gut getrennt werden.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="terms" aria-labelledby="tab-terms">
+          <div class="section-head">
+            <p class="eyebrow">Nachschlagen</p>
+            <h2>Fachwörter ohne Stress</h2>
+          </div>
+
+          <label class="search-label" for="termSearch">Begriff suchen</label>
+          <input class="search-input" id="termSearch" type="search" placeholder="z. B. Peak, Fraktion, Polymerase" />
+
+          <div class="term-grid" id="termGrid"></div>
+        </section>
+
+        <section class="tab-panel" id="questions" aria-labelledby="tab-questions">
+          <div class="section-head">
+            <p class="eyebrow">Teil der Präsentation</p>
+            <h2>Typische Nachfragen sicher beantworten</h2>
+          </div>
+
+          <div class="question-intro">
+            <h3>Antwortregel für Nachfragen</h3>
+            <p>
+              Antworte kurz, ruhig und mit Posterbezug: erst die einfache Erklärung, dann warum es für deine Methode
+              wichtig ist. Wenn etwas nicht eindeutig aus dem Poster hervorgeht, darfst du das sauber einordnen.
+            </p>
+            <div class="response-formula">
+              <span>1. Begriff erklären</span>
+              <span>2. Bedeutung für die Probe nennen</span>
+              <span>3. Zur HPLC oder zum Gel zurückführen</span>
+            </div>
+          </div>
+
+          <div class="qa-grid">
+            <article class="qa-card">
+              <h3>Warum reicht die in-vitro-Transkription allein nicht aus?</h3>
+              <p>
+                Weil dabei nicht automatisch nur perfekte tRNA entsteht. Es können kürzere Transkripte,
+                beschädigte RNA, freie Nukleotide, Salze und andere Reaktionsbestandteile in der Probe bleiben.
+              </p>
+              <p class="answer-line">Kurzantwort: Herstellung ist nicht gleich Reinheit.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Warum HPLC und nicht nur ein Gel?</h3>
+              <p>
+                Ein Gel ist sehr gut zur Kontrolle der RNA-Größe. HPLC eignet sich besser als Methode, um eine Probe
+                präparativ in Fraktionen zu trennen und den gewünschten Bereich gezielt zu sammeln.
+              </p>
+              <p class="answer-line">Kurzantwort: Gel kontrolliert, HPLC reinigt.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Woran erkennt man den richtigen Peak?</h3>
+              <p>
+                Der Peak allein zeigt erst einmal nur, dass ein Bestandteil aus der Säule kommt. Ob es die gewünschte
+                tRNA ist, muss man über Vergleichswerte, erwartete Retentionszeit und anschließende Kontrollen prüfen.
+              </p>
+              <p class="answer-line">Kurzantwort: Peak sammeln und danach bestätigen.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Was bedeutet Reinheit im Unterschied zu Ausbeute?</h3>
+              <p>
+                Reinheit bedeutet, wie wenig unerwünschte Stoffe noch in der Probe sind. Ausbeute bedeutet, wie viel
+                gewünschte tRNA nach der Aufreinigung übrig bleibt.
+              </p>
+              <p class="answer-line">Kurzantwort: Reinheit ist Qualität, Ausbeute ist Menge.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Warum entstehen kurze Transkripte?</h3>
+              <p>
+                Die Polymerase kann während der RNA-Synthese abbrechen oder nicht immer gleich effizient starten.
+                Außerdem kann RNA empfindlich sein und teilweise abgebaut oder hydrolysiert werden.
+              </p>
+              <p class="answer-line">Kurzantwort: Die Synthese läuft nicht in jedem Molekül perfekt durch.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Was bedeutet hydrodynamisches Volumen?</h3>
+              <p>
+                Das beschreibt vereinfacht, wie groß ein Molekül in Lösung wirkt. Es hängt nicht nur von der reinen
+                Masse ab, sondern auch von Form und Faltung. Für RNA ist das wichtig, weil sie Strukturen bilden kann.
+              </p>
+              <p class="answer-line">Kurzantwort: Es ist die wirksame Größe eines Moleküls in Flüssigkeit.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Warum beeinflusst die Flussrate die Trennung?</h3>
+              <p>
+                Wenn die mobile Phase zu schnell durch die Säule läuft, haben die Moleküle weniger Zeit, sich gut zu
+                trennen. Eine passende Flussrate kann deshalb zu klareren Peaks führen.
+              </p>
+              <p class="answer-line">Kurzantwort: Zu schnell kann die Auflösung verschlechtern.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Warum ist der Puffer wichtig?</h3>
+              <p>
+                Der Puffer beeinflusst die Stabilität der RNA und die Bedingungen in der Säule. Bei RNA sind Salzgehalt,
+                pH-Wert und mögliche Wechselwirkungen wichtig, damit die Probe stabil bleibt und gut getrennt wird.
+              </p>
+              <p class="answer-line">Kurzantwort: Der Puffer hält die Bedingungen kontrolliert.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Was würde man als nächstes optimieren?</h3>
+              <p>
+                Sinnvoll wären mehrere Läufe mit veränderter Flussrate, anderer Pufferzusammensetzung oder anderer
+                Säule. Danach würde man vergleichen, wo Reinheit und Ausbeute am besten sind.
+              </p>
+              <p class="answer-line">Kurzantwort: Bedingungen vergleichen und die beste Trennung auswählen.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Was ist die wichtigste Limitation des Posters?</h3>
+              <p>
+                Es zeigt eine vielversprechende Methode, aber noch keine vollständig optimierte Endmethode. Man muss
+                noch genauer prüfen, welche Fraktion die beste Reinheit und Ausbeute liefert.
+              </p>
+              <p class="answer-line">Kurzantwort: Geeignet, aber noch nicht final optimiert.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Warum ist RNA empfindlicher als DNA?</h3>
+              <p>
+                RNA ist chemisch weniger stabil und kann leichter abgebaut werden. Außerdem gibt es überall RNasen,
+                also Enzyme, die RNA abbauen können. Deshalb muss man mit RNA besonders sauber arbeiten.
+              </p>
+              <p class="answer-line">Kurzantwort: RNA kann schneller abgebaut werden.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Was sagst du, wenn du etwas nicht sicher weißt?</h3>
+              <p>
+                Formuliere ruhig und ehrlich: Aus dem Poster kann ich das nicht sicher ablesen. Für die Fragestellung
+                ist aber entscheidend, dass diese Bedingung die Trennung und damit Reinheit und Ausbeute beeinflusst.
+              </p>
+              <p class="answer-line">Kurzantwort: Sicher einordnen statt raten.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="quiz" aria-labelledby="tab-quiz">
+          <div class="section-head">
+            <p class="eyebrow">Mündliche Prüfung simulieren</p>
+            <h2>Fragen üben</h2>
+          </div>
+
+          <div class="quiz-layout">
+            <div class="quiz-card">
+              <p class="eyebrow" id="quizCounter">Frage 1 von 12</p>
+              <h3 id="quizQuestion">Was ist tRNA?</h3>
+              <div class="answer-box" id="quizAnswer" hidden>
+                <strong>Musterantwort:</strong>
+                <p>tRNA ist transfer-RNA. Sie bringt bei der Proteinbiosynthese Aminosäuren zum Ribosom und vermittelt zwischen mRNA-Code und Aminosäure.</p>
+              </div>
+              <div class="button-row">
+                <button class="primary-button" id="showAnswer">Antwort zeigen</button>
+                <button class="ghost-button" id="nextQuestion">Nächste Frage</button>
+              </div>
+            </div>
+
+            <div class="training-notes">
+              <h3>Antwortschema</h3>
+              <p><strong>1. Kurzdefinition:</strong> Erst einfach sagen, was es ist.</p>
+              <p><strong>2. Funktion:</strong> Dann erklären, wofür es gebraucht wird.</p>
+              <p><strong>3. Posterbezug:</strong> Am Ende sagen, wo es im Poster vorkommt.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="timer" aria-labelledby="tab-timer">
+          <div class="section-head">
+            <p class="eyebrow">Einmal laut durchgehen</p>
+            <h2>Probevortrag mit Timer</h2>
+          </div>
+
+          <div class="timer-layout">
+            <div class="timer-card">
+              <div class="time-display" id="timeDisplay">05:00</div>
+              <div class="timer-progress" aria-hidden="true">
+                <span id="timerBar"></span>
+              </div>
+              <div class="button-row">
+                <button class="primary-button" id="startTimer">Start</button>
+                <button class="ghost-button" id="pauseTimer">Pause</button>
+                <button class="ghost-button" id="resetTimer">Zurücksetzen</button>
+              </div>
+            </div>
+
+            <div class="timeline-card">
+              <h3>Was du wann sagst</h3>
+              <ol class="time-plan">
+                <li data-time="270"><span>0:30</span>Einstieg und Ziel</li>
+                <li data-time="225"><span>1:15</span>tRNA-Grundlage</li>
+                <li data-time="165"><span>2:15</span>In-vitro-Transkription</li>
+                <li data-time="75"><span>3:45</span>HPLC und Peaks</li>
+                <li data-time="30"><span>4:30</span>Gel, Ergebnis, Ausblick</li>
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="cheat" aria-labelledby="tab-cheat">
+          <div class="section-head">
+            <p class="eyebrow">Wenn du kurz hängen bleibst</p>
+            <h2>Sichere Sätze und Mini-Antworten</h2>
+          </div>
+
+          <div class="cheat-grid">
+            <article>
+              <h3>Das Thema in einem Satz</h3>
+              <p>Es geht darum, in vitro hergestellte tRNA mit HPLC von Nebenprodukten zu trennen.</p>
+            </article>
+            <article>
+              <h3>Warum HPLC?</h3>
+              <p>Weil nach der Transkription ein Gemisch entsteht und die gewünschte tRNA möglichst sauber gesammelt werden soll.</p>
+            </article>
+            <article>
+              <h3>Was ist der Peak?</h3>
+              <p>Ein Peak zeigt, dass zu diesem Zeitpunkt ein Bestandteil der Probe aus der Säule kommt.</p>
+            </article>
+            <article>
+              <h3>Was zeigt das Gel?</h3>
+              <p>Das Gel zeigt, welche RNA-Größen in der Probe vorhanden sind.</p>
+            </article>
+            <article>
+              <h3>Was ist das Ergebnis?</h3>
+              <p>Die Methode ist vielversprechend, muss aber noch für bessere Reinheit und Ausbeute optimiert werden.</p>
+            </article>
+            <article>
+              <h3>Wenn eine Nachfrage schwer ist</h3>
+              <p>Ich würde es so einordnen: Für das Poster ist vor allem relevant, dass diese Bedingung die Trennung beeinflusst.</p>
+            </article>
+          </div>
+
+          <div class="final-script">
+            <h3>Kompakte 60-Sekunden-Version</h3>
+            <p>
+              Das Poster behandelt die Aufreinigung von in vitro transkribierter tRNA mittels HPLC. tRNA ist eine
+              RNA, die bei der Proteinbiosynthese als Adapter zwischen mRNA und Aminosäure wirkt. Die tRNA wird im
+              Labor aus einem DNA-Template hergestellt. Nach dieser Transkription liegt aber ein Gemisch vor, zum
+              Beispiel mit vollständiger tRNA, kürzeren Transkripten und Reaktionsbestandteilen. Deshalb wird HPLC
+              eingesetzt. Dabei läuft die Probe durch eine Säule, und verschiedene Bestandteile kommen zu unterschiedlichen
+              Zeiten heraus. Im Chromatogramm sieht man das als Peaks. Der gewünschte Bereich kann als Fraktion gesammelt
+              und danach kontrolliert werden. Insgesamt ist die Methode geeignet, muss aber noch optimiert werden.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+const tabs = document.querySelectorAll(".tab-button");
+const panels = document.querySelectorAll(".tab-panel");
+
+tabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    const target = tab.dataset.tab;
+    tabs.forEach((item) => item.classList.toggle("active", item === tab));
+    panels.forEach((panel) => panel.classList.toggle("active", panel.id === target));
+  });
+});
+
+const zoneText = {
+  practice: {
+    label: "Praxisphase",
+    title: "Was ist die große Frage?",
+    body:
+      "Die Praxisphase beschreibt den fachlichen Rahmen: RNA-Biochemie und die Herstellung beziehungsweise Untersuchung von RNA. Für deinen Vortrag reicht: Die Arbeit beschäftigt sich damit, synthetisch hergestellte tRNA sauberer für weitere Experimente vorzubereiten.",
+    script:
+      "Hier wird der Hintergrund der Arbeitsgruppe genannt. Für mein Poster ist wichtig: Es geht um eine Methode zur Aufreinigung von RNA.",
+  },
+  transcription: {
+    label: "In-vitro-Transkription",
+    title: "Wie entsteht die tRNA?",
+    body:
+      "Die tRNA wird im Labor außerhalb einer Zelle hergestellt. Dafür braucht man ein DNA-Template, Nukleotide und eine RNA-Polymerase. Weil die Reaktion nicht perfekt ist, entstehen neben vollständiger tRNA auch kürzere RNA-Produkte.",
+    script:
+      "Die tRNA wird hier künstlich hergestellt. Danach liegt aber ein Gemisch vor, deswegen braucht man eine Reinigungsmethode.",
+  },
+  structure: {
+    label: "tRNA-Struktur",
+    title: "Warum ist tRNA biologisch wichtig?",
+    body:
+      "tRNA hat eine typische Sekundärstruktur mit Schleifen. Besonders wichtig sind das Anticodon und das Ende, an dem eine Aminosäure gebunden werden kann. Damit verbindet tRNA den mRNA-Code mit der passenden Aminosäure.",
+    script:
+      "tRNA kann man als Adapter verstehen: Eine Seite passt zur mRNA, die andere trägt eine Aminosäure.",
+  },
+  hplc: {
+    label: "Aufreinigung",
+    title: "Was macht die HPLC?",
+    body:
+      "HPLC trennt Bestandteile einer flüssigen Probe über eine Säule. Die Moleküle laufen unterschiedlich durch die Säule und kommen deshalb zu verschiedenen Zeiten heraus. So kann man passende Abschnitte sammeln.",
+    script:
+      "Die HPLC macht aus dem RNA-Gemisch getrennte Fraktionen. Ziel ist die Fraktion mit möglichst reiner tRNA.",
+  },
+  chrom: {
+    label: "Chromatogramm",
+    title: "Wie liest man die Peaks?",
+    body:
+      "Ein Peak ist ein Signal für etwas, das gerade aus der Säule kommt. Mehrere Peaks bedeuten, dass mehrere Bestandteile getrennt wurden. Der relevante Peak wird gesammelt und anschließend kontrolliert.",
+    script:
+      "Die Peaks zeigen nicht automatisch Namen, sondern Zeitpunkte, an denen Bestandteile aus der Säule kommen.",
+  },
+  outlook: {
+    label: "Ausblick",
+    title: "Was ist das Fazit?",
+    body:
+      "Die Methode beschleunigt und vereinfacht die Aufreinigung, ist aber noch nicht vollständig optimiert. Besonders Flussrate, Pufferzusammensetzung und Säulenauswahl können die Reinheit und Ausbeute beeinflussen.",
+    script:
+      "Die Methode ist geeignet, aber weitere Versuche sollen zeigen, unter welchen Bedingungen sie am besten funktioniert.",
+  },
+};
+
+const posterZones = document.querySelectorAll(".poster-zone");
+const zoneInfo = document.querySelector("#zoneInfo");
+
+posterZones.forEach((zone) => {
+  zone.addEventListener("click", () => {
+    const data = zoneText[zone.dataset.zone];
+    posterZones.forEach((item) => item.classList.toggle("active", item === zone));
+    zoneInfo.innerHTML = `
+      <p class="eyebrow">${data.label}</p>
+      <h3>${data.title}</h3>
+      <p>${data.body}</p>
+      <div class="mini-script">
+        <strong>So kannst du es sagen:</strong>
+        <span>${data.script}</span>
+      </div>
+    `;
+  });
+});
+
+document.querySelectorAll(".accordion-button").forEach((button) => {
+  button.addEventListener("click", () => {
+    const panel = button.nextElementSibling;
+    const isOpen = panel.classList.contains("open");
+    document.querySelectorAll(".accordion-button").forEach((item) => {
+      item.classList.remove("active");
+      item.setAttribute("aria-expanded", "false");
+    });
+    document.querySelectorAll(".accordion-panel").forEach((item) => item.classList.remove("open"));
+    if (!isOpen) {
+      button.classList.add("active");
+      button.setAttribute("aria-expanded", "true");
+      panel.classList.add("open");
+    }
+  });
+});
+
+const terms = [
+  {
+    term: "tRNA",
+    text: "transfer-RNA; bringt Aminosäuren zum Ribosom und hilft, den mRNA-Code in Protein umzusetzen.",
+    tag: "Biologie",
+  },
+  {
+    term: "Anticodon",
+    text: "Drei Basen auf der tRNA, die passend zu einem Codon der mRNA binden.",
+    tag: "tRNA",
+  },
+  {
+    term: "In vitro",
+    text: "Außerhalb eines lebenden Organismus, zum Beispiel im Reagenzglas.",
+    tag: "Methode",
+  },
+  {
+    term: "Transkription",
+    text: "Herstellung von RNA anhand einer DNA-Vorlage.",
+    tag: "Methode",
+  },
+  {
+    term: "DNA-Template",
+    text: "Die DNA-Vorlage, von der die RNA-Polymerase die RNA abschreibt.",
+    tag: "Startmaterial",
+  },
+  {
+    term: "RNA-Polymerase",
+    text: "Enzym, das RNA aus Nukleotiden aufbaut. T7-RNA-Polymerase ist ein typisches Beispiel.",
+    tag: "Enzym",
+  },
+  {
+    term: "Nukleotide",
+    text: "Bausteine der RNA. Aus ihnen setzt die Polymerase die RNA-Kette zusammen.",
+    tag: "Bausteine",
+  },
+  {
+    term: "Hydrolyse",
+    text: "Spaltung durch Wasser. Bei RNA kann das zu kürzeren Bruchstücken führen.",
+    tag: "Nebenprodukt",
+  },
+  {
+    term: "HPLC",
+    text: "High Performance Liquid Chromatography; eine Methode, die Stoffe in Flüssigkeit über eine Säule trennt.",
+    tag: "Methode",
+  },
+  {
+    term: "Säule",
+    text: "Teil der HPLC, in dem die eigentliche Trennung passiert.",
+    tag: "HPLC",
+  },
+  {
+    term: "Mobile Phase",
+    text: "Flüssigkeit, die die Probe durch die HPLC-Säule transportiert.",
+    tag: "HPLC",
+  },
+  {
+    term: "Retentionszeit",
+    text: "Zeitpunkt, zu dem ein Bestandteil aus der Säule herauskommt.",
+    tag: "Chromatogramm",
+  },
+  {
+    term: "Peak",
+    text: "Signal im Chromatogramm. Es zeigt, dass ein Bestandteil der Probe aus der Säule kommt.",
+    tag: "Chromatogramm",
+  },
+  {
+    term: "Fraktion",
+    text: "Gesammelter Abschnitt aus der HPLC. Eine Fraktion kann danach weiter untersucht werden.",
+    tag: "HPLC",
+  },
+  {
+    term: "Reinheit",
+    text: "Wie wenig unerwünschte Stoffe noch in der Probe enthalten sind.",
+    tag: "Bewertung",
+  },
+  {
+    term: "Ausbeute",
+    text: "Wie viel gewünschtes Produkt nach der Aufreinigung übrig bleibt.",
+    tag: "Bewertung",
+  },
+];
+
+const termGrid = document.querySelector("#termGrid");
+const termSearch = document.querySelector("#termSearch");
+
+function renderTerms(filter = "") {
+  const needle = filter.trim().toLowerCase();
+  const filtered = terms.filter((item) =>
+    `${item.term} ${item.text} ${item.tag}`.toLowerCase().includes(needle)
+  );
+
+  termGrid.innerHTML = filtered
+    .map(
+      (item) => `
+        <article class="term-card">
+          <strong>${item.term}</strong>
+          <p>${item.text}</p>
+          <span>${item.tag}</span>
+        </article>
+      `
+    )
+    .join("");
+}
+
+renderTerms();
+termSearch.addEventListener("input", (event) => renderTerms(event.target.value));
+
+const quizItems = [
+  {
+    q: "Was ist tRNA?",
+    a: "tRNA ist transfer-RNA. Sie bringt bei der Proteinbiosynthese Aminosäuren zum Ribosom und vermittelt zwischen mRNA-Code und Aminosäure.",
+  },
+  {
+    q: "Warum muss die tRNA nach der Transkription aufgereinigt werden?",
+    a: "Nach der Herstellung liegt ein Gemisch vor. Neben vollständiger tRNA können kurze Transkripte, Abbauprodukte, Salze und Reaktionsbestandteile enthalten sein.",
+  },
+  {
+    q: "Was bedeutet in-vitro-Transkription?",
+    a: "RNA wird außerhalb einer Zelle im Labor hergestellt, meist aus einem DNA-Template mithilfe einer RNA-Polymerase und Nukleotiden.",
+  },
+  {
+    q: "Was macht eine RNA-Polymerase?",
+    a: "Sie baut aus Nukleotiden eine RNA-Kette auf und nutzt dabei eine DNA-Vorlage als Information.",
+  },
+  {
+    q: "Was zeigt eine Gelanalyse?",
+    a: "Sie kontrolliert ungefähr die Größe der RNA. Eine passende Bande spricht für das gewünschte Produkt, zusätzliche Banden können Nebenprodukte zeigen.",
+  },
+  {
+    q: "Was bedeutet HPLC?",
+    a: "High Performance Liquid Chromatography. Das ist eine Flüssigkeitschromatographie, bei der Stoffe über eine Säule getrennt werden.",
+  },
+  {
+    q: "Was ist ein Chromatogramm?",
+    a: "Das Diagramm einer HPLC-Messung. Es zeigt Signale, also Peaks, über die Zeit.",
+  },
+  {
+    q: "Was ist ein Peak?",
+    a: "Ein Peak ist ein Signal dafür, dass ein Bestandteil der Probe zu einem bestimmten Zeitpunkt aus der Säule kommt.",
+  },
+  {
+    q: "Was ist eine Fraktion?",
+    a: "Ein gesammelter Abschnitt aus der HPLC. Die Fraktion mit dem passenden Peak kann die gewünschte tRNA enthalten.",
+  },
+  {
+    q: "Was ist Retentionszeit?",
+    a: "Die Zeit, zu der ein Molekül aus der HPLC-Säule herauskommt.",
+  },
+  {
+    q: "Warum müssen Bedingungen wie Puffer und Flussrate optimiert werden?",
+    a: "Sie beeinflussen, wie gut die Trennung funktioniert, wie stabil die RNA bleibt und wie viel reine tRNA am Ende gewonnen wird.",
+  },
+  {
+    q: "Was ist das Fazit des Posters?",
+    a: "HPLC ist grundsätzlich geeignet, um in vitro transkribierte tRNA aufzureinigen, aber die Methode muss weiter optimiert werden.",
+  },
+];
+
+let quizIndex = 0;
+const quizCounter = document.querySelector("#quizCounter");
+const quizQuestion = document.querySelector("#quizQuestion");
+const quizAnswer = document.querySelector("#quizAnswer");
+const showAnswer = document.querySelector("#showAnswer");
+const nextQuestion = document.querySelector("#nextQuestion");
+
+function renderQuiz() {
+  const item = quizItems[quizIndex];
+  quizCounter.textContent = `Frage ${quizIndex + 1} von ${quizItems.length}`;
+  quizQuestion.textContent = item.q;
+  quizAnswer.hidden = true;
+  quizAnswer.innerHTML = `<strong>Musterantwort:</strong><p>${item.a}</p>`;
+}
+
+showAnswer.addEventListener("click", () => {
+  quizAnswer.hidden = false;
+});
+
+nextQuestion.addEventListener("click", () => {
+  quizIndex = (quizIndex + 1) % quizItems.length;
+  renderQuiz();
+});
+
+renderQuiz();
+
+const totalSeconds = 300;
+let remainingSeconds = totalSeconds;
+let timerId = null;
+
+const timeDisplay = document.querySelector("#timeDisplay");
+const timerBar = document.querySelector("#timerBar");
+const startTimer = document.querySelector("#startTimer");
+const pauseTimer = document.querySelector("#pauseTimer");
+const resetTimer = document.querySelector("#resetTimer");
+const timePlanItems = document.querySelectorAll(".time-plan li");
+
+function formatTime(seconds) {
+  const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const secs = String(seconds % 60).padStart(2, "0");
+  return `${mins}:${secs}`;
+}
+
+function updateTimer() {
+  timeDisplay.textContent = formatTime(remainingSeconds);
+  timerBar.style.width = `${(remainingSeconds / totalSeconds) * 100}%`;
+
+  timePlanItems.forEach((item) => {
+    const marker = Number(item.dataset.time);
+    item.classList.toggle("active", remainingSeconds <= marker);
+  });
+}
+
+function tick() {
+  if (remainingSeconds <= 0) {
+    clearInterval(timerId);
+    timerId = null;
+    return;
+  }
+  remainingSeconds -= 1;
+  updateTimer();
+}
+
+startTimer.addEventListener("click", () => {
+  if (!timerId) {
+    timerId = setInterval(tick, 1000);
+  }
+});
+
+pauseTimer.addEventListener("click", () => {
+  clearInterval(timerId);
+  timerId = null;
+});
+
+resetTimer.addEventListener("click", () => {
+  clearInterval(timerId);
+  timerId = null;
+  remainingSeconds = totalSeconds;
+  updateTimer();
+});
+
+updateTimer();
+
+    </script>
+  </body>
+</html>
+
