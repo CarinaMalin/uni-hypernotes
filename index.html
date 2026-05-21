@@ -198,6 +198,7 @@
     .tab-btn[data-tab="biochem"]::before { content: "🧬"; }
     .tab-btn[data-tab="brain"]::before { content: "💭"; }
     .tab-btn[data-tab="stats"]::before { content: "📊"; }
+    .tab-btn[data-tab="presentations"]::before { content: "🎞️"; }
 
     .tab-btn.active {
       background: var(--accent-soft);
@@ -1302,6 +1303,7 @@
     <button class="tab-btn" data-tab="tools">Tools</button>
     <button class="tab-btn" data-tab="learn">Lernen</button>
     <button class="tab-btn" data-tab="tasks">Aufgaben</button>
+    <button class="tab-btn" data-tab="presentations">Präsentationen</button>
     <button class="tab-btn" data-tab="biochem">Bio/Chemie</button>
     <button class="tab-btn" data-tab="brain">Brain-Dump</button>
     <button class="tab-btn" data-tab="stats">Stats</button>
@@ -1805,6 +1807,16 @@
       ></iframe>
     </div>
 
+<!-- PRÄSENTATIONEN-TAB -->
+<div id="presentationsSection" class="section" style="padding:0;overflow:hidden;">
+  <iframe
+    id="presentationsFrame"
+    src="praesentationen/index.html"
+    style="width:100%;height:100%;border:none;display:block;"
+    title="Präsentationen"
+  ></iframe>
+</div>
+    
     <!-- AUFGABEN-TAB -->
     <div id="tasksSection" class="section">
       <div class="card">
@@ -1958,6 +1970,7 @@ let data = {
       formulas: document.getElementById("formulasSection"),
       tools: document.getElementById("toolsSection"),
       learn: document.getElementById("learnSection"),
+      presentations: document.getElementById("presentationsSection"),
       tasks: document.getElementById("tasksSection"),
       biochem: document.getElementById("biochemSection"),
       brain: document.getElementById("brainSection"),
