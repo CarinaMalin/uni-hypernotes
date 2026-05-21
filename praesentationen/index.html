@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Präsentationen</title>
+  <style>
+    :root {
+      --bg: #161821;
+      --card: #1f2230;
+      --card-soft: #24283a;
+      --text: #f7f7ff;
+      --muted: #a4aac5;
+      --accent: #7b8cff;
+      --accent-soft: rgba(123, 140, 255, 0.16);
+      --border: rgba(255,255,255,0.08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: radial-gradient(circle at top, #2a3245 0, #10121a 45%, #05060a 100%);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      overflow: hidden;
+    }
+
+    .app {
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 330px minmax(0, 1fr);
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .sidebar,
+    .viewer {
+      background: rgba(31, 34, 48, 0.92);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.45);
+      overflow: hidden;
+    }
+
+    .sidebar {
+      padding: 18px;
+      overflow-y: auto;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 24px;
+    }
+
+    .sub {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .category {
+      margin: 20px 0 10px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .presentation-card {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.035);
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .presentation-card:hover,
+    .presentation-card.active {
+      background: var(--accent-soft);
+      border-color: rgba(123,140,255,0.45);
+    }
+
+    .emoji {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.07);
+      font-size: 20px;
+    }
+
+    .presentation-title {
+      font-size: 14px;
+      font-weight: 750;
+      margin-bottom: 3px;
+    }
+
+    .presentation-desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .viewer {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      min-width: 0;
+    }
+
+    .viewer-top {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(5,7,15,0.35);
+    }
+
+    .viewer-title {
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .viewer-subtitle {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .viewer-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .small-btn {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 7px 11px;
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .small-btn:hover {
+      background: var(--accent-soft);
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: none;
+      background: white;
+    }
+
+    .empty {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .empty strong {
+      display: block;
+      color: var(--text);
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 850px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+      }
+
+      .sidebar {
+        max-height: 260px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h1>🎞️ Präsentationen</h1>
+      <p class="sub">
+        Wähle eine Präsentation aus. Neue Präsentationen kannst du später einfach in die Liste im Script eintragen.
+      </p>
+
+      <div id="presentationList"></div>
+    </aside>
+
+    <main class="viewer">
+      <div class="viewer-top">
+        <div>
+          <div class="viewer-title" id="viewerTitle">Noch keine Präsentation ausgewählt</div>
+          <div class="viewer-subtitle" id="viewerSubtitle">Wähle links eine Präsentation aus.</div>
+        </div>
+        <div class="viewer-actions">
+          <button class="small-btn" id="openNewTabBtn" disabled>In neuem Tab öffnen</button>
+        </div>
+      </div>
+
+      <iframe id="presentationFrame" title="Präsentation"></iframe>
+
+      <div class="empty" id="emptyState">
+        <div>
+          <strong>Bereit für deine Präsentationen</strong>
+          <div>Links kannst du nach Fach/Kategorie auswählen.</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const presentations = [
+      {
+        id: "postertraining-trna-hplc",
+        subject: "Wissenschaftliches Arbeiten",
+        title: "Postertraining tRNA HPLC",
+        description: "5-Minuten-Posterpräsentation mit Basics, Fragen, Timer und Spickzettel.",
+        emoji: "🧬",
+        path: "wissenschaftliches-arbeiten/postertraining-trna-hplc/index.html"
+      }
+    ];
+
+    const listEl = document.getElementById("presentationList");
+    const frame = document.getElementById("presentationFrame");
+    const emptyState = document.getElementById("emptyState");
+    const viewerTitle = document.getElementById("viewerTitle");
+    const viewerSubtitle = document.getElementById("viewerSubtitle");
+    const openNewTabBtn = document.getElementById("openNewTabBtn");
+
+    let activePath = null;
+
+    function renderPresentationList() {
+      const subjects = [...new Set(presentations.map(p => p.subject))];
+
+      listEl.innerHTML = subjects.map(subject => {
+        const items = presentations
+          .filter(p => p.subject === subject)
+          .map(p => `
+            <button class="presentation-card" data-id="${p.id}">
+              <span class="emoji">${p.emoji}</span>
+              <span>
+                <span class="presentation-title">${p.title}</span>
+                <span class="presentation-desc">${p.description}</span>
+              </span>
+            </button>
+          `).join("");
+
+        return `
+          <div class="category">${subject}</div>
+          ${items}
+        `;
+      }).join("");
+
+      document.querySelectorAll(".presentation-card").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const item = presentations.find(p => p.id === btn.dataset.id);
+          openPresentation(item);
+
+          document.querySelectorAll(".presentation-card").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+        });
+      });
+    }
+
+    function openPresentation(item) {
+      activePath = item.path;
+      frame.src = item.path;
+      frame.style.display = "block";
+      emptyState.style.display = "none";
+
+      viewerTitle.textContent = item.title;
+      viewerSubtitle.textContent = item.subject;
+      openNewTabBtn.disabled = false;
+    }
+
+    openNewTabBtn.addEventListener("click", () => {
+      if (activePath) window.open(activePath, "_blank");
+    });
+
+    renderPresentationList();
+  </script>
+</body>
+</html>
