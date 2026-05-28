@@ -2160,15 +2160,9 @@ async function syncFromCloud() {
   data = cloud.data;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-  // Alles neu rendern, damit du es siehst
-  applyTheme();
-  renderNotebookSelect();
-  resizeCanvas();
-  renderPageList();
-  redrawActivePage();
-
-  // renderDecks() removed - replaced by Karteikarten2
-  if (typeof renderNotebookSelect === "function") renderNotebookSelect();
+// Alles neu rendern, damit du es siehst
+if (typeof applyTheme === "function") applyTheme();
+if (typeof renderNotebookSelect === "function") renderNotebookSelect();
 if (typeof resizeCanvas === "function") resizeCanvas();
 if (typeof renderPageList === "function") renderPageList();
 if (typeof redrawActivePage === "function") redrawActivePage();
@@ -2179,11 +2173,6 @@ if (typeof renderTasks === "function") renderTasks();
 if (typeof renderBrainHistory === "function") renderBrainHistory();
 if (typeof renderStats === "function") renderStats();
 if (typeof renderToolInputs === "function") renderToolInputs();
-  renderFormulas();
-  renderTasks();
-  renderBrainHistory();
-  renderStats();
-  renderToolInputs();
 
   updateSyncStatus("Cloud-Daten geladen ✔");
 }
