@@ -2168,7 +2168,17 @@ async function syncFromCloud() {
   redrawActivePage();
 
   // renderDecks() removed - replaced by Karteikarten2
-  renderExams();
+  if (typeof renderNotebookSelect === "function") renderNotebookSelect();
+if (typeof resizeCanvas === "function") resizeCanvas();
+if (typeof renderPageList === "function") renderPageList();
+if (typeof redrawActivePage === "function") redrawActivePage();
+
+if (typeof renderExams === "function") renderExams();
+if (typeof renderFormulas === "function") renderFormulas();
+if (typeof renderTasks === "function") renderTasks();
+if (typeof renderBrainHistory === "function") renderBrainHistory();
+if (typeof renderStats === "function") renderStats();
+if (typeof renderToolInputs === "function") renderToolInputs();
   renderFormulas();
   renderTasks();
   renderBrainHistory();
