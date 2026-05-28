@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bakterienkommunikation – Einfach erklärt</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --card: #1c2230;
+  --border: #2a3344;
+  --accent: #4fa8d5;
+  --accent2: #7ecb9f;
+  --accent3: #e6a35a;
+  --accent4: #c780e8;
+  --muted: #8b9ab0;
+  --text: #dde4ee;
+  --text-dim: #a8b4c4;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* HEADER */
+header {
+  padding: 20px 28px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.header-title { font-size: 15px; font-weight: 600; color: var(--text); }
+.header-sub { font-size: 12px; color: var(--muted); }
+.search-wrap { margin-left: auto; position: relative; }
+#search {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 8px 14px 8px 36px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  width: 220px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+#search:focus { border-color: var(--accent); }
+#search::placeholder { color: var(--muted); }
+.search-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 13px;
+  pointer-events: none;
+}
+
+/* CATEGORY FILTER */
+.filters {
+  display: flex;
+  gap: 7px;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  background: var(--surface);
+}
+.filter-btn {
+  flex-shrink: 0;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.filter-btn:hover { color: var(--text); border-color: #444; }
+.filter-btn.active { background: rgba(79,168,213,0.15); border-color: var(--accent); color: var(--accent); }
+
+/* MAIN */
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 28px 28px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 18px 0 6px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+/* CARD */
+.term-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.term-card:hover { border-color: #3a4a60; }
+.term-card.hidden { display: none; }
+
+.term-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+}
+.term-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.term-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+.term-short {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 300;
+  margin-left: 4px;
+}
+.term-tag {
+  font-size: 10px;
+  padding: 2px 9px;
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+.chevron {
+  color: var(--muted);
+  font-size: 11px;
+  transition: transform 0.22s;
+  flex-shrink: 0;
+}
+.term-card.open .chevron { transform: rotate(180deg); }
+
+.term-body {
+  display: none;
+  padding: 0 20px 18px;
+  border-top: 1px solid var(--border);
+}
+.term-card.open .term-body { display: block; }
+
+.explain-simple {
+  padding: 14px 0 10px;
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--text);
+  font-weight: 300;
+}
+.explain-simple em { color: var(--accent); font-style: normal; font-weight: 500; }
+.explain-simple strong { color: var(--accent2); font-weight: 500; }
+
+.analogy {
+  background: rgba(79,168,213,0.07);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  padding: 10px 14px;
+  margin: 8px 0 10px;
+  font-size: 13.5px;
+  color: var(--text-dim);
+  font-style: italic;
+  line-height: 1.6;
+}
+.analogy::before { content: '💡 Eselsbrücke: '; font-style: normal; font-weight: 500; color: var(--accent); }
+
+.detail-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.detail-pill {
+  font-size: 12px;
+  padding: 4px 11px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.no-results {
+  text-align: center;
+  color: var(--muted);
+  padding: 48px 0;
+  font-size: 14px;
+}
+
+/* Color themes per category */
+.cat-qs   .term-icon { background: rgba(79,168,213,0.12); }
+.cat-mol  .term-icon { background: rgba(126,203,159,0.12); }
+.cat-sys  .term-icon { background: rgba(230,163,90,0.12); }
+.cat-bio  .term-icon { background: rgba(199,128,232,0.12); }
+.cat-med  .term-icon { background: rgba(224,92,92,0.12); }
+
+.cat-qs   .term-tag { background: rgba(79,168,213,0.12); color: var(--accent); }
+.cat-mol  .term-tag { background: rgba(126,203,159,0.12); color: var(--accent2); }
+.cat-sys  .term-tag { background: rgba(230,163,90,0.12); color: var(--accent3); }
+.cat-bio  .term-tag { background: rgba(199,128,232,0.12); color: var(--accent4); }
+.cat-med  .term-tag { background: rgba(224,92,92,0.12); color: #e05c5c; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="header-title">Bakterienkommunikation – Einfach erklärt</div>
+    <div class="header-sub">Alle Fachbegriffe auf einen Blick</div>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search" placeholder="Begriff suchen…" oninput="filterCards()">
+  </div>
+</header>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="setFilter('all', this)">Alle</button>
+  <button class="filter-btn" onclick="setFilter('qs', this)">🔵 Quorum Sensing</button>
+  <button class="filter-btn" onclick="setFilter('mol', this)">🟢 Moleküle</button>
+  <button class="filter-btn" onclick="setFilter('sys', this)">🟠 Systeme & Gene</button>
+  <button class="filter-btn" onclick="setFilter('bio', this)">🟣 Biofilm</button>
+  <button class="filter-btn" onclick="setFilter('med', this)">🔴 Medizin & Anwendung</button>
+</div>
+
+<main id="card-container">
+
+<!-- ===== QUORUM SENSING ===== -->
+<div class="section-label" data-section="qs">🔵 Quorum Sensing – Grundbegriffe</div>
+
+<div class="term-card cat-qs" data-cat="qs" data-terms="quorum sensing zelldichte kommunikation">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">📡</div>
+    <div>
+      <span class="term-name">Quorum Sensing</span>
+      <span class="term-short">QS</span>
+    </div>
+    <span class="term-tag">Kernbegriff</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Quorum Sensing ist der Oberbegriff für das gesamte Kommunikationssystem. „Quorum" kommt aus dem Lateinischen und bedeutet sinngemäß: <em>„genug von uns"</em>. Bakterien schütten ständig winzige Signalmoleküle aus. Je mehr Bakterien es gibt, desto mehr davon sammelt sich an. Überschreitet die Menge einen <strong>Schwellenwert</strong>, schalten alle gleichzeitig bestimmte Gene an oder aus – wie ein Lichtschalter, der erst auslöst, wenn genug Druck drauf ist.
+    </div>
+    <div class="analogy">Stell dir vor, jeder in einem Raum zündet eine Kerze an. Wenn genug Kerzen brennen, wird es warm genug, damit alle gleichzeitig das Fenster öffnen.</div>
+  </div>
+</div>
+
+<div class="term-card cat-qs" data-cat="qs" data-terms="autoinduktor signal schwellenwert">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">✉️</div>
+    <div>
+      <span class="term-name">Autoinduktor</span>
+      <span class="term-short">AI</span>
+    </div>
+    <span class="term-tag">Signalmolekül</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Das ist das Signalmolekül, das jedes Bakterium selbst produziert und nach außen abgibt. „Auto" = selbst, „Induktor" = etwas, das etwas auslöst. Wenn genug davon vorhanden ist, <em>induziert</em> (= löst aus) es eine Reaktion in der Zelle – auch in der eigenen. Das Molekül ist also gleichzeitig Sender und Empfänger-Trigger.
+    </div>
+    <div class="analogy">Jedes Bakterium ist wie ein Mensch, der Parfüm trägt. Einzeln riecht man kaum was. Wenn genug Menschen im Raum sind, wird der Geruch so stark, dass alle reagieren.</div>
+  </div>
+</div>
+
+<div class="term-card cat-qs" data-cat="qs" data-terms="genexpression genregulation transkription">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🧬</div>
+    <div>
+      <span class="term-name">Genexpression / Genregulation</span>
+    </div>
+    <span class="term-tag">Grundbegriff</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Gene sind die Baupläne in der DNA. <em>Genexpression</em> bedeutet: ein Gen wird „angeschaltet" – der Bauplan wird abgelesen und ein Protein wird hergestellt. <strong>Genregulation</strong> bedeutet, dass kontrolliert wird, welche Gene gerade aktiv sind und welche nicht. Quorum Sensing ist im Kern ein Mechanismus zur Genregulation: je nach Zelldichte werden andere Gene an- oder abgeschaltet.
+    </div>
+    <div class="analogy">Gen = Rezept im Kochbuch. Genexpression = jemand liest das Rezept und kocht tatsächlich. Genregulation = entscheiden, welches Rezept heute gekocht wird.</div>
+  </div>
+</div>
+
+<div class="term-card cat-qs" data-cat="qs" data-terms="synthase enzym produktion lux">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">⚙️</div>
+    <div>
+      <span class="term-name">Synthase</span>
+    </div>
+    <span class="term-tag">Enzym</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Eine Synthase ist ein <em>Enzym</em> – also ein Protein, das chemische Reaktionen beschleunigt. „Synthese" = etwas zusammenbauen. Im QS-Kontext ist die Synthase das Enzym, das die <strong>Autoinduktoren produziert</strong>. Bei gramnegativen Bakterien ist das z.B. die LuxI-Synthase, die AHL-Moleküle baut.
+    </div>
+    <div class="analogy">Die Synthase ist die Fabrik, die die Signalmoleküle herstellt.</div>
+  </div>
+</div>
+
+<div class="term-card cat-qs" data-cat="qs" data-terms="transkriptionsregulator rezeptor bindung dna">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🔑</div>
+    <div>
+      <span class="term-name">Transkriptionsregulator</span>
+    </div>
+    <span class="term-tag">Protein</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Ein Transkriptionsregulator ist ein Protein, das an die DNA bindet und <em>kontrolliert, ob ein Gen abgelesen wird</em>. Im QS: wenn der Autoinduktor an diesen Regulator bindet, ändert er seine Form – und kann dann an die DNA andocken und Gene an- oder ausschalten. LuxR ist z.B. so ein Transkriptionsregulator.
+    </div>
+    <div class="analogy">Der Regulator ist wie ein Schalter an der Tür: erst wenn der richtige Schlüssel (= Autoinduktor) steckt, kann die Tür (= Gen) aufgemacht werden.</div>
+  </div>
+</div>
+
+<!-- ===== MOLEKÜLE ===== -->
+<div class="section-label" data-section="mol">🟢 Moleküle</div>
+
+<div class="term-card cat-mol" data-cat="mol" data-terms="AHL acyl homoserin lacton gramnegativ">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🔬</div>
+    <div>
+      <span class="term-name">AHL</span>
+      <span class="term-short">N-Acyl-Homoserin-Lacton</span>
+    </div>
+    <span class="term-tag">Molekül</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      AHL ist der Autoinduktor, den <em>gramnegative Bakterien</em> benutzen. Das Molekül besteht aus zwei Teilen: einem <strong>Homoserin-Lacton-Ring</strong> (der immer gleich ist) und einer <strong>Acyl-Seitenkette</strong> (die sich je nach Bakterienart unterscheidet – unterschiedlich lang, unterschiedliche Gruppen). Weil AHL lipophil (fettlöslich) ist, kann es einfach durch die Zellmembran diffundieren – also rein und raus, ohne aktiven Transport.
+    </div>
+    <div class="analogy">Stell dir AHL vor wie einen Briefumschlag (der Ring) mit einem variablen Inhalt (die Kette) – jede Bakterienart schreibt quasi ihre eigene „Sprache".</div>
+    <div class="detail-row">
+      <span class="detail-pill">Gramnegativ</span>
+      <span class="detail-pill">lipophil → passive Diffusion</span>
+      <span class="detail-pill">variierte Acylkette</span>
+    </div>
+  </div>
+</div>
+
+<div class="term-card cat-mol" data-cat="mol" data-terms="AIP peptid grampositiv staphylococcus agr">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🔬</div>
+    <div>
+      <span class="term-name">AIP</span>
+      <span class="term-short">Autoinducing Peptide</span>
+    </div>
+    <span class="term-tag">Molekül</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      AIPs sind die Autoinduktoren <em>grampositiver Bakterien</em>. Es sind kurze <strong>Peptide</strong> (= kleine Proteinstücke aus wenigen Aminosäuren), die nach der Herstellung noch modifiziert werden – deshalb: „posttranslational modifiziert". Anders als AHL können Peptide <em>nicht einfach durch die Membran diffundieren</em> – sie werden aktiv aus der Zelle herausgepumpt und draußen an membrangebundene Rezeptoren erkannt.
+    </div>
+    <div class="analogy">AHL geht einfach durch die Wand (wie Duft). AIP muss aktiv rausgetragen und draußen empfangen werden – mehr wie ein Paketbote, der klingelt.</div>
+    <div class="detail-row">
+      <span class="detail-pill">Grampositiv</span>
+      <span class="detail-pill">aktiver Export</span>
+      <span class="detail-pill">membranständiger Rezeptor</span>
+    </div>
+  </div>
+</div>
+
+<div class="term-card cat-mol" data-cat="mol" data-terms="AI-2 LuxS artübergreifend universal">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🌐</div>
+    <div>
+      <span class="term-name">AI-2</span>
+      <span class="term-short">Autoinduktor-2</span>
+    </div>
+    <span class="term-tag">Molekül</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      AI-2 ist besonders: Es wird aus dem <em>LuxS-Stoffwechselweg</em> gewonnen und kommt in vielen verschiedenen Bakterienarten vor – sowohl gramnegativen als auch grampositiven. Deshalb wird es als mögliches <strong>artübergreifendes Signal</strong> diskutiert. Bakterien könnten damit nicht nur mit ihrer eigenen Art kommunizieren, sondern auch mit anderen Arten – z.B. im Biofilm, wo viele Arten zusammenleben.
+    </div>
+    <div class="analogy">AHL und AIP sind wie Sprachen einzelner Länder. AI-2 wäre dann sowas wie Englisch – viele können es, also können mehr miteinander reden.</div>
+  </div>
+</div>
+
+<div class="term-card cat-mol" data-cat="mol" data-terms="c-di-GMP second messenger intrazellulär GTP biofilm motilität">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">⚡</div>
+    <div>
+      <span class="term-name">c-di-GMP</span>
+      <span class="term-short">cyclisches Diguanosinmonophosphat</span>
+    </div>
+    <span class="term-tag">Second Messenger</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      c-di-GMP ist ein <em>intrazellulärer Second Messenger</em> – kein Signal von außen, sondern ein Signal innerhalb der Zelle. „Second Messenger" bedeutet: ein erstes Signal kommt von außen, wird aber innerhalb der Zelle durch ein zweites Molekül (eben c-di-GMP) weitergeleitet. Ein <strong>hoher c-di-GMP-Spiegel</strong> fördert Biofilmbildung und hemmt Bewegung. Ein <strong>niedriger Spiegel</strong> fördert Beweglichkeit (planktonisches Wachstum). Das Molekül wird aus zwei GTP-Molekülen gebaut (durch Diguanylatcyclasen) und durch Phosphodiesterasen wieder abgebaut.
+    </div>
+    <div class="analogy">Wie ein innerer Schalter: viel c-di-GMP = „Bleib sitzen und bau Biofilm". Wenig c-di-GMP = „Beweg dich, schwimm weg".</div>
+    <div class="detail-row">
+      <span class="detail-pill">intrazellulär</span>
+      <span class="detail-pill">hoch → Biofilm</span>
+      <span class="detail-pill">niedrig → Motilität</span>
+    </div>
+  </div>
+</div>
+
+<div class="term-card cat-mol" data-cat="mol" data-terms="SAM SAdenosylmethionin acyl ACP carrier protein">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🧪</div>
+    <div>
+      <span class="term-name">SAM & Acyl-ACP</span>
+      <span class="term-short">Bausteine für AHL</span>
+    </div>
+    <span class="term-tag">Molekül</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Diese beiden Moleküle sind die <em>Rohmaterialien</em>, aus denen die LuxI-Synthase ein AHL-Molekül baut. <strong>SAM</strong> (S-Adenosylmethionin) liefert den Homoserin-Lacton-Teil. <strong>Acyl-ACP</strong> (Acyl-Carrier-Protein mit gebundener Acylgruppe) liefert die Fettsäurekette. Man muss die Namen nicht auswendig wissen – nur verstehen: AHL wird aus zwei Bausteinen zusammengesetzt.
+    </div>
+    <div class="analogy">SAM = Teigboden, Acyl-ACP = Belag. Zusammen ergibt es die Pizza (= AHL).</div>
+  </div>
+</div>
+
+<!-- ===== SYSTEME & GENE ===== -->
+<div class="section-label" data-section="sys">🟠 Systeme & Gene</div>
+
+<div class="term-card cat-sys" data-cat="sys" data-terms="LuxI LuxR system vibrio fischeri biolumineszenz">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">💡</div>
+    <div>
+      <span class="term-name">LuxI / LuxR – System</span>
+    </div>
+    <span class="term-tag">QS-System</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Das klassische QS-System gramnegativer Bakterien, entdeckt bei <em>Aliivibrio fischeri</em>. <strong>LuxI</strong> ist die Synthase – sie produziert das AHL-Signalmolekül. <strong>LuxR</strong> ist der Transkriptionsregulator – er empfängt das AHL und bindet dann an die DNA. „Lux" kommt von „Lux" (Licht) – weil dieses System die Biolumineszenz kontrolliert.
+    </div>
+    <div class="detail-row">
+      <span class="detail-pill">LuxI = Produzent</span>
+      <span class="detail-pill">LuxR = Empfänger & Schalter</span>
+      <span class="detail-pill">lux-Operon = Leuchtgene</span>
+    </div>
+  </div>
+</div>
+
+<div class="term-card cat-sys" data-cat="sys" data-terms="lux operon promoter transkription">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">📖</div>
+    <div>
+      <span class="term-name">Operon & Promotor</span>
+    </div>
+    <span class="term-tag">DNA-Struktur</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Ein <em>Operon</em> ist eine Gruppe von Genen auf der DNA, die gemeinsam reguliert werden und eine verwandte Funktion haben. Das <strong>lux-Operon</strong> enthält alle Gene, die für die Biolumineszenz nötig sind. Ein <em>Promotor</em> ist eine DNA-Region, an die Regulatoren binden können – quasi der „Startknopf" für ein Gen oder Operon. Wenn LuxR-AHL an den Promotor des lux-Operons bindet, werden alle Leuchtgene auf einmal aktiviert.
+    </div>
+    <div class="analogy">Operon = Playlist. Promotor = Play-Taste. LuxR-AHL = der Finger, der drückt.</div>
+  </div>
+</div>
+
+<div class="term-card cat-sys" data-cat="sys" data-terms="las rhl system pseudomonas aeruginosa lasR rhlR">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🦠</div>
+    <div>
+      <span class="term-name">las- & rhl-System</span>
+      <span class="term-short">P. aeruginosa</span>
+    </div>
+    <span class="term-tag">QS-System</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      <em>Pseudomonas aeruginosa</em> hat gleich zwei AHL-Systeme, die hierarchisch verbunden sind. Das <strong>las-System</strong> ist übergeordnet: LasR (Regulator) + ein spezifisches AHL (3-oxo-C12-HSL) aktivieren Virulenzfaktoren und steuern auch das rhl-System. Das <strong>rhl-System</strong> ist untergeordnet: RhlR + C4-HSL produzieren weitere Virulenzfaktoren (Rhamnolipide, Elastase). Die Systeme arbeiten wie eine Hierarchie – erst las, dann rhl.
+    </div>
+    <div class="detail-row">
+      <span class="detail-pill">las übergeordnet</span>
+      <span class="detail-pill">rhl untergeordnet</span>
+      <span class="detail-pill">beide → Virulenz</span>
+    </div>
+  </div>
+</div>
+
+<div class="term-card cat-sys" data-cat="sys" data-terms="agr system staphylococcus aureus agrA agrB agrC agrD RNAII RNAIII">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🧫</div>
+    <div>
+      <span class="term-name">agr-System</span>
+      <span class="term-short">accessory gene regulator</span>
+    </div>
+    <span class="term-tag">QS-System</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Das QS-System von <em>Staphylococcus aureus</em> und verwandten Gram-positiven Bakterien. Besteht aus mehreren Komponenten: <strong>AgrD</strong> ist das Vorläuferpeptid. <strong>AgrB</strong> verarbeitet es zum reifen AIP und pumpt es raus. <strong>AgrC</strong> ist ein membranständiger Rezeptor (Histidinkinase), der das AIP draußen erkennt. <strong>AgrA</strong> ist der Response-Regulator, der dann im Inneren Gene aktiviert – besonders <strong>RNAIII</strong>, eine regulatorische RNA, die viele Virulenzfaktoren steuert.
+    </div>
+    <div class="detail-row">
+      <span class="detail-pill">AgrD → Vorläufer</span>
+      <span class="detail-pill">AgrB → Prozessierung + Export</span>
+      <span class="detail-pill">AgrC → Rezeptor</span>
+      <span class="detail-pill">AgrA → Aktivator</span>
+      <span class="detail-pill">RNAIII → Virulenzsteuerung</span>
+    </div>
+  </div>
+</div>
+
+<div class="term-card cat-sys" data-cat="sys" data-terms="histidinkinase phosphorylierung two component system">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">⚗️</div>
+    <div>
+      <span class="term-name">Histidinkinase & Response-Regulator</span>
+    </div>
+    <span class="term-tag">Signalweg</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Das ist ein klassisches bakterielles Signalweiterleitungsprinzip. Die <em>Histidinkinase</em> (z.B. AgrC) sitzt in der Membran und erkennt das Signal draußen. Wenn sie aktiviert wird, überträgt sie eine Phosphatgruppe (= Phosphorylierung) auf den <strong>Response-Regulator</strong> (z.B. AgrA). Dieser verändert dadurch seine Form und kann nun Zielgene aktivieren oder hemmen.
+    </div>
+    <div class="analogy">Histidinkinase = Türklingel. Response-Regulator = der, der aufmacht. Phosphorylierung = der Strom, der durch die Klingel fließt.</div>
+  </div>
+</div>
+
+<div class="term-card cat-sys" data-cat="sys" data-terms="diguanylatcyclase phosphodiesterase GGDEF EAL GTP abbau">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🔄</div>
+    <div>
+      <span class="term-name">Diguanylatcyclase & Phosphodiesterase</span>
+    </div>
+    <span class="term-tag">Enzyme (c-di-GMP)</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Diese beiden Enzymtypen regulieren den <em>c-di-GMP-Spiegel</em>. <strong>Diguanylatcyclasen</strong> (mit GGDEF-Domäne) bauen c-di-GMP auf – sie verbinden zwei GTP-Moleküle. <strong>Phosphodiesterasen</strong> (mit EAL- oder HD-GYP-Domäne) bauen c-di-GMP wieder ab – das Endprodukt ist GMP. Je nach Umweltbedingung wird mal mehr aufgebaut, mal mehr abgebaut, was den Biofilm-vs-Schwimmen-Schalter steuert.
+    </div>
+    <div class="detail-row">
+      <span class="detail-pill">Diguanylatcyclase → aufbauen</span>
+      <span class="detail-pill">Phosphodiesterase → abbauen</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BIOFILM ===== -->
+<div class="section-label" data-section="bio">🟣 Biofilm</div>
+
+<div class="term-card cat-bio" data-cat="bio" data-terms="biofilm oberfläche matrix gemeinschaft sessil planktonisch">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🏘️</div>
+    <div>
+      <span class="term-name">Biofilm</span>
+    </div>
+    <span class="term-tag">Lebensform</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Ein Biofilm ist eine strukturierte Gemeinschaft von Bakterien, die an einer Oberfläche haften und sich in eine selbstproduzierte <em>Matrix</em> (= Schleim aus Zuckern, Proteinen, DNA) einbetten. Das Gegenteil sind <strong>planktonische Zellen</strong> – frei schwebende Einzelzellen. Biofilme sind keine chaotischen Haufen: sie haben Strukturen, Nährstoffkanäle, verschiedene Zellzustände.
+    </div>
+    <div class="analogy">Planktonisch = Einzelperson, die alleine durch die Stadt läuft. Biofilm = ganze Siedlung mit Gebäuden, Wasserversorgung und Arbeitsteilung.</div>
+  </div>
+</div>
+
+<div class="term-card cat-bio" data-cat="bio" data-terms="EPS extrazelluläre polymere Substanzen matrix polysaccharide">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🫧</div>
+    <div>
+      <span class="term-name">EPS – Extrazelluläre Polymere Substanzen</span>
+    </div>
+    <span class="term-tag">Biofilm-Matrix</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      EPS ist der „Kleber" und „Schutzmantel" des Biofilms. Bakterien scheiden diese Substanzen selbst aus: Polysaccharide (lange Zuckerketten), Proteine und extrazelluläre DNA. Die EPS-Matrix sorgt dafür, dass der Biofilm zusammenhält, Antibiotika nicht so leicht reinkommen, und die Zellen in verschiedenen Umgebungsbedingungen überleben können.
+    </div>
+    <div class="analogy">EPS ist wie Beton in einem Gebäude – hält alles zusammen, schützt nach außen, gibt Struktur.</div>
+  </div>
+</div>
+
+<div class="term-card cat-bio" data-cat="bio" data-terms="phasen adhäsion reversibel irreversibel reifung dispersion pili fimbrien">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">📊</div>
+    <div>
+      <span class="term-name">Phasen der Biofilmbildung</span>
+    </div>
+    <span class="term-tag">Prozess</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Biofilmbildung verläuft in 5 Schritten: <strong>1. Reversible Adhäsion</strong> – Bakterien heften sich vorläufig an eine Oberfläche. <strong>2. Irreversible Adhäsion</strong> – Pili, Fimbrien und Adhäsine stabilisieren die Bindung (jetzt bleiben sie). <strong>3. Mikrokoloniebildung</strong> – Zellen teilen sich, EPS wird produziert. <strong>4. Reifung</strong> – 3D-Struktur entsteht, mit Kanälen und Gradienten. <strong>5. Dispersion</strong> – Zellen lösen sich ab und besiedeln neue Orte.
+    </div>
+    <div class="detail-row">
+      <span class="detail-pill">Pili = fadenförmige Anhänge</span>
+      <span class="detail-pill">Adhäsine = Haftproteine</span>
+      <span class="detail-pill">Dispersion = Ausbreitung</span>
+    </div>
+  </div>
+</div>
+
+<div class="term-card cat-bio" data-cat="bio" data-terms="persister zellen antibiotikatoleranz motilität flagellen">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🛡️</div>
+    <div>
+      <span class="term-name">Persister-Zellen & Antibiotikatoleranz</span>
+    </div>
+    <span class="term-tag">Biofilm-Eigenschaft</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Biofilm-Bakterien sind bis zu <em>1000-fach toleranter</em> gegenüber Antibiotika als frei lebende Zellen. Gründe: die EPS-Matrix bremst Antibiotika aus, es gibt Sauerstoff- und Nährstoffgradienten (tiefe Schichten wachsen langsamer → Antibiotika wirken schlechter), und es gibt sogenannte <strong>Persister-Zellen</strong> – eine kleine Untergruppe von Zellen, die in einen Ruhezustand übergehen und so fast nicht angreifbar sind.
+    </div>
+    <div class="analogy">Persister-Zellen sind wie Schlafende: das Antibiotikum zielt auf aktive Prozesse – wer schläft, wird nicht getroffen.</div>
+  </div>
+</div>
+
+<!-- ===== MEDIZIN & ANWENDUNG ===== -->
+<div class="section-label" data-section="med">🔴 Medizin & Anwendung</div>
+
+<div class="term-card cat-med" data-cat="med" data-terms="virulenzfaktoren pathogen infektionen toxine elastase rhamnolipide">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">⚠️</div>
+    <div>
+      <span class="term-name">Virulenzfaktoren</span>
+    </div>
+    <span class="term-tag">Medizin</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Virulenzfaktoren sind alle Eigenschaften eines Erregers, die ihm helfen, einen Wirt zu <em>infizieren, zu schädigen oder dem Immunsystem zu entkommen</em>. Bei <em>P. aeruginosa</em> z.B.: <strong>Elastase</strong> (zerstört Gewebe), <strong>alkalische Protease</strong>, <strong>Exotoxin A</strong>. Bei <em>S. aureus</em>: Toxine, degradative Enzyme. Wichtig: Quorum Sensing reguliert, <em>wann</em> diese Faktoren produziert werden – bei hoher Zelldichte, wenn die Chance auf eine erfolgreiche Infektion größer ist.
+    </div>
+  </div>
+</div>
+
+<div class="term-card cat-med" data-cat="med" data-terms="quorum quenching lactonase acylase enzym anti-virulenz">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🚫</div>
+    <div>
+      <span class="term-name">Quorum Quenching</span>
+    </div>
+    <span class="term-tag">Strategie</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Quorum Quenching bedeutet: die Kommunikation der Bakterien <em>aktiv stören</em>, ohne sie direkt abzutöten. Ansätze: <strong>AHL-Lactonase</strong> – Enzym, das den Lactonring des AHL zerschneidet → Signal inaktiv. <strong>AHL-Acylase</strong> – trennt die Acylkette ab → AHL kaputt. Oder <strong>Rezeptorantagonisten</strong> – Moleküle, die an den Rezeptor binden, ihn aber nicht aktivieren → Signal wird blockiert. Vorteil: weniger Selektionsdruck als klassische Antibiotika. Aber: Resistenz ist trotzdem möglich.
+    </div>
+    <div class="analogy">Statt die Bakterien zu töten, wird ihnen das Mikrofon weggenommen – sie können sich nicht mehr absprechen.</div>
+  </div>
+</div>
+
+<div class="term-card cat-med" data-cat="med" data-terms="mukoviszidose zystische fibrose lunge chronisch pseudomonas">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🫁</div>
+    <div>
+      <span class="term-name">Mukoviszidose (Zystische Fibrose)</span>
+    </div>
+    <span class="term-tag">Erkrankung</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Eine genetische Erkrankung, bei der Schleimdrüsen zu zähen Schleim produzieren – besonders in der Lunge. Dieser zähe Schleim kann nicht normal abtransportiert werden, wodurch sich <em>P. aeruginosa</em> leichter ansiedeln kann. Einmal im Biofilm in der Lunge, ist es extrem schwer, die Bakterien zu entfernen – chronische Infektion, Gewebeschäden, Entzündungen.
+    </div>
+  </div>
+</div>
+
+<div class="term-card cat-med" data-cat="med" data-terms="opportunistisch pathogen immunsystem wirt">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🎭</div>
+    <div>
+      <span class="term-name">Opportunistischer Erreger</span>
+    </div>
+    <span class="term-tag">Medizin</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Ein opportunistischer Erreger ist ein Bakterium, das bei <em>gesunden Menschen</em> kaum gefährlich ist – aber bei geschwächtem Immunsystem (z.B. nach Transplantation, bei Mukoviszidose, bei HIV) ernsthaft krank machen kann. <em>P. aeruginosa</em> ist so ein Erreger: überall in der Umwelt vorhanden, für Gesunde ungefährlich, aber für Immungeschwächte lebensbedrohlich.
+    </div>
+  </div>
+</div>
+
+<div class="term-card cat-med" data-cat="med" data-terms="counterillumination biolumineszenz tintenfisch tarnung">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">✨</div>
+    <div>
+      <span class="term-name">Counterillumination</span>
+    </div>
+    <span class="term-tag">Biologie</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Der Tintenfisch <em>Euprymna scolopes</em> leuchtet von unten – durch die Bakterien in seinem Leuchtorgan. Warum? Von unten betrachtet wirft er normalerweise einen Schatten gegen das Mondlicht. Durch das Leuchten reduziert er diesen Schatten: <em>er passt seine Helligkeit dem Hintergrundlicht an</em>. Für Raubtiere, die von unten schauen, ist er damit unsichtbar. Das nennt man Counterillumination.
+    </div>
+    <div class="analogy">Wie ein Tarnmantel, der die Farbe des Himmels annimmt – aber mit Licht.</div>
+  </div>
+</div>
+
+<div class="term-card cat-med" data-cat="med" data-terms="lasR mutation chronische infektion selektion anpassung variante">
+  <div class="term-header" onclick="toggle(this)">
+    <div class="term-icon">🔀</div>
+    <div>
+      <span class="term-name">lasR-Varianten bei chronischer Infektion</span>
+    </div>
+    <span class="term-tag">Selektion</span>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="term-body">
+    <div class="explain-simple">
+      Bei Mukoviszidose-Patienten wurde beobachtet, dass sich <em>P. aeruginosa</em> im Verlauf langer Infektionen verändert – besonders das <strong>lasR-Gen</strong> mutiert. Diese Varianten produzieren weniger Virulenzfaktoren und wachsen langsamer. Das klingt erstmal weniger gefährlich – aber es bedeutet: die Bakterien passen sich an die Lunge an, „sparen Energie" und sind damit noch schwerer zu eliminieren. Ein Beispiel dafür, dass QS sich selbst unter Selektionsdruck anpassen kann.
+    </div>
+  </div>
+</div>
+
+<div id="no-results" class="no-results" style="display:none;">Kein Begriff gefunden 🔍</div>
+
+</main>
+
+<script>
+  let activeFilter = 'all';
+
+  function toggle(header) {
+    const card = header.closest('.term-card');
+    card.classList.toggle('open');
+  }
+
+  function setFilter(cat, btn) {
+    activeFilter = cat;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilter();
+  }
+
+  function filterCards() {
+    applyFilter();
+  }
+
+  function applyFilter() {
+    const query = document.getElementById('search').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.term-card');
+    let visible = 0;
+
+    cards.forEach(card => {
+      const cat = card.dataset.cat;
+      const terms = (card.dataset.terms || '') + ' ' + card.innerText.toLowerCase();
+      const catMatch = activeFilter === 'all' || cat === activeFilter;
+      const searchMatch = !query || terms.includes(query);
+      if (catMatch && searchMatch) {
+        card.classList.remove('hidden');
+        visible++;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+
+    // Show/hide section labels
+    document.querySelectorAll('.section-label').forEach(label => {
+      const sec = label.dataset.section;
+      const hasVisible = [...document.querySelectorAll(`.term-card.cat-${sec}`)].some(c => !c.classList.contains('hidden'));
+      label.style.display = (activeFilter === 'all' || activeFilter === sec) && hasVisible ? 'block' : 'none';
+    });
+
+    document.getElementById('no-results').style.display = visible === 0 ? 'block' : 'none';
+  }
+</script>
+</body>
+</html>
